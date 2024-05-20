@@ -79,15 +79,27 @@ function getOpenConversation() {
     return parseInt($('#conversation').attr('conversationID'))
 }
 function loadConversations(conversations) {
-    $("#activeConversations").empty()
+    $("#activeConversationsList").empty()
     for (let conversation of conversations) {
+        console.log("HERE ", conversation)
         showConversationButton(conversation)
     }
 }
 function showConversationButton(conversation) {
-    let activeConversationsDiv = $("#activeConversations")
+    let activeConversationsDiv = $("#activeConversationsList")
     if ($(`button[id=${conversation.conversationID}]`).length) return
-    activeConversationsDiv.append(`<button id=${conversation.conversationID} onclick="requestConversation(${conversation.conversationID})">${conversation.users.map(user => user.username)}</button>`)
+    let id = conversation.conversationID
+    let usernames = conversation.users.map(user => user.username)
+    let lastMessage = conversation.texts[conversation.texts.length - 1]
+
+    let text
+    if (lastMessage) text = usernames + "<br>" + lastMessage.userID + ": " + lastMessage.message
+    else text = usernames
+    activeConversationsDiv.append(`
+    <button class="conversationBlock" id="${id}" onclick="requestConversation(${id})">
+        <div class="userPic"></div>
+        <div class="activeConversationListButtonText">${text}</div>
+    </button>`)
 }
 function addConversation(conversation) {
     $('#conversation').attr('conversationID', conversation.conversationID)
@@ -154,3 +166,8 @@ function startNewConversation(user) {
     openConversationArea()
     ws.send(JSON.stringify({type: Type.STARTCONVERSATION, users: [user, userID]}))
 }
+$('.userBlock').hover(function() {
+    $('#leftPanel').toggleClass('hovered');
+    $('#activeConversations').toggleClass('leftPanelHovered');
+    $('.activeConversationListButtonText').toggleClass('leftPanelHovered');
+});

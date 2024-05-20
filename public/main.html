@@ -6,15 +6,28 @@
     <link rel="stylesheet" href="main.css">
 </head>
 <body>
-<div id="leftPanel">
-    <div id="currentOnlineUsersTitle">Currently Online Users</div>
-    <div id="currentlyOnlineUsers"></div>
+<div id="mainContainer">
+    <div id="leftPanel">
+        <div class="panelTitle">Users</div>
+        <div id="currentlyOnlineUsers">
+            <button class="userBlock" onclick="startNewConversation(0)"><div class="userPic"></div><div class="onlineUserListButtonText">User1</div></button>
+            <button class="userBlock" onclick="startNewConversation(0)"><div class="userPic"></div><div class="onlineUserListButtonText">User2</div></button>
+        </div>
+    </div>
+    <div id="activeConversations">
+        <div class="panelTitle">Active Conversations</div>
+        <div id="activeConversationsList"></div>
+        <button class="conversationBlock" id="3" onclick="requestConversation(3)">
+            <div class="userPic"></div>
+            <div class="activeConversationListButtonText">User3</div>
+        </button>
+    </div>
+    <div id="conversation">
+        <div id="messages"></div>
+        <div id="messageInputDiv"></div>
+    </div>
 </div>
-<div id="activeConversations"></div>
-<div id="conversation">
-    <div id="messages"></div>
-    <div id="messageInputDiv"></div>
-</div>
+
 <!--<p id="loggedInUsername"></p>-->
 <!--<p>Currently online users</p>-->
 

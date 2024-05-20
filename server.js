@@ -54,6 +54,7 @@ function login(ws, userID) {
 function sendRequestedConversation(ws, conversationID, type) {
     Database.findConversation(conversationID).then((conversation) => {
         getConversationWithUsernames(conversation).then((newConversation) => {
+            if (!newConversation) return
             let promises = newConversation.texts.map((text) => {
                 return Database.findUserWithID(text.userID).then((user) => {
                     text.user = user
@@ -98,7 +99,7 @@ function loadConversations(ws, user) {
         Promise.all(promises).then((conversations) => {
             let sendableConversation = conversations.map(conversation => {
                 if (!conversation) return
-                return {conversationID: conversation.conversationID, users: conversation.users}
+                return conversation
             })
             ws.send(JSON.stringify({type: helper.Type.LOADCONVERSATIONS, conversations: sendableConversation}))
         })

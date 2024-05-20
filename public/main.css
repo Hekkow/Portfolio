@@ -12,14 +12,24 @@ body {
     display: flex;
     font-weight: bold;
     font-family: Arial, serif;
+    justify-content: center;
+    align-items: center;
+}
+#mainContainer {
+    width: 80%;
+    height: 80%;
+    display: flex;
+}
+#leftPanel, #activeConversations {
+    transition: 0.4s ease-in;
 }
 #leftPanel {
-    width: 15%;
+    width: 100px;
     border: inset 5px red;
     display: flex;
     flex-direction: column;
 }
-#currentOnlineUsersTitle {
+.panelTitle {
     height: 70px;
     line-height: 70px;
     text-align: center;
@@ -32,7 +42,7 @@ body {
     align-items: center;
 }
 #activeConversations {
-    width: 15%;
+    width: 250px;
     border: inset 5px blue;
     z-index: 20;
     /*box-shadow: 0 0 10px 10px black;*/
@@ -86,54 +96,53 @@ body {
     border: 3px solid #4ab1ef;
     background-color: #4ab1ef;
 }
-.userBlock {
-    height: 70px;
-    width: 90%;
-
+.conversationBlock, .userBlock {
+    height: 80px;
+    width: 100%;
     background-color: transparent;
-    border: 3px solid #4ab1ef;
+    border: 0;
     outline: 0;
-    position: relative;
-    /*font-weight: bold;*/
     font-family: Arial, serif;
     font-size: 16px;
-    text-align: left;
-    /*transition-duration: 0.3s;*/
-    transition: all 0.15s ease;
-    /*box-shadow: 0 3px 10px black;*/
-    bottom: 0;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #4ab1ef;
-    border-radius: 3px;
+    /*font-weight: bold;*/
+    padding: 0;
     display: flex;
     /*justify-content: center;*/
     align-items: center;
-    padding: 0;
+    border-radius: 3px;
 }
-.userBlock:hover {
-    border-radius: 0;
-    width: 95%;
-    /*box-shadow: 0 3px 10px 3px #4ab1ef;*/
-    /*bottom: 5px;*/
-    /*z-index: 10;*/
-    /*padding-left: 30px;*/
+.conversationBlock:hover, .userBlock:hover {
     background-color: #4ab1ef;
+    border-radius: 10px;
     cursor: pointer;
     color: white;
-}
-.onlineUserListButtonPic {
-    height: 50px;
-    width: 50px;
-    border-radius: 60px;
-    border: 3px solid #4ab1ef;
-    margin-left: 10px;
-    margin-right: 10px;
     transition: all 0.15s ease;
 }
-.userBlock:hover .onlineUserListButtonPic {
+.userBlock {
+    text-align: left;
+}
+.userPic {
+    height: 60px;
+    width: 60px;
+    border-radius: 60px;
+    border: 3px solid #4ab1ef;
+    margin-left: 15px;
+    margin-right: 10px;
+    transition: all 0.15s ease;
+
+}
+.onlineUserListButtonText {
+    width: 0;
+    font-size: 0;
+}
+.activeConversationListButtonText {
+    text-align: left;
+}
+.userBlock:hover .userPic,
+.conversationBlock:hover .userPic{
     border: 3px solid white;
 }
+
 .myText {
     text-align: right;
 }
