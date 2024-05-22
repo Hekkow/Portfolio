@@ -6,7 +6,11 @@ require('express-ws')(app)
 const helper = require('./public/helper.js')
 
 const clients = []
-// Database.deleteAll()
+Database.initPromise.then(() => {
+    Database.deleteAll()
+    Database.createLatestIDs()
+})
+
 app.use(express.static('public'));
 app.use(express.json());
 app.ws('/main', (ws, req) => {

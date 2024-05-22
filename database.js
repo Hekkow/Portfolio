@@ -2,15 +2,24 @@ const { MongoClient } = require("mongodb")
 const { readFile } = require('fs').promises
 
 class Database {
-    constructor() { this.init() }
+    constructor() { this.initPromise = this.init() }
     async init() {
         this.uri = JSON.parse(await readFile('private.json')).databaseuri
         this.client = new MongoClient(this.uri)
+
         this.database = this.client.db('ChatApp')
         this.users = this.database.collection('Users')
-        this.users.createIndex({userID: 1})
         this.conversations = this.database.collection('Conversations')
-        this.conversations.createIndex({conversationID: 1})
+        this.latestIDs = await this.database.collection('LatestIDs')
+
+        await this.users.createIndex({userID: 1})
+        await this.conversations.createIndex({conversationID: 1})
+
+        await this.createLatestIDs()
+    }
+    async createLatestIDs() {
+        let latestIDs = await this.latestIDs.findOne()
+        if (!latestIDs) await this.latestIDs.insertOne({ latestConversationID: 1, latestUserID: 1, latestMessageID: 1 });
     }
     async register(username) {
         let id = await this.getLatestUserID()
@@ -30,7 +39,7 @@ class Database {
     async addMessage(message) {
         return await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
-            {$push: {texts: {userID: message.userID, message: message.message}}},
+            {$push: {texts: {userID: message.userID, message: message.message, messageID: await this.getLatestMessageID()}}},
             {returnDocument: "after"})
     }
     async findUserWithName(username) {
@@ -46,13 +55,14 @@ class Database {
         return conversations
     }
     async deleteAll() {
-        this.users.drop()
-        this.conversations.drop()
+        await this.users.drop()
+        await this.conversations.drop()
+        await this.latestIDs.drop()
     }
     async createConversation(users) {
         let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}})
         if (previousConversation) return previousConversation
-        let id = await this.getLatestConversation()
+        let id = await this.getLatestConversationID()
         let conversation = {conversationID: id, texts: [], users: users}
         for (let user of users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
@@ -61,18 +71,22 @@ class Database {
         return conversation
     }
     async getLatestUserID() {
-        let user = await this.users.find().sort({userID: -1}).limit(1).toArray()
-        if (user[0]) {
-            return ++user[0].userID
-        }
-        else return 1
+        let latestIDs = await this.latestIDs.findOne()
+        let latestUserID = ++latestIDs.latestUserID
+        this.latestIDs.updateOne({}, { $set: { latestUserID: latestUserID } })
+        return latestUserID
     }
-    async getLatestConversation(id) {
-        let conversation = await this.conversations.find().sort({conversationID: -1}).limit(1).toArray()
-        if (conversation[0]) {
-            return ++conversation[0].conversationID
-        }
-        else return 1
+    async getLatestConversationID() {
+        let latestIDs = await this.latestIDs.findOne()
+        let latestConversationID = ++latestIDs.latestConversationID
+        this.latestIDs.updateOne({}, { $set: { latestConversationID: latestConversationID } })
+        return latestConversationID
+    }
+    async getLatestMessageID() {
+        let latestIDs = await this.latestIDs.findOne()
+        let latestMessageID = ++latestIDs.latestMessageID
+        this.latestIDs.updateOne({}, { $set: { latestMessageID: latestMessageID } })
+        return latestMessageID
     }
     async loginOrRegister(username) {
         let user = await this.findUserWithName(username)
