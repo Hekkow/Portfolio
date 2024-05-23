@@ -82,6 +82,8 @@ function receivedMessage(message) {
 }
 function receivedDeletedMessage(messageID) {
     $(`.messageDiv[messageID='${messageID}']`).remove()
+    $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
+    if (messageID === replyingTo) deleteReply()
 }
 function getOpenConversation() {
     return parseInt($('#conversation').attr('conversationID'))
@@ -154,41 +156,73 @@ function updateMessageID(message) {
     let toSetMessageID = $('div').filter('[messageID="undefined"]').first()
     if (toSetMessageID) toSetMessageID.attr('messageID', message.messageID)
 }
-function showMessage(message, local) {
+function getReplyAboveText(message) {
+    if (message.replyingTo === -1) return ""
+    let reply = '<p class="replyText">Replying to: '
+    let replyingToDiv = $(`div[messageID="${message.replyingTo}"]`)
+    if (replyingToDiv.length > 0) reply += getMessageText(replyingToDiv)
+    else reply += "Deleted message"
+    console.log(reply)
+    return reply + '</p>'
+}
+function getName(message) {
     let name = message.user
     if (name) name = name.username
     else name = username
+    return name
+}
+function showMessage(message, local) {
+    let name = getName(message)
     let messages = $('#messages')
-    let reply = ""
-    if (message.replyingTo !== -1) reply = $('div').filter(`[messageID="${message.replyingTo}"]`).find('p').text()
-    if (reply !== "") reply = "Replying to: " + reply + "<br>"
-    messages.append(`<div class='messageDiv' messageID=${message.messageID}><p>${reply}${name}: ${message.message}</p></div>`)
+    let reply = getReplyAboveText(message)
+    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${message.message}</p></div></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
-    if (local) {
-        messageDiv.addClass('myText');
-    }
+    if (local) messageDiv.addClass('myText');
     messages.scrollTop(messages.prop("scrollHeight"))
     messageDiv.hover(function() {
-        if (local) $(this).prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
-        else $(this).append(`<div class='replyButton'></div>`)
-        $(this).find('.deleteButton').click(function() {
-            deleteMessage($(this).parent())
-        })
-        $(this).find('.replyButton').click(function() {
-            replyMessage($(this).parent())
-        })
+        showHoverButtons($(this), local)
     }, function() {
-        $(this).find('div').remove()
+        hideHoverButtons($(this))
     })
-
+    if (message.replyingTo !== -1) {
+        messageDiv.click(function() {
+            scrollToMessage(message.replyingTo)
+        })
+    }
+}
+function showHoverButtons(div, local) {
+    if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
+    else div.append(`<div class='replyButton'></div>`)
+    div.find('.deleteButton').click(function(e) {
+        e.stopPropagation()
+        deleteMessage(div)
+    })
+    div.find('.replyButton').click(function(e) {
+        e.stopPropagation()
+        replyMessage(div)
+    })
+}
+function hideHoverButtons(div) {
+    div.find('.replyButton').remove()
+    div.find('.deleteButton').remove()
+}
+function scrollToMessage(messageID) {
+    let scrollToMessage = $(`.messageDiv[messageID=${messageID}]`)
+    let messages = $('#messages')
+    let targetPosition = scrollToMessage.offset().top - messages.offset().top + messages.scrollTop();
+    messages.scrollTop(targetPosition);
+    scrollToMessage.css('background-color', 'red')
+    scrollToMessage.animate({backgroundColor: 'white'}, 500)
 }
 function replyMessage(messageDiv) {
     let replyBar = $('#replyBar')
     replyBar.addClass('active')
-    replyBar.text(messageDiv.find('p').text())
+    replyBar.text(getMessageText(messageDiv))
     replyingTo = parseInt(messageDiv.attr('messageID'))
     $('#messageInput').focus()
-
+}
+function getMessageText(messageDiv) {
+    return messageDiv.find('p.messageText').text()
 }
 function deleteReply() {
     let replyBar = $('#replyBar')
