@@ -10,6 +10,7 @@ else {
     connection()
 }
 let users = []
+let replyingTo = -1
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
@@ -143,9 +144,11 @@ function sendMessage() {
     messageInput.val("")
     messageInput.focus()
     if (!text || !text.trim()) return
-    let message = {conversationID: conversationID, userID: userID, message: text}
+    let message = {conversationID: conversationID, userID: userID, message: text, replyingTo: replyingTo}
     showMessage(message, true)
     ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
+
+    deleteReply()
 }
 function updateMessageID(message) {
     let toSetMessageID = $('div').filter('[messageID="undefined"]').first()
@@ -156,23 +159,43 @@ function showMessage(message, local) {
     if (name) name = name.username
     else name = username
     let messages = $('#messages')
-    messages.append(`<div class='messageDiv' messageID=${message.messageID}><p>${name}: ${message.message}</p></div>`)
+    let reply = ""
+    if (message.replyingTo !== -1) reply = $('div').filter(`[messageID="${message.replyingTo}"]`).find('p').text()
+    if (reply !== "") reply = "Replying to: " + reply + "<br>"
+    messages.append(`<div class='messageDiv' messageID=${message.messageID}><p>${reply}${name}: ${message.message}</p></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) {
         messageDiv.addClass('myText');
     }
     messages.scrollTop(messages.prop("scrollHeight"))
     messageDiv.hover(function() {
-        let buttons = `<div class='deleteButton'></div>`
-        if (local) $(this).prepend(buttons)
-        // else $(this).append(buttons)
+        if (local) $(this).prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
+        else $(this).append(`<div class='replyButton'></div>`)
         $(this).find('.deleteButton').click(function() {
             deleteMessage($(this).parent())
+        })
+        $(this).find('.replyButton').click(function() {
+            replyMessage($(this).parent())
         })
     }, function() {
         $(this).find('div').remove()
     })
 
+}
+function replyMessage(messageDiv) {
+    let replyBar = $('#replyBar')
+    replyBar.addClass('active')
+    replyBar.text(messageDiv.find('p').text())
+    replyingTo = parseInt(messageDiv.attr('messageID'))
+    $('#messageInput').focus()
+
+}
+function deleteReply() {
+    let replyBar = $('#replyBar')
+    replyBar.removeClass('active')
+    replyBar.text("")
+    replyingTo = -1
+    $('#messageInput').focus()
 }
 function deleteMessage(messageDiv) {
     let messageID = parseInt(messageDiv.attr('messageID'))
@@ -195,3 +218,6 @@ function startNewConversation(user) {
     openConversationArea()
     ws.send(JSON.stringify({type: Type.STARTCONVERSATION, users: [user, userID]}))
 }
+$(window).on('focus', function() {
+    $('#messageInput').focus()
+})

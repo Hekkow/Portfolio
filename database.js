@@ -39,7 +39,7 @@ class Database {
     async addMessage(message) {
         return await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
-            {$push: {texts: {userID: message.userID, message: message.message, messageID: await this.getLatestMessageID()}}},
+            {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID()}}},
             {returnDocument: "after"})
     }
     async deleteMessage(conversationID, messageID) {
