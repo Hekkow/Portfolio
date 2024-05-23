@@ -30,6 +30,8 @@ app.ws('/main', (ws, req) => {
             case helper.Type.NEWMESSAGE:
                 receivedMessage(data.message)
                 break
+            case helper.Type.DELETEMESSAGE:
+                deleteMessage(data)
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -67,25 +69,30 @@ function sendRequestedConversation(ws, conversationID, type) {
             })
             Promise.all(promises).then((updatedTexts) => {
                 newConversation.texts = updatedTexts
-                console.log(newConversation)
                 ws.send(JSON.stringify({type: type, conversation: newConversation}))
             })
         })
     })
 }
+function deleteMessage(data) {
+    Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: helper.Type.DELETEMESSAGE, messageID: data.messageID}))
+        }
+    })
+}
 function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
-        console.log(conversation)
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
             Database.findUserWithID(message.userID).then((user) => {
                 message.messageID = conversation.texts[conversation.texts.length - 1].messageID
                 message.user = user
-                console.log("message", message)
                 client.socket.send(JSON.stringify({type: helper.Type.NEWMESSAGE, message: message}))
             })
-
         }
     })
 }

@@ -160,3 +160,9 @@ p {
     text-align: right;
     justify-content: flex-end;
 }
+.deleteButton {
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    cursor: pointer;
+}

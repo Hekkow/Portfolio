@@ -42,6 +42,13 @@ class Database {
             {$push: {texts: {userID: message.userID, message: message.message, messageID: await this.getLatestMessageID()}}},
             {returnDocument: "after"})
     }
+    async deleteMessage(conversationID, messageID) {
+        return await this.conversations.findOneAndUpdate(
+            {conversationID: conversationID},
+            {$pull: {texts: {messageID: messageID}}},
+            {returnDocument: "after"}
+        )
+    }
     async findUserWithName(username) {
         return await this.users.findOne({username: username})
     }

@@ -60,6 +60,9 @@ function messaged(event) {
         case Type.REQUESTCONVERSATION:
             showConversationButton(message.conversation)
             break
+        case Type.DELETEMESSAGE:
+            receivedDeletedMessage(message.messageID)
+            break
     }
 
 }
@@ -75,6 +78,9 @@ function receivedMessage(message) {
     else {
         ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
     }
+}
+function receivedDeletedMessage(messageID) {
+    $(`.messageDiv[messageID='${messageID}']`).remove()
 }
 function getOpenConversation() {
     return parseInt($('#conversation').attr('conversationID'))
@@ -149,17 +155,29 @@ function showMessage(message, local) {
     let name = message.user
     if (name) name = name.username
     else name = username
-    $('#messages').append(`<div class='messageDiv' messageID=${message.messageID}><p>${name}: ${message.message}</p></div>`)
+    let messages = $('#messages')
+    messages.append(`<div class='messageDiv' messageID=${message.messageID}><p>${name}: ${message.message}</p></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) {
         messageDiv.addClass('myText');
     }
+    messages.scrollTop(messages.prop("scrollHeight"))
     messageDiv.hover(function() {
-        console.log("HERE")
-        $(this).append(`<div>TEST</div>`)
+        let buttons = `<div class='deleteButton'></div>`
+        if (local) $(this).prepend(buttons)
+        // else $(this).append(buttons)
+        $(this).find('.deleteButton').click(function() {
+            deleteMessage($(this).parent())
+        })
     }, function() {
         $(this).find('div').remove()
     })
+
+}
+function deleteMessage(messageDiv) {
+    let messageID = parseInt(messageDiv.attr('messageID'))
+    messageDiv.remove()
+    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: userID, conversationID: getOpenConversation()}))
 }
 function requestConversation(conversationID) {
     ws.send(JSON.stringify({type: Type.OPENCONVERSATION, conversationID:conversationID}))

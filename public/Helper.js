@@ -12,7 +12,8 @@ let Type = {
     LOADCONVERSATIONS: 'LOADCONVERSATIONS',
     OPENCONVERSATION: 'OPENCONVERSATION',
     NEWMESSAGE: 'NEWMESSAGE',
-    REQUESTCONVERSATION: 'REQUESTCONVERSATION'
+    REQUESTCONVERSATION: 'REQUESTCONVERSATION',
+    DELETEMESSAGE: 'DELETEMESSAGE'
 }
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
     module.exports = {loginCookie, port, host, Type};
