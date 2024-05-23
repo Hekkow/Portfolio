@@ -69,7 +69,8 @@ function setUp(user) {
 }
 function receivedMessage(message) {
     if (message.conversationID === getOpenConversation()) {
-        showMessage(message)
+        if (message.user.username === username) updateMessageID(message)
+        else showMessage(message, false)
     }
     else {
         ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
@@ -81,7 +82,6 @@ function getOpenConversation() {
 function loadConversations(conversations) {
     $("#activeConversationsList").empty()
     for (let conversation of conversations) {
-        console.log("HERE ", conversation)
         showConversationButton(conversation)
     }
 }
@@ -103,17 +103,16 @@ function showConversationButton(conversation) {
 }
 function addConversation(conversation) {
     $('#conversation').attr('conversationID', conversation.conversationID)
-//     let activeConversationsDiv = $("#activeConversations")
-//     if ($(`#${conversation.conversationID}`).length) return
-//     activeConversationsDiv.append(`<button id=${conversation.conversationID} onclick="requestConversation(${conversation.conversationID})">${conversation.users.map(user => user.username)}</button>`)
 }
 function openConversation(conversation) {
     $('#conversation').attr('conversationID', conversation.conversationID)
     openConversationArea()
     for (let message of conversation.texts) {
-        showMessage(message)
+        if (message.user.username === username) showMessage(message, true)
+        else showMessage(message, false)
     }
 }
+
 function openConversationArea() {
     $('#messages').empty()
     loadMessageInput()
@@ -139,16 +138,28 @@ function sendMessage() {
     messageInput.focus()
     if (!text || !text.trim()) return
     let message = {conversationID: conversationID, userID: userID, message: text}
-    showMessage(message)
+    showMessage(message, true)
     ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
 }
-
-function showMessage(message) {
+function updateMessageID(message) {
+    let toSetMessageID = $('div').filter('[messageID="undefined"]').first()
+    if (toSetMessageID) toSetMessageID.attr('messageID', message.messageID)
+}
+function showMessage(message, local) {
     let name = message.user
-    if (!name) name = username
-    else name = name.username
-    if (name === username) $('#messages').append(`<p class="myText">${name}: ${message.message}<p/>`)
-    else $('#messages').append(`<p>${name}: ${message.message}<p/>`)
+    if (name) name = name.username
+    else name = username
+    $('#messages').append(`<div class='messageDiv' messageID=${message.messageID}><p>${name}: ${message.message}</p></div>`)
+    let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
+    if (local) {
+        messageDiv.addClass('myText');
+    }
+    messageDiv.hover(function() {
+        console.log("HERE")
+        $(this).append(`<div>TEST</div>`)
+    }, function() {
+        $(this).find('div').remove()
+    })
 }
 function requestConversation(conversationID) {
     ws.send(JSON.stringify({type: Type.OPENCONVERSATION, conversationID:conversationID}))
@@ -166,8 +177,3 @@ function startNewConversation(user) {
     openConversationArea()
     ws.send(JSON.stringify({type: Type.STARTCONVERSATION, users: [user, userID]}))
 }
-$('.userBlock').hover(function() {
-    $('#leftPanel').toggleClass('hovered');
-    $('#activeConversations').toggleClass('leftPanelHovered');
-    $('.activeConversationListButtonText').toggleClass('leftPanelHovered');
-});

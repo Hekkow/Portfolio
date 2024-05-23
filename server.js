@@ -7,7 +7,7 @@ const helper = require('./public/helper.js')
 
 const clients = []
 Database.initPromise.then(() => {
-    Database.deleteAll()
+    // Database.deleteAll()
     Database.createLatestIDs()
 })
 
@@ -75,14 +75,14 @@ function sendRequestedConversation(ws, conversationID, type) {
 }
 function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
+        console.log(conversation)
         for (let userID of conversation.users) {
-            if (userID === message.userID) continue
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
             Database.findUserWithID(message.userID).then((user) => {
-
+                message.messageID = conversation.texts[conversation.texts.length - 1].messageID
                 message.user = user
-                console.log("THE MESSAGE IS ", message)
+                console.log("message", message)
                 client.socket.send(JSON.stringify({type: helper.Type.NEWMESSAGE, message: message}))
             })
 
