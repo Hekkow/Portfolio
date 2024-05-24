@@ -52,6 +52,11 @@ class Database {
     async findUserWithName(username) {
         return await this.users.findOne({username: username})
     }
+    async findConversationWithUsers(users) {
+        if (!Array.isArray(users)) return null
+        let conversation = await this.conversations.findOne({users: {$all: users, $size: users.length}})
+        return conversation
+    }
     async findConversation(conversationID) {
         let conversation = await this.conversations.findOne({conversationID: conversationID})
         return conversation
@@ -67,6 +72,7 @@ class Database {
         await this.latestIDs.drop()
     }
     async createConversation(users) {
+        if (!Array.isArray(users)) return null
         let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}})
         if (previousConversation) return previousConversation
         let id = await this.getLatestConversationID()

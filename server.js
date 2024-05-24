@@ -6,8 +6,8 @@ require('express-ws')(app)
 const helper = require('./public/helper.js')
 
 const clients = []
-Database.initPromise.then(() => {
-    // Database.deleteAll()
+Database.initPromise.then(async () => {
+    await Database.deleteAll()
     Database.createLatestIDs()
 })
 
@@ -21,8 +21,6 @@ app.ws('/main', (ws, req) => {
                 login(ws, data.userID)
                 break
             case helper.Type.STARTCONVERSATION:
-                startConversation(ws, data.users)
-                break
             case helper.Type.OPENCONVERSATION:
             case helper.Type.REQUESTCONVERSATION:
                 sendRequestedConversation(ws, data.conversationID, data.type)
@@ -58,7 +56,9 @@ function login(ws, userID) {
     })
 }
 function sendRequestedConversation(ws, conversationID, type) {
-    Database.findConversation(conversationID).then((conversation) => {
+    Database.findConversation(conversationID).then(async (conversation) => {
+        if (!conversation) conversation = await Database.findConversationWithUsers(conversationID)
+        if (!conversation) conversation = await Database.createConversation(conversationID)
         getConversationWithUsernames(conversation).then((newConversation) => {
             if (!newConversation) return
             let promises = newConversation.texts.map((text) => {
@@ -74,6 +74,15 @@ function sendRequestedConversation(ws, conversationID, type) {
         })
     })
 }
+function startConversation(ws, users) {
+    Database.findConversationWithUsers(users).then(async (conversation) => {
+        if (!conversation) conversation = await Database.createConversation(users)
+        Database.findUsersWithID(conversation.users).then((users) => {
+            conversation.users = users
+            ws.send(JSON.stringify({type: helper.Type.CONVERSATIONCREATED, conversation: conversation}))
+        })
+    })
+}
 function deleteMessage(data) {
     Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
         for (let userID of conversation.users) {
@@ -85,6 +94,7 @@ function deleteMessage(data) {
 }
 function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
+        console.log(conversation)
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
@@ -118,14 +128,7 @@ function loadConversations(ws, user) {
 
 
 }
-function startConversation(ws, users) {
-    Database.createConversation(users).then(async (conversation) => {
-        Database.findUsersWithID(conversation.users).then((users) => {
-            conversation.users = users
-            ws.send(JSON.stringify({type: helper.Type.CONVERSATIONCREATED, conversation: conversation}))
-        })
-    })
-}
+
 function updateUserLists() {
     Database.findUsersWithID(clients.map(client => client.userID)).then((users) => {
         for (let client of clients) {

@@ -46,13 +46,12 @@ function messaged(event) {
         case Type.BACKTOLOGIN:
             window.location.href = '/'
             break
-        case Type.CONVERSATIONCREATED:
-            addConversation(message.conversation)
-            break
         case Type.LOADCONVERSATIONS:
             loadConversations(message.conversations)
             break
+        case Type.CONVERSATIONCREATED:
         case Type.OPENCONVERSATION:
+        case Type.STARTCONVERSATION:
             openConversation(message.conversation)
             break
         case Type.NEWMESSAGE:
@@ -72,6 +71,7 @@ function setUp(user) {
     // $('#loggedInUsername').text(username)
 }
 function receivedMessage(message) {
+    console.log("HERE and rECEIVED")
     if (message.conversationID === getOpenConversation()) {
         if (message.user.username === username) updateMessageID(message)
         else showMessage(message, false)
@@ -85,7 +85,7 @@ function receivedDeletedMessage(messageID) {
     $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
     if (messageID === replyingTo) deleteReply()
 }
-function getOpenConversation() {
+function getOpenConversation() { // why did i not just set a variable?? am i stupid??
     return parseInt($('#conversation').attr('conversationID'))
 }
 function loadConversations(conversations) {
@@ -110,15 +110,11 @@ function showConversationButton(conversation) {
         <div class="activeConversationListButtonText">${text}</div>
     </button>`)
 }
-function addConversation(conversation) {
-    $('#conversation').attr('conversationID', conversation.conversationID)
-}
 function openConversation(conversation) {
     $('#conversation').attr('conversationID', conversation.conversationID)
     openConversationArea()
     for (let message of conversation.texts) {
-        if (message.user.username === username) showMessage(message, true)
-        else showMessage(message, false)
+        showMessage(message, message.user.username === username)
     }
 }
 
@@ -175,7 +171,9 @@ function showMessage(message, local) {
     let name = getName(message)
     let messages = $('#messages')
     let reply = getReplyAboveText(message)
-    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${message.message}</p></div></div>`)
+    let sendableMessage = message.message
+    sendableMessage = addLinks(sendableMessage)
+    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) messageDiv.addClass('myText');
     messages.scrollTop(messages.prop("scrollHeight"))
@@ -189,6 +187,24 @@ function showMessage(message, local) {
             scrollToMessage(message.replyingTo)
         })
     }
+}
+function addLinks(text) {
+    let pattern = /\b(?:https?:\/\/)?(?:www\.)?\w+\.\w+(?:\/\S*)?\b/g;
+    let match;
+    let indices = [];
+    while ((match = pattern.exec(text)) !== null) {
+        indices.push({ match: match[0], index: match.index });
+    }
+    for (let i = indices.length - 1; i >= 0; i--) {
+        let url = indices[i].match;
+        if (!(url.startsWith('http://') || url.startsWith('https://'))) url = 'https://' + url;
+        let start = indices[i].index;
+        let end = start + indices[i].match.length;
+        text = text.slice(0, end) + '</a>' + text.slice(end);
+        text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+    }
+
+    return text;
 }
 function showHoverButtons(div, local) {
     if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
@@ -250,7 +266,7 @@ function updateUserList(users) {
 }
 function startNewConversation(user) {
     openConversationArea()
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, users: [user, userID]}))
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [user, userID]}))
 }
 $(window).on('focus', function() {
     $('#messageInput').focus()
