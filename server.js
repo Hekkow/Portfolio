@@ -49,6 +49,7 @@ function login(ws, userID) {
             ws.send(JSON.stringify({type: helper.Type.BACKTOLOGIN}))
             return
         }
+        console.log(user.username + " logged in")
         clients.push({socket: ws, userID: userID})
         ws.send(JSON.stringify({type: helper.Type.RECEIVEUSERNAME, user: user}))
         updateUserLists()

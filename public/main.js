@@ -71,19 +71,25 @@ function setUp(user) {
     // $('#loggedInUsername').text(username)
 }
 function receivedMessage(message) {
-    console.log("HERE and rECEIVED")
     if (message.conversationID === getOpenConversation()) {
         if (message.user.username === username) updateMessageID(message)
         else showMessage(message, false)
     }
-    else {
-        ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
-    }
+    requestConversationButton(message.conversationID)
+
+}
+function requestConversationButton(conversationID) {
+    ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: conversationID}))
 }
 function receivedDeletedMessage(messageID) {
     $(`.messageDiv[messageID='${messageID}']`).remove()
     $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
     if (messageID === replyingTo) deleteReply()
+    let conversationBlock = $(`.conversationBlock[messageID=${messageID}]`)
+    if (conversationBlock.length) {
+        requestConversationButton(parseInt(conversationBlock.attr('conversationID')))
+        console.log("HERERASd")
+    }
 }
 function getOpenConversation() { // why did i not just set a variable?? am i stupid??
     return parseInt($('#conversation').attr('conversationID'))
@@ -96,19 +102,28 @@ function loadConversations(conversations) {
 }
 function showConversationButton(conversation) {
     let activeConversationsDiv = $("#activeConversationsList")
-    if ($(`button[id=${conversation.conversationID}]`).length) return
-    let id = conversation.conversationID
-    let usernames = conversation.users.map(user => user.username)
-    let lastMessage = conversation.texts[conversation.texts.length - 1]
 
+    let id = conversation.conversationID
+    let usernames = conversation.users.map(user => user.username).filter(user => user !== username)
+    let lastMessage = conversation.texts[conversation.texts.length - 1]
+    console.log(lastMessage)
     let text
-    if (lastMessage) text = usernames + "<br>" + lastMessage.userID + ": " + lastMessage.message
+    if (lastMessage) text = usernames + "<br>" + conversation.users.filter(user => user.userID === lastMessage.userID)[0].username + ": " + lastMessage.message
     else text = usernames
-    activeConversationsDiv.append(`
-    <button class="conversationBlock" id="${id}" onclick="requestConversation(${id})">
-        <div class="userPic"></div>
-        <div class="activeConversationListButtonText">${text}</div>
-    </button>`)
+    let conversationButton = $(`button[conversationID=${conversation.conversationID}]`)
+    if (!conversationButton.length) {
+        activeConversationsDiv.append(`
+            <button class="conversationBlock" conversationID="${id}" onclick="requestConversation(${id})" messageID="${lastMessage.messageID}">
+                <div class="userPic"></div>
+                <div class="activeConversationListButtonText">${text}</div>
+            </button>`)
+    }
+    else {
+
+        conversationButton.find('.activeConversationListButtonText').html(text)
+        conversationButton.attr('messageID', lastMessage.messageID)
+    }
+
 }
 function openConversation(conversation) {
     $('#conversation').attr('conversationID', conversation.conversationID)
@@ -145,7 +160,6 @@ function sendMessage() {
     let message = {conversationID: conversationID, userID: userID, message: text, replyingTo: replyingTo}
     showMessage(message, true)
     ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
-
     deleteReply()
 }
 function updateMessageID(message) {
@@ -261,7 +275,7 @@ function updateUserList(users) {
 
     for (let user of users) {
         if (!user) continue
-        if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock" onclick="startNewConversation(${user.userID})"><div class="onlineUserListButtonPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
+        if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
 }
 function startNewConversation(user) {
