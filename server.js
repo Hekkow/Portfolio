@@ -21,7 +21,6 @@ app.ws('/main', (ws, req) => {
                 login(ws, data.userID)
                 break
             case helper.Type.STARTCONVERSATION:
-            case helper.Type.OPENCONVERSATION:
             case helper.Type.REQUESTCONVERSATION:
                 sendRequestedConversation(ws, data.conversationID, data.type)
                 break
@@ -30,6 +29,7 @@ app.ws('/main', (ws, req) => {
                 break
             case helper.Type.DELETEMESSAGE:
                 deleteMessage(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -53,35 +53,14 @@ function login(ws, userID) {
         clients.push({socket: ws, userID: userID})
         ws.send(JSON.stringify({type: helper.Type.RECEIVEUSERNAME, user: user}))
         updateUserLists()
-        loadConversations(ws, user)
+        loadLocalData(ws, user)
     })
 }
 function sendRequestedConversation(ws, conversationID, type) {
     Database.findConversation(conversationID).then(async (conversation) => {
         if (!conversation) conversation = await Database.findConversationWithUsers(conversationID)
         if (!conversation) conversation = await Database.createConversation(conversationID)
-        getConversationWithUsernames(conversation).then((newConversation) => {
-            if (!newConversation) return
-            let promises = newConversation.texts.map((text) => {
-                return Database.findUserWithID(text.userID).then((user) => {
-                    text.user = user
-                    return text
-                })
-            })
-            Promise.all(promises).then((updatedTexts) => {
-                newConversation.texts = updatedTexts
-                ws.send(JSON.stringify({type: type, conversation: newConversation}))
-            })
-        })
-    })
-}
-function startConversation(ws, users) {
-    Database.findConversationWithUsers(users).then(async (conversation) => {
-        if (!conversation) conversation = await Database.createConversation(users)
-        Database.findUsersWithID(conversation.users).then((users) => {
-            conversation.users = users
-            ws.send(JSON.stringify({type: helper.Type.CONVERSATIONCREATED, conversation: conversation}))
-        })
+        ws.send(JSON.stringify({type: type, conversation: conversation}))
     })
 }
 function deleteMessage(data) {
@@ -95,38 +74,24 @@ function deleteMessage(data) {
 }
 function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
-        console.log(conversation)
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            Database.findUserWithID(message.userID).then((user) => {
-                message.messageID = conversation.texts[conversation.texts.length - 1].messageID
-                message.user = user
-                client.socket.send(JSON.stringify({type: helper.Type.NEWMESSAGE, message: message}))
-            })
+            if (conversation.texts.length === 1) client.socket.send(JSON.stringify({type: helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
+            else client.socket.send(JSON.stringify({type: helper.Type.NEWMESSAGE, message: message}))
+
         }
     })
 }
-async function getConversationWithUsernames(conversation) {
-    if (!conversation) return
-    return Database.findUsersWithID(conversation.users).then((users) => {
-        conversation.users = users
-        return conversation
-    })
-}
 
-function loadConversations(ws, user) {
-    Database.findConversations(user.conversations).then((conversations) => { // get user's conversations
-        let promises = conversations.map(getConversationWithUsernames)
-        Promise.all(promises).then((conversations) => {
-            let sendableConversation = conversations.map(conversation => {
-                if (!conversation) return
-                return conversation
-            })
-            ws.send(JSON.stringify({type: helper.Type.LOADCONVERSATIONS, conversations: sendableConversation}))
+function loadLocalData(ws, user) {
+    Database.findConversations(user.conversations).then((conversations) => {
+        let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
+        Database.findUsersWithID(Array.from(userIDs)).then((users) => {
+            ws.send(JSON.stringify({type: helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
         })
-    })
 
+    })
 
 }
 
