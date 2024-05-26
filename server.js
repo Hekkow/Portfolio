@@ -74,6 +74,8 @@ function deleteMessage(data) {
 }
 function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
+        message.messageID = conversation.texts[conversation.texts.length - 1].messageID
+        console.log(message)
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue

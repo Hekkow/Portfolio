@@ -51,16 +51,19 @@ function messaged(event) {
             loadLocalData(message)
             break
         case Type.STARTCONVERSATION:
-            openConversation(message.conversation)
+            updateLocalConversations(message.conversation)
+            openConversation(message.conversation.conversationID)
             break
         case Type.REQUESTCONVERSATION:
-            updateConversationButton(message.conversation)
+            updateLocalConversations(message.conversation)
+            showNewConversationButton(message.conversation)
             break
         case Type.NEWMESSAGE:
             receivedMessage(message.message)
             break
         case Type.FIRSTMESSAGE:
             receivedFirstMessage(message)
+            break
         case Type.DELETEMESSAGE:
             receivedDeletedMessage(message.messageID)
             break
@@ -73,15 +76,10 @@ function setUp(user) {
 }
 function receivedFirstMessage(data) {
     loadedConversations.set(data.conversation.conversationID, data.conversation)
-    updateConversationButton(data.conversation.conversationID)
+    showNewConversationButton(data.conversation)
+    updateMessageID(data.message)
 }
 function receivedMessage(message) {
-    if (message.conversationID === getOpenConversation()) {
-        if (loadedUsers.get(message.userID).username === username) updateMessageID(message)
-        else showMessage(message, false)
-    }
-    // i suspect below will cause problems later
-    // i should've written down why because now i forget but this'll be the first suspect if i have another issue
     if (loadedConversations.has(message.conversationID)) {
         loadedConversations.get(message.conversationID).texts.push(message)
         updateConversationButton(message.conversationID)
@@ -89,8 +87,38 @@ function receivedMessage(message) {
     else {
         ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
     }
-
+    if (message.conversationID === getOpenConversation()) {
+        updateMessageID(message)
+        if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
+    }
 }
+function showNewConversationButton(conversation) {
+    let conversationID = conversation.conversationID
+    let activeConversationsDiv = $("#activeConversationsList")
+
+    let stuff = getTextForConversationButton(conversation)
+
+    activeConversationsDiv.append(`
+            <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}">
+                <div class="userPic"></div>
+                <div class="activeConversationListButtonText">${stuff.text}</div>
+            </button>`)
+}
+function updateConversationButton(conversationID) {
+    let conversation = loadedConversations.get(conversationID)
+    let stuff = getTextForConversationButton(conversation)
+    let conversationButton = $(`button[conversationID=${conversation.conversationID}]`)
+    conversationButton.find('.activeConversationListButtonText').html(stuff.text)
+    conversationButton.attr('messageID', stuff.messageID)
+}
+function getTextForConversationButton(conversation) {
+    let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
+    let lastMessage = conversation.texts[conversation.texts.length - 1]
+    let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
+    return {usernames: usernames, messageID: lastMessage.messageID, text: text}
+}
+
+
 function receivedDeletedMessage(messageID) {
     $(`.messageDiv[messageID='${messageID}']`).remove()
     $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
@@ -101,7 +129,6 @@ function receivedDeletedMessage(messageID) {
         let conversationID = parseInt(conversationBlock.attr('conversationID'))
         if (loadedConversations.has(conversationID)) {
             let texts = loadedConversations.get(conversationID).texts
-            console.log(texts)
             texts.splice(texts.findIndex(message => message.messageID === messageID))
         }
         updateConversationButton(conversationID)
@@ -113,52 +140,49 @@ function getOpenConversation() { // why did i not just set a variable?? am i stu
 function loadLocalData(data) {
     $("#activeConversationsList").empty()
     updateLocalUsers(data.users)
+    updateLocalConversations(data.conversations)
     for (let conversation of data.conversations) {
-        loadedConversations.set(conversation.conversationID, conversation)
-        updateConversationButton(conversation.conversationID)
+        showNewConversationButton(conversation)
     }
 }
 function updateLocalUsers(users) {
-    for (let user of users) {
-        loadedUsers.set(user.userID, user)
+    if (Array.isArray(users)) {
+        for (let user of users) {
+            loadedUsers.set(user.userID, user)
+        }
     }
+    else loadedUsers.set(users.userID, users)
 }
-function updateConversationButton(conversationID) {
-    let activeConversationsDiv = $("#activeConversationsList")
-    console.log("hra", conversationID, loadedConversations)
-    let conversation
-    if (conversationID.conversationID) conversation = loadedConversations.get(conversationID.conversationID)
-    else conversation = loadedConversations.get(conversationID)
-    let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
-    let lastMessage = conversation.texts[conversation.texts.length - 1]
-    let text
-    if (lastMessage) text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
-    else text = usernames
-    let conversationButton = $(`button[conversationID=${conversation.conversationID}]`)
-    if (!conversationButton.length) {
-        activeConversationsDiv.append(`
-            <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${lastMessage.messageID}">
-                <div class="userPic"></div>
-                <div class="activeConversationListButtonText">${text}</div>
-            </button>`)
+function updateLocalConversations(conversations) {
+    if (Array.isArray(conversations)) {
+        for (let conversation of conversations) {
+            loadedConversations.set(conversation.conversationID, conversation)
+        }
     }
-    else {
-        conversationButton.find('.activeConversationListButtonText').html(text)
-        conversationButton.attr('messageID', lastMessage.messageID)
-    }
-
+    else loadedConversations.set(conversations.conversationID, conversations)
 }
-function openConversation(conversation) {
-    console.log("HEREHRAHEFAHEGHAEG", conversation)
-    if (!conversation.conversationID) conversation = loadedConversations.get(conversation)
-    else if (!loadedConversations.has(conversation.conversationID)) loadedConversations.set(conversation.conversationID, conversation)
-    $('#conversation').attr('conversationID', conversation.conversationID)
+function openConversation(conversationID) {
+    $('#conversation').attr('conversationID', conversationID)
     openConversationArea()
-    for (let message of conversation.texts) {
+    for (let message of loadedConversations.get(conversationID).texts) {
         showMessage(message, loadedUsers.get(message.userID).username === username)
     }
 }
+function startNewConversation(receivingUserID) {
+    openConversationArea()
+    let users = [receivingUserID, userID]
+    for (const [key, value] of loadedConversations.entries()) {
 
+        value.users.sort()
+        users.sort()
+        if (value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
+            openConversation(value.conversationID)
+            $('#conversation').attr('conversationID', value.conversationID)
+            return
+        }
+    }
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID]}))
+}
 function openConversationArea() {
     $('#messages').empty()
     loadMessageInput()
@@ -189,6 +213,7 @@ function sendMessage() {
     deleteReply()
 }
 function updateMessageID(message) {
+    if (loadedUsers.get(message.userID).username !== username) return
     let toSetMessageID = $('div').filter('[messageID="undefined"]').first()
     if (toSetMessageID) toSetMessageID.attr('messageID', message.messageID)
 }
@@ -202,8 +227,6 @@ function getReplyAboveText(message) {
 }
 function getName(message) {
     let name = message.userID
-    console.log(loadedUsers)
-    console.log(message, loadedUsers.get(name))
     if (name) name = loadedUsers.get(name).username
     else name = username
     return name
@@ -213,7 +236,6 @@ function showMessage(message, local) {
     let messages = $('#messages')
     let reply = getReplyAboveText(message)
     let sendableMessage = message.message
-    // console.log("name", name)
     sendableMessage = addLinks(sendableMessage)
     messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
@@ -303,24 +325,7 @@ function updateUserList(users) {
         if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
 }
-function startNewConversation(receivingUserID) {
 
-    openConversationArea()
-    let users = [receivingUserID, userID]
-    for (const [key, value] of loadedConversations.entries()) {
-
-        value.users.sort()
-        users.sort()
-        console.log("herawr", value.users, users)
-        if (value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
-            console.log(loadedConversations.get(key))
-            openConversation(loadedConversations.get(key))
-            return
-        }
-    }
-    console.log("HERERAHWEFOA")
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID]}))
-}
 $(window).on('focus', function() {
     $('#messageInput').focus()
 })
