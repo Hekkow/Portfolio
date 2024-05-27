@@ -52,7 +52,10 @@ function messaged(event) {
             break
         case Type.STARTCONVERSATION:
             updateLocalConversations(message.conversation)
-            openConversation(message.conversation.conversationID)
+            break
+        case Type.CONVERSATIONCREATED:
+            updateLocalConversations(message.conversation)
+            $('#conversation').attr('conversationID', message.conversation.conversationID)
             break
         case Type.REQUESTCONVERSATION:
             updateLocalConversations(message.conversation)
@@ -70,6 +73,7 @@ function messaged(event) {
     }
 }
 function setUp(user) {
+    updateLocalUsers(user)
     username = user.username
     // $('#loggedInUsername').text(username)
 }
@@ -90,18 +94,44 @@ function receivedMessage(message) {
         updateMessageID(message)
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
+    else {
+        showOrUpdateButton(message.conversationID)
+    }
+}
+function showOrUpdateButton(conversationID) {
+    if ($(`.conversationBlock[conversationID=${conversationID}]`).length) updateConversationButton(conversationID)
+    else showNewConversationButton(loadedConversations.get(conversationID))
 }
 function showNewConversationButton(conversation) {
     let conversationID = conversation.conversationID
     let activeConversationsDiv = $("#activeConversationsList")
 
     let stuff = getTextForConversationButton(conversation)
-
+    if ($(`.conversationBlock[conversationID=${conversationID}]`).length) return
     activeConversationsDiv.append(`
             <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}">
                 <div class="userPic"></div>
                 <div class="activeConversationListButtonText">${stuff.text}</div>
             </button>`)
+    let conversationDiv = $(`.conversationBlock[conversationID="${conversationID}"]`)
+    conversationDiv.hover(function() {
+        showConversationHoverButtons($(this))
+    }, function() {
+        hideConversationHoverButtons($(this))
+    })
+}
+function showConversationHoverButtons(div) {
+    div.append(`<div class='deleteButton'>`)
+    div.find('.deleteButton').click(function(e) {
+        e.stopPropagation()
+        ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: parseInt(div.attr('conversationID'))}))
+        div.remove()
+        closeConversationArea()
+        console.log('deleted')
+    })
+}
+function hideConversationHoverButtons(div) {
+    div.find('.deleteButton').remove()
 }
 function updateConversationButton(conversationID) {
     let conversation = loadedConversations.get(conversationID)
@@ -113,6 +143,7 @@ function updateConversationButton(conversationID) {
 function getTextForConversationButton(conversation) {
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
+    if (!lastMessage) lastMessage = ""
     let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
     return {usernames: usernames, messageID: lastMessage.messageID, text: text}
 }
@@ -140,8 +171,9 @@ function loadLocalData(data) {
     $("#activeConversationsList").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
-    for (let conversation of data.conversations) {
-        showNewConversationButton(conversation)
+    for (let conversationID of loadedUsers.get(userID).openConversations) {
+        console.log(conversationID)
+        showNewConversationButton(loadedConversations.get(conversationID))
     }
 }
 function updateLocalUsers(users) {
@@ -161,6 +193,7 @@ function updateLocalConversations(conversations) {
     else loadedConversations.set(conversations.conversationID, conversations)
 }
 function openConversation(conversationID) {
+    showNewConversationButton(loadedConversations.get(conversationID))
     $('#conversation').attr('conversationID', conversationID)
     openConversationArea()
     for (let message of loadedConversations.get(conversationID).texts) {
@@ -185,6 +218,11 @@ function startNewConversation(receivingUserID) {
 function openConversationArea() {
     $('#messages').empty()
     loadMessageInput()
+}
+function closeConversationArea() {
+    $('#messages').empty()
+    $('#conversation').attr('conversationID', -1)
+    $('#messageInputDiv').empty()
 }
 function loadMessageInput() {
     let conversationDiv = $('#messageInputDiv')
@@ -243,13 +281,13 @@ function showMessage(message, local) {
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) {
         messageDiv.addClass('myText');
-        messageDiv.addClass('localMessage')
+        if (message.messageID === undefined) messageDiv.addClass('localMessage')
     }
     messages.scrollTop(messages.prop("scrollHeight"))
     messageDiv.hover(function() {
-        showHoverButtons($(this), local)
+        showMessageHoverButtons($(this), local)
     }, function() {
-        hideHoverButtons($(this))
+        hideMessageHoverButtons($(this))
     })
     if (message.replyingTo !== -1) {
         messageDiv.click(function() {
@@ -275,7 +313,7 @@ function addLinks(text) {
 
     return text;
 }
-function showHoverButtons(div, local) {
+function showMessageHoverButtons(div, local) {
     if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
     else div.append(`<div class='replyButton'></div>`)
     div.find('.deleteButton').click(function(e) {
@@ -287,7 +325,7 @@ function showHoverButtons(div, local) {
         replyMessage(div)
     })
 }
-function hideHoverButtons(div) {
+function hideMessageHoverButtons(div) {
     div.find('.replyButton').remove()
     div.find('.deleteButton').remove()
 }

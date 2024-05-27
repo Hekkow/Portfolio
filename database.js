@@ -23,7 +23,7 @@ class Database {
     }
     async register(username) {
         let id = await this.getLatestUserID()
-        let user = {username: username, conversations:[], userID: id}
+        let user = {username: username, conversations: [], userID: id, openConversations: []}
         await this.users.insertOne(user)
         return user
     }
@@ -37,10 +37,15 @@ class Database {
         return users
     }
     async addMessage(message) {
-        return await this.conversations.findOneAndUpdate(
+        let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
             {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID()}}},
             {returnDocument: "after"})
+        await this.users.updateMany(
+            {userID: {$in: conversation.users} },
+            {$push: {openConversations: conversation.conversationID}}
+        )
+        return conversation
     }
     async deleteMessage(conversationID, messageID) {
         return await this.conversations.findOneAndUpdate(
@@ -66,6 +71,12 @@ class Database {
         let conversations = await Promise.all(promises)
         return conversations
     }
+    async closeConversation(userID, conversationID) {
+        return await this.users.findOneAndUpdate(
+            {userID: userID},
+            {$pull: {openConversations: conversationID}}
+        )
+    }
     async deleteAll() {
         await this.users.drop()
         await this.conversations.drop()
@@ -78,7 +89,7 @@ class Database {
         let id = await this.getLatestConversationID()
         let conversation = {conversationID: id, texts: [], users: users}
         for (let user of users) {
-            this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
+            this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID, openConversations: conversation.conversationID}})
         }
         await this.conversations.insertOne(conversation)
         return conversation

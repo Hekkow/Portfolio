@@ -30,6 +30,9 @@ app.ws('/main', (ws, req) => {
             case helper.Type.DELETEMESSAGE:
                 deleteMessage(data)
                 break
+            case helper.Type.CLOSECONVERSATION:
+                closeConversation(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -52,16 +55,22 @@ function login(ws, userID) {
         console.log(user.username + " logged in")
         clients.push({socket: ws, userID: userID})
         ws.send(JSON.stringify({type: helper.Type.RECEIVEUSERNAME, user: user}))
-        updateUserLists()
         loadLocalData(ws, user)
+        updateUserLists()
     })
 }
 function sendRequestedConversation(ws, conversationID, type) {
     Database.findConversation(conversationID).then(async (conversation) => {
         if (!conversation) conversation = await Database.findConversationWithUsers(conversationID)
-        if (!conversation) conversation = await Database.createConversation(conversationID)
+        if (!conversation) {
+            conversation = await Database.createConversation(conversationID)
+            type = helper.Type.CONVERSATIONCREATED
+        }
         ws.send(JSON.stringify({type: type, conversation: conversation}))
     })
+}
+function closeConversation(data) {
+    Database.closeConversation(data.userID, data.conversationID)
 }
 function deleteMessage(data) {
     Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
@@ -73,9 +82,10 @@ function deleteMessage(data) {
     })
 }
 function receivedMessage(message) {
+    console.log(message)
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
-        console.log(message)
+
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
@@ -92,7 +102,6 @@ function loadLocalData(ws, user) {
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
             ws.send(JSON.stringify({type: helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
         })
-
     })
 
 }
