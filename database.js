@@ -39,7 +39,7 @@ class Database {
     async addMessage(message) {
         let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
-            {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID()}}},
+            {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID(), date: message.date}}},
             {returnDocument: "after"})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
@@ -89,7 +89,7 @@ class Database {
         let id = await this.getLatestConversationID()
         let conversation = {conversationID: id, texts: [], users: users}
         for (let user of users) {
-            this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID, openConversations: conversation.conversationID}})
+            this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
         await this.conversations.insertOne(conversation)
         return conversation

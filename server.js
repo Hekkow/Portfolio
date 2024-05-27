@@ -82,7 +82,6 @@ function deleteMessage(data) {
     })
 }
 function receivedMessage(message) {
-    console.log(message)
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
 

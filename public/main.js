@@ -136,9 +136,10 @@ function hideConversationHoverButtons(div) {
 function updateConversationButton(conversationID) {
     let conversation = loadedConversations.get(conversationID)
     let stuff = getTextForConversationButton(conversation)
-    let conversationButton = $(`button[conversationID=${conversation.conversationID}]`)
+    let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
     conversationButton.find('.activeConversationListButtonText').html(stuff.text)
     conversationButton.attr('messageID', stuff.messageID)
+    if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
 }
 function getTextForConversationButton(conversation) {
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
@@ -153,7 +154,7 @@ function receivedDeletedMessage(messageID) {
     $(`.messageDiv[messageID='${messageID}']`).remove()
     $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
     if (messageID === replyingTo) deleteReply()
-    let conversationBlock = $(`.conversationBlock[messageID=${messageID}]`) // this should always work i think
+    let conversationBlock = $(`.conversationBlock[messageID=${messageID}]`)
 
     if (conversationBlock.length) {
         let conversationID = parseInt(conversationBlock.attr('conversationID'))
@@ -171,8 +172,9 @@ function loadLocalData(data) {
     $("#activeConversationsList").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
+    console.log(data.conversations)
+    console.log(data.openConversations)
     for (let conversationID of loadedUsers.get(userID).openConversations) {
-        console.log(conversationID)
         showNewConversationButton(loadedConversations.get(conversationID))
     }
 }
@@ -193,7 +195,7 @@ function updateLocalConversations(conversations) {
     else loadedConversations.set(conversations.conversationID, conversations)
 }
 function openConversation(conversationID) {
-    showNewConversationButton(loadedConversations.get(conversationID))
+    if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     $('#conversation').attr('conversationID', conversationID)
     openConversationArea()
     for (let message of loadedConversations.get(conversationID).texts) {
@@ -244,7 +246,7 @@ function sendMessage() {
     messageInput.val("")
     messageInput.focus()
     if (!text || !text.trim()) return
-    let message = {conversationID: conversationID, userID: userID, message: text, replyingTo: replyingTo}
+    let message = {conversationID: conversationID, userID: userID, message: text, replyingTo: replyingTo, date: new Date()}
     showMessage(message, true)
     ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
     deleteReply()
