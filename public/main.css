@@ -150,12 +150,16 @@ body {
     display: flex;
     align-items: center;
 }
-p {
-    margin: 0;
-}
 .messageDiv:hover {
     background-color: #c7f5ff;
 }
+.messageDiv.localMessage .messageText {
+    color: gray;
+}
+p {
+    margin: 0;
+}
+
 .myText {
     text-align: right;
     justify-content: flex-end;

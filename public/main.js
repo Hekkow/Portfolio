@@ -68,7 +68,6 @@ function messaged(event) {
             receivedDeletedMessage(message.messageID)
             break
     }
-
 }
 function setUp(user) {
     username = user.username
@@ -215,7 +214,10 @@ function sendMessage() {
 function updateMessageID(message) {
     if (loadedUsers.get(message.userID).username !== username) return
     let toSetMessageID = $('div').filter('[messageID="undefined"]').first()
-    if (toSetMessageID) toSetMessageID.attr('messageID', message.messageID)
+    if (toSetMessageID) {
+        toSetMessageID.attr('messageID', message.messageID)
+        toSetMessageID.removeClass('localMessage')
+    }
 }
 function getReplyAboveText(message) {
     if (message.replyingTo === -1) return ""
@@ -239,7 +241,10 @@ function showMessage(message, local) {
     sendableMessage = addLinks(sendableMessage)
     messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
-    if (local) messageDiv.addClass('myText');
+    if (local) {
+        messageDiv.addClass('myText');
+        messageDiv.addClass('localMessage')
+    }
     messages.scrollTop(messages.prop("scrollHeight"))
     messageDiv.hover(function() {
         showHoverButtons($(this), local)
