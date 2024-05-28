@@ -59,12 +59,12 @@ body {
     overflow: auto;
 }
 #messageInputDiv {
-    height: 100px;
     border: inset 5px purple;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    padding-top: 20px;
+    padding-bottom: 20px;
 }
 #messageInput {
     box-sizing: border-box;
@@ -77,6 +77,7 @@ body {
     background-color: white;
     border-radius: 30px;
     transition: all 0.15s ease;
+
 }
 #messageInput:focus {
     border: 3px solid #4ab1ef;
@@ -145,19 +146,30 @@ body {
 }
 .messageDiv {
     width: 100%;
-    height: 50px;
+    min-height: 50px;
+    height: auto;
     margin: 0;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 }
 .messageDiv:hover {
     background-color: #c7f5ff;
+}
+.messageTextDiv {
+    width: 300px;
+}
+.messageText {
+    overflow-wrap: break-word;
 }
 .messageDiv.localMessage .messageText {
     color: gray;
 }
 p {
     margin: 0;
+}
+textarea {
+    resize: none;
+    overflow: hidden;
 }
 
 .myText {

@@ -4,6 +4,7 @@
 let userID = Cookies.get(loginCookie)
 let username
 let ws
+let openConversationID = -1
 let loadedConversations = new Map()
 let loadedUsers = new Map()
 if (!userID) window.location.href = '/'
@@ -55,7 +56,7 @@ function messaged(event) {
             break
         case Type.CONVERSATIONCREATED:
             updateLocalConversations(message.conversation)
-            $('#conversation').attr('conversationID', message.conversation.conversationID)
+            openConversationID = message.conversation.conversationID
             break
         case Type.REQUESTCONVERSATION:
             updateLocalConversations(message.conversation)
@@ -90,7 +91,7 @@ function receivedMessage(message) {
     else {
         ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
     }
-    if (message.conversationID === getOpenConversation()) {
+    if (message.conversationID === openConversationID) {
         updateMessageID(message)
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
@@ -154,7 +155,6 @@ function showConversationHoverButtons(div) {
         ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: parseInt(div.attr('conversationID'))}))
         div.remove()
         closeConversationArea()
-        console.log('deleted')
     })
 }
 function hideConversationHoverButtons(div) {
@@ -164,7 +164,8 @@ function hideConversationHoverButtons(div) {
 function getTextForConversationButton(conversation) {
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
-    if (!lastMessage) lastMessage = ""
+    if (!lastMessage) return
+    if (lastMessage.message.length > 18) lastMessage.message = lastMessage.message.substring(0, 15) + "..."
     let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
     return {usernames: usernames, messageID: lastMessage.messageID, text: text, date: lastMessage.date}
 }
@@ -184,9 +185,6 @@ function receivedDeletedMessage(messageID) {
         }
         updateConversationButton(conversationID)
     }
-}
-function getOpenConversation() { // why did i not just set a variable?? am i stupid??
-    return parseInt($('#conversation').attr('conversationID'))
 }
 function loadLocalData(data) {
     $("#activeConversationsList").empty()
@@ -214,7 +212,7 @@ function updateLocalConversations(conversations) {
 }
 function openConversation(conversationID) {
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
-    $('#conversation').attr('conversationID', conversationID)
+    openConversationID = conversationID
     openConversationArea()
     for (let message of loadedConversations.get(conversationID).texts) {
         showMessage(message, loadedUsers.get(message.userID).username === username)
@@ -229,7 +227,6 @@ function startNewConversation(receivingUserID) {
         users.sort()
         if (value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
             openConversation(value.conversationID)
-            $('#conversation').attr('conversationID', value.conversationID)
             return
         }
     }
@@ -241,14 +238,21 @@ function openConversationArea() {
 }
 function closeConversationArea() {
     $('#messages').empty()
-    $('#conversation').attr('conversationID', -1)
+    openConversationID = -1
     $('#messageInputDiv').empty()
 }
 function loadMessageInput() {
     let conversationDiv = $('#messageInputDiv')
     conversationDiv.empty()
-    conversationDiv.append('<input id="messageInput" type="text" autofocus><button id="messageSendButton" onclick="sendMessage()"></button>')
+    conversationDiv.append('<textarea id="messageInput" autofocus></textarea><button id="messageSendButton" onclick="sendMessage()"></button>')
     let messageInput = $('#messageInput')
+    messageInput.css('height', 'auto')
+    messageInput.css('height', this.scrollHeight + 'px')
+    messageInput.on('input', function() {
+        messageInput.css('height', 'auto')
+        messageInput.css('height', this.scrollHeight + 'px')
+    })
+    // scroll to bottom
     messageInput.keyup((event) => {
         if (event.key === "Enter") {
             event.preventDefault()
@@ -258,13 +262,12 @@ function loadMessageInput() {
     messageInput.focus()
 }
 function sendMessage() {
-    let conversationID = getOpenConversation()
     let messageInput = $('#messageInput')
     let text = messageInput.val()
     messageInput.val("")
     messageInput.focus()
     if (!text || !text.trim()) return
-    let message = {conversationID: conversationID, userID: userID, message: text, replyingTo: replyingTo, date: new Date()}
+    let message = {conversationID: openConversationID, userID: userID, message: text, replyingTo: replyingTo, date: new Date()}
     showMessage(message, true)
     ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
     deleteReply()
@@ -377,7 +380,7 @@ function deleteReply() {
 function deleteMessage(messageDiv) {
     let messageID = parseInt(messageDiv.attr('messageID'))
     messageDiv.remove()
-    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: userID, conversationID: getOpenConversation()}))
+    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: userID, conversationID: openConversationID}))
 }
 function updateUserList(users) {
     let currentlyOnlineUsersDiv = $('#currentlyOnlineUsers')
