@@ -102,23 +102,50 @@ function showOrUpdateButton(conversationID) {
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) updateConversationButton(conversationID)
     else showNewConversationButton(loadedConversations.get(conversationID))
 }
+// possible optimization is removing date from attrib and just getting it from loaded conversations instead
 function showNewConversationButton(conversation) {
     let conversationID = conversation.conversationID
     let activeConversationsDiv = $("#activeConversationsList")
 
     let stuff = getTextForConversationButton(conversation)
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) return
-    activeConversationsDiv.append(`
-            <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}">
+    let newConversationBlock = $(`
+            <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
                 <div class="userPic"></div>
                 <div class="activeConversationListButtonText">${stuff.text}</div>
             </button>`)
+    let placed = false
+
+    $('.conversationBlock').each(function() {
+        if (new Date($(this).attr('date')) < new Date(stuff.date)) {
+            newConversationBlock.insertBefore($(this))
+            placed = true
+            return false
+        }
+    })
+    if (!placed) {
+        activeConversationsDiv.append(newConversationBlock)
+    }
+    // activeConversationsDiv.append(`
+    //         <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
+    //             <div class="userPic"></div>
+    //             <div class="activeConversationListButtonText">${stuff.text}</div>
+    //         </button>`)
     let conversationDiv = $(`.conversationBlock[conversationID="${conversationID}"]`)
     conversationDiv.hover(function() {
         showConversationHoverButtons($(this))
     }, function() {
         hideConversationHoverButtons($(this))
     })
+}
+function updateConversationButton(conversationID) {
+    let conversation = loadedConversations.get(conversationID)
+    let stuff = getTextForConversationButton(conversation)
+    let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
+    conversationButton.find('.activeConversationListButtonText').html(stuff.text)
+    conversationButton.attr('messageID', stuff.messageID)
+    conversationButton.attr('date', stuff.date)
+    if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
 }
 function showConversationHoverButtons(div) {
     div.append(`<div class='deleteButton'>`)
@@ -133,20 +160,13 @@ function showConversationHoverButtons(div) {
 function hideConversationHoverButtons(div) {
     div.find('.deleteButton').remove()
 }
-function updateConversationButton(conversationID) {
-    let conversation = loadedConversations.get(conversationID)
-    let stuff = getTextForConversationButton(conversation)
-    let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
-    conversationButton.find('.activeConversationListButtonText').html(stuff.text)
-    conversationButton.attr('messageID', stuff.messageID)
-    if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
-}
+
 function getTextForConversationButton(conversation) {
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
     if (!lastMessage) lastMessage = ""
     let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
-    return {usernames: usernames, messageID: lastMessage.messageID, text: text}
+    return {usernames: usernames, messageID: lastMessage.messageID, text: text, date: lastMessage.date}
 }
 
 
@@ -172,8 +192,6 @@ function loadLocalData(data) {
     $("#activeConversationsList").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
-    console.log(data.conversations)
-    console.log(data.openConversations)
     for (let conversationID of loadedUsers.get(userID).openConversations) {
         showNewConversationButton(loadedConversations.get(conversationID))
     }
