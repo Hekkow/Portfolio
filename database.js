@@ -54,6 +54,13 @@ class Database {
             {returnDocument: "after"}
         )
     }
+    async editMessage(conversationID, messageID, message) {
+        return await this.conversations.findOneAndUpdate(
+            {conversationID: conversationID, "texts.messageID": messageID},
+            {$set: { "texts.$.message": message}},
+            {returnDocument: "after"}
+        )
+    }
     async findUserWithName(username) {
         return await this.users.findOne({username: username})
     }

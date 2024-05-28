@@ -30,6 +30,9 @@ app.ws('/main', (ws, req) => {
             case helper.Type.DELETEMESSAGE:
                 deleteMessage(data)
                 break
+            case helper.Type.EDITMESSAGE:
+                editMessage(data.message)
+                break
             case helper.Type.CLOSECONVERSATION:
                 closeConversation(data)
                 break
@@ -72,12 +75,21 @@ function sendRequestedConversation(ws, conversationID, type) {
 function closeConversation(data) {
     Database.closeConversation(data.userID, data.conversationID)
 }
+function editMessage(message) {
+    Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: helper.Type.EDITMESSAGE, message: {userID: message.userID, messageID: message.messageID, message: message.message}}))
+        }
+    })
+}
 function deleteMessage(data) {
     Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            client.socket.send(JSON.stringify({type: helper.Type.DELETEMESSAGE, messageID: data.messageID}))
+            client.socket.send(JSON.stringify({type: helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
         }
     })
 }

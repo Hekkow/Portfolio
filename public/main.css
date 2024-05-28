@@ -156,11 +156,12 @@ body {
     background-color: #c7f5ff;
 }
 .messageTextDiv {
-    width: 300px;
+    max-width: 500px;
 }
 .messageText {
     overflow-wrap: break-word;
 }
+
 .messageDiv.localMessage .messageText {
     color: gray;
 }
@@ -176,23 +177,38 @@ textarea {
     text-align: right;
     justify-content: flex-end;
 }
-.deleteButton {
+.deleteButton, .replyButton, .editButton, #replyBarCloseButton {
     width: 30px;
     height: 30px;
-    background-color: red;
     cursor: pointer;
 }
+.deleteButton {
+    background-color: red;
+}
 .replyButton {
-    width: 30px;
-    height: 30px;
     background-color: blue;
-    cursor: pointer;
+}
+.editButton {
+    background-color: green;
+}
+#replyBarCloseButton {
+    height: 0;
+    background-color: black;
 }
 #replyBar {
     height: 0;
     border: inset 0 black;
+
 }
 #replyBar.active {
-    height: 30px;
+    min-height: 30px;
+    height: auto;
     border: inset 5px black;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    word-break: break-word;
+}
+#replyBar.active #replyBarCloseButton {
+    height: 30px;
+
 }

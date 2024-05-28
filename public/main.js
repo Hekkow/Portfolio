@@ -1,6 +1,5 @@
 // GLITCHES
-// sometimes shows duplicated users
-
+// opening new conversation on one user then opening that same conversation on another user before sending a message crashes server
 let userID = Cookies.get(loginCookie)
 let username
 let ws
@@ -13,6 +12,7 @@ else {
     connection()
 }
 let replyingTo = -1
+let editing = -1
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
@@ -71,6 +71,8 @@ function messaged(event) {
         case Type.DELETEMESSAGE:
             receivedDeletedMessage(message.messageID)
             break
+        case Type.EDITMESSAGE:
+            receivedEditedMessage(message.message)
     }
 }
 function setUp(user) {
@@ -124,14 +126,7 @@ function showNewConversationButton(conversation) {
             return false
         }
     })
-    if (!placed) {
-        activeConversationsDiv.append(newConversationBlock)
-    }
-    // activeConversationsDiv.append(`
-    //         <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
-    //             <div class="userPic"></div>
-    //             <div class="activeConversationListButtonText">${stuff.text}</div>
-    //         </button>`)
+    if (!placed) activeConversationsDiv.append(newConversationBlock)
     let conversationDiv = $(`.conversationBlock[conversationID="${conversationID}"]`)
     conversationDiv.hover(function() {
         showConversationHoverButtons($(this))
@@ -165,11 +160,16 @@ function getTextForConversationButton(conversation) {
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
     if (!lastMessage) return
-    if (lastMessage.message.length > 18) lastMessage.message = lastMessage.message.substring(0, 15) + "..."
-    let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessage.message
+    let lastMessageText = lastMessage.message
+    if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
+    let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessageText
     return {usernames: usernames, messageID: lastMessage.messageID, text: text, date: lastMessage.date}
 }
 
+function receivedEditedMessage(message) { // lots of duplicate code here with update message
+    let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
+    messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
+}
 
 function receivedDeletedMessage(messageID) {
     $(`.messageDiv[messageID='${messageID}']`).remove()
@@ -252,6 +252,7 @@ function loadMessageInput() {
         messageInput.css('height', 'auto')
         messageInput.css('height', this.scrollHeight + 'px')
     })
+    messageInput.focus()
     // scroll to bottom
     messageInput.keyup((event) => {
         if (event.key === "Enter") {
@@ -259,18 +260,30 @@ function loadMessageInput() {
             sendMessage()
         }
     })
-    messageInput.focus()
+
 }
 function sendMessage() {
     let messageInput = $('#messageInput')
-    let text = messageInput.val()
+    let text = messageInput.val().replace(/\n$/, '')
     messageInput.val("")
     messageInput.focus()
     if (!text || !text.trim()) return
-    let message = {conversationID: openConversationID, userID: userID, message: text, replyingTo: replyingTo, date: new Date()}
-    showMessage(message, true)
-    ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
+    if (editing === -1) {
+        let message = {conversationID: openConversationID, userID: userID, message: text, replyingTo: replyingTo, date: new Date()}
+        showMessage(message, true)
+        ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
+    }
+    else {
+        let message = {conversationID: openConversationID, userID: userID, message: text, date: new Date(), messageID: editing}
+        updateMessage(message)
+        ws.send(JSON.stringify({type: Type.EDITMESSAGE, message: message}))
+    }
     deleteReply()
+}
+function updateMessage(message) { // get rid of duplicate code between this and showMessage
+    let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
+    messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
+    messageDiv.addClass('localMessage')
 }
 function updateMessageID(message) {
     if (loadedUsers.get(message.userID).username !== username) return
@@ -306,7 +319,7 @@ function showMessage(message, local) {
         messageDiv.addClass('myText');
         if (message.messageID === undefined) messageDiv.addClass('localMessage')
     }
-    messages.scrollTop(messages.prop("scrollHeight"))
+    scrollToBottom()
     messageDiv.hover(function() {
         showMessageHoverButtons($(this), local)
     }, function() {
@@ -317,6 +330,9 @@ function showMessage(message, local) {
             scrollToMessage(message.replyingTo)
         })
     }
+}
+function scrollToBottom() {
+    $('#messages').scrollTop($('#messages').prop("scrollHeight"))
 }
 function addLinks(text) {
     let pattern = /\b(?:https?:\/\/)?(?:www\.)?\w+\.\w+(?:\/\S*)?\b/g;
@@ -337,7 +353,7 @@ function addLinks(text) {
     return text;
 }
 function showMessageHoverButtons(div, local) {
-    if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div>`)
+    if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div><div class='editButton'></div>`)
     else div.append(`<div class='replyButton'></div>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
@@ -347,10 +363,15 @@ function showMessageHoverButtons(div, local) {
         e.stopPropagation()
         replyMessage(div)
     })
+    div.find('.editButton').click(function(e) {
+        e.stopPropagation()
+        editMessage(div)
+    })
 }
 function hideMessageHoverButtons(div) {
     div.find('.replyButton').remove()
     div.find('.deleteButton').remove()
+    div.find('.editButton').remove()
 }
 function scrollToMessage(messageID) {
     let scrollToMessage = $(`.messageDiv[messageID=${messageID}]`)
@@ -360,12 +381,32 @@ function scrollToMessage(messageID) {
     scrollToMessage.css('background-color', 'red')
     scrollToMessage.animate({backgroundColor: 'white'}, 500)
 }
-function replyMessage(messageDiv) {
+function replyMessage(messageDiv) { // remove duplicate code from this and next
     let replyBar = $('#replyBar')
     replyBar.addClass('active')
     replyBar.text(getMessageText(messageDiv))
+    showReplyBarDeleteButton()
     replyingTo = parseInt(messageDiv.attr('messageID'))
     $('#messageInput').focus()
+    if (editing !== -1) {
+        editing = -1
+        $('#messageInput').val("")
+    }
+}
+function editMessage(messageDiv) {
+    let replyBar = $('#replyBar')
+    replyBar.addClass('active')
+    replyBar.text("editing")
+    editing = parseInt(messageDiv.attr('messageID'))
+    $('#messageInput').val(loadedConversations.get(openConversationID).texts.find(text => text.messageID === editing).message)
+    showReplyBarDeleteButton()
+    $('#messageInput').focus()
+}
+function showReplyBarDeleteButton() {
+    let replyBar = $('#replyBar')
+    replyBar.html(replyBar.html() + '<div id="replyBarCloseButton"></div>')
+    $('#replyBarCloseButton').click(() => { deleteReply() })
+    scrollToBottom()
 }
 function getMessageText(messageDiv) {
     return messageDiv.find('p.messageText').text()
@@ -375,6 +416,7 @@ function deleteReply() {
     replyBar.removeClass('active')
     replyBar.text("")
     replyingTo = -1
+    editing = -1
     $('#messageInput').focus()
 }
 function deleteMessage(messageDiv) {
