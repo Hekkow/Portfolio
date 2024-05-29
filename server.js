@@ -8,9 +8,12 @@ const helper = require('./public/helper.js')
 const clients = []
 Database.initPromise.then(async () => {
     await Database.deleteAll()
-    Database.createLatestIDs()
+    await Database.createLatestIDs()
+    await Database.createPublicConversation()
 })
-
+// conversation types
+// 0: dm
+// 1: group
 app.use(express.static('public'));
 app.use(express.json());
 app.ws('/main', (ws, req) => {
@@ -22,7 +25,7 @@ app.ws('/main', (ws, req) => {
                 break
             case helper.Type.STARTCONVERSATION:
             case helper.Type.REQUESTCONVERSATION:
-                sendRequestedConversation(ws, data.conversationID, data.type)
+                sendRequestedConversation(ws, data.conversationID, data.conversationType, data.type)
                 break
             case helper.Type.NEWMESSAGE:
                 receivedMessage(data.message)
@@ -62,13 +65,18 @@ function login(ws, userID) {
         updateUserLists()
     })
 }
-function sendRequestedConversation(ws, conversationID, type) {
+function sendRequestedConversation(ws, conversationID, conversationType, type) {
     Database.findConversation(conversationID).then(async (conversation) => {
-        if (!conversation) conversation = await Database.findConversationWithUsers(conversationID)
+        if (!conversation && conversationType === 0) {
+            console.log("WOW1")
+            conversation = await Database.findConversationWithUsers(conversationID)
+        }
         if (!conversation) {
-            conversation = await Database.createConversation(conversationID)
+            console.log("WOW2")
+            conversation = await Database.createConversation(conversationID, conversationType)
             type = helper.Type.CONVERSATIONCREATED
         }
+        console.log("WOW3")
         ws.send(JSON.stringify({type: type, conversation: conversation}))
     })
 }
@@ -108,7 +116,7 @@ function receivedMessage(message) {
 }
 
 function loadLocalData(ws, user) {
-    Database.findConversations(user.conversations).then((conversations) => {
+    Database.findConversations(user.openConversations).then((conversations) => {
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
             ws.send(JSON.stringify({type: helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
@@ -120,6 +128,10 @@ function loadLocalData(ws, user) {
 function updateUserLists() {
     Database.findUsersWithID(clients.map(client => client.userID)).then((users) => {
         for (let client of clients) {
+            Database.findUserWithID(client.userID).then((user) => { // very very inefficient
+                console.log(user)
+                loadLocalData(client.socket, user)
+            })
             client.socket.send(JSON.stringify({type: helper.Type.ONLINEUSERSUPDATE, users: users}))
         }
     })

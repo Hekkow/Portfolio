@@ -1,5 +1,3 @@
-// GLITCHES
-// opening new conversation on one user then opening that same conversation on another user before sending a message crashes server
 let userID = Cookies.get(loginCookie)
 let username
 let ws
@@ -48,10 +46,12 @@ function connection() {
                 break
             case Type.STARTCONVERSATION:
                 updateLocalConversations(message.conversation)
+
                 openConversationID = message.conversation.conversationID
                 break
             case Type.CONVERSATIONCREATED:
                 updateLocalConversations(message.conversation)
+                console.log("CONVERSATION ID", message.conversation)
                 openConversationID = message.conversation.conversationID
                 break
             case Type.REQUESTCONVERSATION:
@@ -179,13 +179,24 @@ function hideConversationHoverButtons(div) {
     div.find('.deleteButton').remove()
 }
 function getTextForConversationButton(conversation) {
-    let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
+    let conversationName
     let lastMessage = conversation.texts[conversation.texts.length - 1]
-    if (!lastMessage) return
-    let lastMessageText = lastMessage.message
+    let lastMessageText = lastMessage ? lastMessage.message : ""
+    let lastTextUsername = lastMessage ? loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username : ""
     if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
-    let text = usernames + "<br>" + loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username + ": " + lastMessageText
-    return {usernames: usernames, messageID: lastMessage.messageID, text: text, date: lastMessage.date}
+    console.log(conversation.conversationType)
+    if (conversation.conversationType === 0) {
+        conversationName = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
+        console.log(1)
+    }
+    else if (conversation.conversationType === 1) {
+        conversationName = conversation.conversationName
+        console.log(2)
+
+    }
+    console.log("COVNERSATIOnad name ", conversationName)
+    let text = conversationName + "<br>" + lastTextUsername + ": " + lastMessageText
+    return {messageID: lastMessage ? lastMessage.messageID : -1, text: text, date: lastMessage ? lastMessage.date : new Date()}
 }
 
 
@@ -217,9 +228,7 @@ function openConversation(conversationID) {
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     openConversationID = conversationID
     openConversationArea()
-    console.log(loadedConversations.get(conversationID).texts)
     for (let message of loadedConversations.get(conversationID).texts) {
-        console.log("HERE", message)
         showMessage(message, loadedUsers.get(message.userID).username === username)
     }
 }
@@ -230,12 +239,12 @@ function startNewConversation(receivingUserID) {
 
         value.users.sort()
         users.sort()
-        if (value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
+        if (value.type === 0 && value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
             openConversation(value.conversationID)
             return
         }
     }
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID]}))
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID], conversationType: 0}))
 }
 function openConversationArea() {
     $('#messages').empty()

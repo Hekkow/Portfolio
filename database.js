@@ -15,7 +15,9 @@ class Database {
         await this.users.createIndex({userID: 1})
         await this.conversations.createIndex({conversationID: 1})
 
-        await this.createLatestIDs()
+    }
+    async createPublicConversation() {
+        if (await this.getLatestConversationID() === 2) await this.createConversation([], 1, "Howdy")
     }
     async createLatestIDs() {
         let latestIDs = await this.latestIDs.findOne()
@@ -23,8 +25,10 @@ class Database {
     }
     async register(username) {
         let id = await this.getLatestUserID()
-        let user = {username: username, conversations: [], userID: id, openConversations: []}
+        let publicConversationID = 3
+        let user = {username: username, conversations: [publicConversationID], userID: id, openConversations: [publicConversationID]}
         await this.users.insertOne(user)
+        await this.conversations.findOneAndUpdate({conversationID: publicConversationID}, {$push: {users: id}})
         return user
     }
     async findUserWithID(userID) {
@@ -36,15 +40,14 @@ class Database {
         let users = await Promise.all(promises)
         return users
     }
-    async addMessage(message) {
-        console.log(message)
+    async addMessage(message) { // feel like i could possibly combine conversations and openconversations?
         let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
             {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID(), date: message.date}}},
             {returnDocument: "after"})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
-            {$push: {openConversations: conversation.conversationID}}
+            {$addToSet: {openConversations: conversation.conversationID}}
         )
         return conversation
     }
@@ -67,7 +70,7 @@ class Database {
     }
     async findConversationWithUsers(users) {
         if (!Array.isArray(users)) return null
-        let conversation = await this.conversations.findOne({users: {$all: users, $size: users.length}})
+        let conversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, type: 0})
         return conversation
     }
     async findConversation(conversationID) {
@@ -90,12 +93,15 @@ class Database {
         await this.conversations.drop()
         await this.latestIDs.drop()
     }
-    async createConversation(users) {
+    async createConversation(users, conversationType, conversationName) {
         if (!Array.isArray(users)) return null
-        let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}})
-        if (previousConversation) return previousConversation
+        if (conversationType === 0) {
+            let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: 0})
+            if (previousConversation) return previousConversation
+        }
         let id = await this.getLatestConversationID()
-        let conversation = {conversationID: id, texts: [], users: users}
+        let conversation = {conversationID: id, texts: [], users: users, conversationType: conversationType}
+        if (conversationName) conversation.conversationName = conversationName
         for (let user of users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
