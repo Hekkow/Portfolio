@@ -37,6 +37,7 @@ class Database {
         return users
     }
     async addMessage(message) {
+        console.log(message)
         let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
             {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID(), date: message.date}}},

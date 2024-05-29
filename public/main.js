@@ -16,7 +16,6 @@ let editing = -1
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
-
     ws.onopen = () => {
         ws.send(JSON.stringify({type: Type.LOGIN, userID: userID}))
         console.log("Connected")
@@ -31,48 +30,46 @@ function connection() {
         }, 400)
     }
     ws.onmessage = (event) => {
-        messaged(event)
-    }
-}
-function messaged(event) {
-    let message = JSON.parse(event.data)
-    // console.log(message)
-    let type = message.type
-    switch (type) {
-        case Type.ONLINEUSERSUPDATE:
-            updateUserList(message.users)
-            break
-        case Type.RECEIVEUSERNAME:
-            setUp(message.user)
-            break
-        case Type.BACKTOLOGIN:
-            window.location.href = '/'
-            break
-        case Type.LOADLOCALDATA:
-            loadLocalData(message)
-            break
-        case Type.STARTCONVERSATION:
-            updateLocalConversations(message.conversation)
-            break
-        case Type.CONVERSATIONCREATED:
-            updateLocalConversations(message.conversation)
-            openConversationID = message.conversation.conversationID
-            break
-        case Type.REQUESTCONVERSATION:
-            updateLocalConversations(message.conversation)
-            showNewConversationButton(message.conversation)
-            break
-        case Type.NEWMESSAGE:
-            receivedMessage(message.message)
-            break
-        case Type.FIRSTMESSAGE:
-            receivedFirstMessage(message)
-            break
-        case Type.DELETEMESSAGE:
-            receivedDeletedMessage(message.messageID)
-            break
-        case Type.EDITMESSAGE:
-            receivedEditedMessage(message.message)
+        let message = JSON.parse(event.data)
+        // console.log(message)
+        let type = message.type
+        switch (type) {
+            case Type.ONLINEUSERSUPDATE:
+                updateUserList(message.users)
+                break
+            case Type.RECEIVEUSERNAME:
+                setUp(message.user)
+                break
+            case Type.BACKTOLOGIN:
+                window.location.href = '/'
+                break
+            case Type.LOADLOCALDATA:
+                loadLocalData(message)
+                break
+            case Type.STARTCONVERSATION:
+                updateLocalConversations(message.conversation)
+                openConversationID = message.conversation.conversationID
+                break
+            case Type.CONVERSATIONCREATED:
+                updateLocalConversations(message.conversation)
+                openConversationID = message.conversation.conversationID
+                break
+            case Type.REQUESTCONVERSATION:
+                updateLocalConversations(message.conversation)
+                showNewConversationButton(message.conversation)
+                break
+            case Type.NEWMESSAGE:
+                receivedNewMessage(message.message)
+                break
+            case Type.FIRSTMESSAGE:
+                receivedNewFirstMessage(message)
+                break
+            case Type.DELETEMESSAGE:
+                receivedDeletedMessage(message.messageID)
+                break
+            case Type.EDITMESSAGE:
+                receivedEditedMessage(message.message)
+        }
     }
 }
 function setUp(user) {
@@ -80,36 +77,62 @@ function setUp(user) {
     username = user.username
     // $('#loggedInUsername').text(username)
 }
-function receivedFirstMessage(data) {
-    loadedConversations.set(data.conversation.conversationID, data.conversation)
-    showNewConversationButton(data.conversation)
-    updateMessageID(data.message)
-}
-function receivedMessage(message) {
-    if (loadedConversations.has(message.conversationID)) {
-        loadedConversations.get(message.conversationID).texts.push(message)
-        updateConversationButton(message.conversationID)
-    }
+function receivedNewFirstMessage(data) {
+    // for when both users open the conversation before one sends a message
+    if (data.conversation.conversationID === openConversationID) receivedNewMessage(data.message)
     else {
-        ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
+        loadedConversations.set(data.conversation.conversationID, data.conversation)
+        showNewConversationButton(data.conversation)
     }
+
+
+}
+function receivedNewMessage(message) {
+    if (!loadedConversations.has(message.conversationID)) {
+        ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
+        return
+    }
+    loadedConversations.get(message.conversationID).texts.push(message)
+
     if (message.conversationID === openConversationID) {
         updateMessageID(message)
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
-    else {
-        showOrUpdateButton(message.conversationID)
+    showOrUpdateConversationButton(message.conversationID)
+
+}
+function receivedEditedMessage(message) { // lots of duplicate code here with update message
+    let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
+    messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
+    messageDiv.removeClass('localMessage')
+    updateTextsAndButton(message.messageID, "Edit", message)
+}
+
+function receivedDeletedMessage(messageID) {
+    $(`.messageDiv[messageID='${messageID}']`).remove()
+    $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
+    if (messageID === replyingTo) closeReplyBar()
+    updateTextsAndButton(messageID, "Delete")
+}
+function updateTextsAndButton(messageID, mode, message) {
+    let conversationBlock = $(`.conversationBlock[messageID=${messageID}]`)
+    if (conversationBlock.length) {
+        let conversationID = parseInt(conversationBlock.attr('conversationID'))
+        if (loadedConversations.has(conversationID)) {
+            let texts = loadedConversations.get(conversationID).texts
+            if (mode === "Edit") texts[texts.findIndex(text => text.messageID === messageID)].message = message.message
+            else if (mode === "Delete") texts.splice(texts.findIndex(text => text.messageID === messageID))
+        }
+        updateConversationButton(conversationID)
     }
 }
-function showOrUpdateButton(conversationID) {
+function showOrUpdateConversationButton(conversationID) {
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) updateConversationButton(conversationID)
     else showNewConversationButton(loadedConversations.get(conversationID))
 }
-// possible optimization is removing date from attrib and just getting it from loaded conversations instead
 function showNewConversationButton(conversation) {
     let conversationID = conversation.conversationID
     let activeConversationsDiv = $("#activeConversationsList")
-
     let stuff = getTextForConversationButton(conversation)
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) return
     let newConversationBlock = $(`
@@ -117,8 +140,8 @@ function showNewConversationButton(conversation) {
                 <div class="userPic"></div>
                 <div class="activeConversationListButtonText">${stuff.text}</div>
             </button>`)
+    // places it in order of most recent texts
     let placed = false
-
     $('.conversationBlock').each(function() {
         if (new Date($(this).attr('date')) < new Date(stuff.date)) {
             newConversationBlock.insertBefore($(this))
@@ -155,9 +178,7 @@ function showConversationHoverButtons(div) {
 function hideConversationHoverButtons(div) {
     div.find('.deleteButton').remove()
 }
-
 function getTextForConversationButton(conversation) {
-    console.log(conversation)
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
     if (!lastMessage) return
@@ -167,37 +188,7 @@ function getTextForConversationButton(conversation) {
     return {usernames: usernames, messageID: lastMessage.messageID, text: text, date: lastMessage.date}
 }
 
-function receivedEditedMessage(message) { // lots of duplicate code here with update message
-    let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
-    messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
-    messageDiv.removeClass('localMessage')
-    let conversationBlock = $(`.conversationBlock[messageID=${message.messageID}]`)
 
-    if (conversationBlock.length) {
-        let conversationID = parseInt(conversationBlock.attr('conversationID'))
-        if (loadedConversations.has(conversationID)) {
-            let texts = loadedConversations.get(conversationID).texts
-            texts[texts.findIndex(text => text.messageID === message.messageID)].message = message.message
-        }
-        updateConversationButton(conversationID)
-    }
-}
-
-function receivedDeletedMessage(messageID) {
-    $(`.messageDiv[messageID='${messageID}']`).remove()
-    $(`.messageDiv[replyingTo='${messageID}']`).find('.replyText').text("Replying to: Deleted Message")
-    if (messageID === replyingTo) deleteReply()
-    let conversationBlock = $(`.conversationBlock[messageID=${messageID}]`)
-
-    if (conversationBlock.length) {
-        let conversationID = parseInt(conversationBlock.attr('conversationID'))
-        if (loadedConversations.has(conversationID)) {
-            let texts = loadedConversations.get(conversationID).texts
-            texts.splice(texts.findIndex(message => message.messageID === messageID))
-        }
-        updateConversationButton(conversationID)
-    }
-}
 function loadLocalData(data) {
     $("#activeConversationsList").empty()
     updateLocalUsers(data.users)
@@ -226,7 +217,9 @@ function openConversation(conversationID) {
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     openConversationID = conversationID
     openConversationArea()
+    console.log(loadedConversations.get(conversationID).texts)
     for (let message of loadedConversations.get(conversationID).texts) {
+        console.log("HERE", message)
         showMessage(message, loadedUsers.get(message.userID).username === username)
     }
 }
@@ -258,25 +251,27 @@ function loadMessageInput() {
     conversationDiv.empty()
     conversationDiv.append('<textarea id="messageInput" autofocus></textarea><button id="messageSendButton" onclick="sendMessage()"></button>')
     let messageInput = $('#messageInput')
-    messageInput.css('height', 'auto')
-    messageInput.css('height', this.scrollHeight + 'px')
     messageInput.on('input', function() {
-        messageInput.css('height', 'auto')
-        messageInput.css('height', this.scrollHeight + 'px')
+        resizeMessageInput()
     })
     messageInput.focus()
-    // scroll to bottom
+
     messageInput.keyup((event) => {
-        if (event.key === "Enter") {
+        if (event.key === "Enter" && !event.originalEvent.shiftKey) {
             event.preventDefault()
             sendMessage()
         }
     })
-
+}
+function resizeMessageInput() {
+    let messageInput = $('#messageInput')
+    messageInput.css('height', 'auto')
+    messageInput.css('height', messageInput[0].scrollHeight + 'px')
+    scrollToBottom()
 }
 function sendMessage() {
     let messageInput = $('#messageInput')
-    let text = messageInput.val().replace(/\n$/, '')
+    let text = messageInput.val().trim()
     messageInput.val("")
     messageInput.focus()
     if (!text || !text.trim()) return
@@ -290,9 +285,34 @@ function sendMessage() {
         updateMessage(message)
         ws.send(JSON.stringify({type: Type.EDITMESSAGE, message: message}))
     }
-    deleteReply()
+    resizeMessageInput()
+    closeReplyBar()
 }
-function updateMessage(message) { // get rid of duplicate code between this and showMessage
+function showMessage(message, local) {
+    let name = getName(message)
+    let messages = $('#messages')
+    let reply = getReplyAboveText(message)
+    let sendableMessage = message.message
+    sendableMessage = addLinks(sendableMessage)
+    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
+    let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
+    if (local) {
+        messageDiv.addClass('myText');
+        if (message.messageID === undefined) messageDiv.addClass('localMessage')
+    }
+    scrollToBottom()
+    messageDiv.hover(function() {
+        showMessageHoverButtons($(this), local)
+    }, function() {
+        hideMessageHoverButtons($(this))
+    })
+    if (message.replyingTo !== -1) {
+        messageDiv.click(function() {
+            scrollToMessage(message.replyingTo)
+        })
+    }
+}
+function updateMessage(message) {
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
     messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
     messageDiv.addClass('localMessage')
@@ -319,30 +339,7 @@ function getName(message) {
     else name = username
     return name
 }
-function showMessage(message, local) {
-    let name = getName(message)
-    let messages = $('#messages')
-    let reply = getReplyAboveText(message)
-    let sendableMessage = message.message
-    sendableMessage = addLinks(sendableMessage)
-    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
-    let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
-    if (local) {
-        messageDiv.addClass('myText');
-        if (message.messageID === undefined) messageDiv.addClass('localMessage')
-    }
-    scrollToBottom()
-    messageDiv.hover(function() {
-        showMessageHoverButtons($(this), local)
-    }, function() {
-        hideMessageHoverButtons($(this))
-    })
-    if (message.replyingTo !== -1) {
-        messageDiv.click(function() {
-            scrollToMessage(message.replyingTo)
-        })
-    }
-}
+
 function scrollToBottom() {
     $('#messages').scrollTop($('#messages').prop("scrollHeight"))
 }
@@ -393,37 +390,37 @@ function scrollToMessage(messageID) {
     scrollToMessage.css('background-color', 'red')
     scrollToMessage.animate({backgroundColor: 'white'}, 500)
 }
-function replyMessage(messageDiv) { // remove duplicate code from this and next
-    let replyBar = $('#replyBar')
-    replyBar.addClass('active')
-    replyBar.text(getMessageText(messageDiv))
-    showReplyBarDeleteButton()
-    replyingTo = parseInt(messageDiv.attr('messageID'))
-    $('#messageInput').focus()
+function replyMessage(messageDiv) {
+    showReplyBar(messageDiv, "Reply")
     if (editing !== -1) {
         editing = -1
         $('#messageInput').val("")
     }
 }
 function editMessage(messageDiv) {
+    showReplyBar(messageDiv, "Edit")
+    $('#messageInput').val(loadedConversations.get(openConversationID).texts.find(text => text.messageID === editing).message)
+}
+function showReplyBar(messageDiv, mode) {
     let replyBar = $('#replyBar')
     replyBar.addClass('active')
-    replyBar.text("editing")
-    editing = parseInt(messageDiv.attr('messageID'))
-    $('#messageInput').val(loadedConversations.get(openConversationID).texts.find(text => text.messageID === editing).message)
-    showReplyBarDeleteButton()
+    let messageID = parseInt(messageDiv.attr('messageID'))
+    let replyBarText
+    if (mode === "Reply") {
+        replyingTo = messageID
+        replyBarText = getMessageText(messageDiv)
+    }
+    else if (mode === "Edit") {
+        editing = messageID
+        replyBarText = "Editing"
+    }
+    replyBar.text(replyBarText)
+    replyBar.html(replyBar.html() + '<div id="replyBarCloseButton"></div>')
+    $('#replyBarCloseButton').click(() => { closeReplyBar() })
+    scrollToBottom()
     $('#messageInput').focus()
 }
-function showReplyBarDeleteButton() {
-    let replyBar = $('#replyBar')
-    replyBar.html(replyBar.html() + '<div id="replyBarCloseButton"></div>')
-    $('#replyBarCloseButton').click(() => { deleteReply() })
-    scrollToBottom()
-}
-function getMessageText(messageDiv) {
-    return messageDiv.find('p.messageText').text()
-}
-function deleteReply() {
+function closeReplyBar() {
     let replyBar = $('#replyBar')
     replyBar.removeClass('active')
     replyBar.text("")
@@ -431,6 +428,10 @@ function deleteReply() {
     editing = -1
     $('#messageInput').focus()
 }
+function getMessageText(messageDiv) {
+    return messageDiv.find('p.messageText').text()
+}
+
 function deleteMessage(messageDiv) {
     let messageID = parseInt(messageDiv.attr('messageID'))
     messageDiv.remove()

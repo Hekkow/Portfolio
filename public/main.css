@@ -158,8 +158,10 @@ body {
 .messageTextDiv {
     max-width: 500px;
 }
-.messageText {
+.messageText, .replyText {
     overflow-wrap: break-word;
+    white-space: pre-line;
+    /*text-align: left;*/
 }
 
 .messageDiv.localMessage .messageText {
@@ -198,7 +200,7 @@ textarea {
 #replyBar {
     height: 0;
     border: inset 0 black;
-
+    white-space: pre-line;
 }
 #replyBar.active {
     min-height: 30px;
