@@ -157,6 +157,7 @@ function hideConversationHoverButtons(div) {
 }
 
 function getTextForConversationButton(conversation) {
+    console.log(conversation)
     let usernames = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     let lastMessage = conversation.texts[conversation.texts.length - 1]
     if (!lastMessage) return
@@ -169,6 +170,17 @@ function getTextForConversationButton(conversation) {
 function receivedEditedMessage(message) { // lots of duplicate code here with update message
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
     messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
+    messageDiv.removeClass('localMessage')
+    let conversationBlock = $(`.conversationBlock[messageID=${message.messageID}]`)
+
+    if (conversationBlock.length) {
+        let conversationID = parseInt(conversationBlock.attr('conversationID'))
+        if (loadedConversations.has(conversationID)) {
+            let texts = loadedConversations.get(conversationID).texts
+            texts[texts.findIndex(text => text.messageID === message.messageID)].message = message.message
+        }
+        updateConversationButton(conversationID)
+    }
 }
 
 function receivedDeletedMessage(messageID) {

@@ -80,7 +80,7 @@ function editMessage(message) {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            client.socket.send(JSON.stringify({type: helper.Type.EDITMESSAGE, message: {userID: message.userID, messageID: message.messageID, message: message.message}}))
+            client.socket.send(JSON.stringify({type: helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
         }
     })
 }
