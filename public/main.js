@@ -57,6 +57,14 @@ function connection() {
                 updateLocalConversations(message.conversation)
                 showNewConversationButton(message.conversation)
                 break
+            case Type.INVITETOGROUPCHAT:
+                updateLocalConversations(message.conversation)
+                updateConversationButton(message.conversation.conversationID)
+                break
+            case Type.RENAMEGROUPCHAT:
+                updateLocalConversations(message.conversation)
+                updateConversationButton(message.conversation.conversationID)
+                break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
                 break
@@ -200,7 +208,7 @@ function loadLocalData(data) {
     $("#activeConversationsListUp").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
-    for (let conversationID of loadedUsers.get(userID).openConversations) {
+    for (let conversationID of loadedUsers.get(userID).conversations) {
         showNewConversationButton(loadedConversations.get(conversationID))
     }
 }
@@ -452,25 +460,51 @@ function updateUserList(users) {
 }
 
 function showCreateGroupChatPopup() {
+    showGroupChatUsersList((key, value) => key === userID)
+    $('#activeConversationsListDown').append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
+}
+function showInviteToGroupChatPopup() {
+    if (openConversationID === -1) return
+    showGroupChatUsersList((key, value) => key === userID || loadedConversations.get(openConversationID).users.includes(key))
+    $('#activeConversationsListDown').append(`<button id="groupChatInviteButton" onclick="inviteToGroupChat()">Invite</button>`)
+}
+function showRenameGroupChatPopup() {
+    if (openConversationID === -1) return
+    $('#activeConversationsListDown').append(`<input type="text" id="groupChatRenameInput"><button id="groupChatRenameButton" onclick="renameGroupChat()">Rename</button>`)
+}
+function inviteToGroupChat() {
+    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: openConversationID, users: getCheckedUsers()}))
+    removeGroupChatPopup()
+}
+function createNewGroupChat() {
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: getCheckedUsers(), conversationType: group})) // conversationID here is users array
+    removeGroupChatPopup()
+}
+function renameGroupChat() {
+    ws.send(JSON.stringify({type: Type.RENAMEGROUPCHAT, conversationID: openConversationID, newName: $('#groupChatRenameInput').val()}))
+    removeGroupChatPopup()
+}
+function getCheckedUsers() {
+    let users = [userID]
+    $('.groupChatUserInput:checked').each(function() { users.push(parseInt($(this).val())) })
+    return users
+}
+function showGroupChatUsersList(condition) {
+
     removeGroupChatPopup()
     let div = $('#activeConversationsListDown')
     for (let [key, value] of loadedUsers) {
-        if (key === userID) continue
+        if (condition(key, value)) continue
         div.append(`<input class="groupChatUserInput" type="checkbox" value=${key}><label class="groupChatUserLabel" for="${key}">${value.username}</label>`)
     }
-    div.append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
-}
-function createNewGroupChat() {
-    let users = [userID]
-    $('.groupChatUserInput:checked').each(function() { users.push(parseInt($(this).val())) })
-    console.log(users)
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: users, conversationType: group}))
-    removeGroupChatPopup()
 }
 function removeGroupChatPopup() {
     $('.groupChatUserInput').remove()
     $('.groupChatUserLabel').remove()
     $('#groupChatCreateButton').remove()
+    $('#groupChatInviteButton').remove()
+    $('#groupChatRenameInput').remove()
+    $('#groupChatRenameButton').remove()
 }
 
 $(window).on('focus', function() {

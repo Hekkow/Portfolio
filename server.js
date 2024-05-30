@@ -36,6 +36,12 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.CLOSECONVERSATION:
                 closeConversation(data)
                 break
+            case Helper.Type.INVITETOGROUPCHAT:
+                inviteToGroupChat(data)
+                break
+            case Helper.Type.RENAMEGROUPCHAT:
+                renameGroupChat(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -71,6 +77,24 @@ function sendRequestedConversation(ws, conversationID, conversationType, type) {
         }
         console.log({type: type, conversation: conversation})
         ws.send(JSON.stringify({type: type, conversation: conversation}))
+    })
+}
+function inviteToGroupChat(data) {
+    Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
+        }
+    })
+}
+function renameGroupChat(data) {
+    Database.renameGroupChat(data.conversationID, data.newName).then((conversation) => {
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: Helper.Type.RENAMEGROUPCHAT, conversation: conversation})) // can be optimzied
+        }
     })
 }
 function closeConversation(data) {
@@ -109,7 +133,7 @@ function receivedMessage(message) {
 }
 
 function loadLocalData(ws, user) {
-    Database.findConversations(user.openConversations).then((conversations) => {
+    Database.findConversations(user.conversations).then((conversations) => {
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
             ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))

@@ -26,7 +26,7 @@ class Database {
     async register(username) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, conversations: [publicConversationID], userID: id, openConversations: [publicConversationID]}
+        let user = {username: username, conversations: [publicConversationID], userID: id}
         await this.users.insertOne(user)
         await this.conversations.findOneAndUpdate({conversationID: publicConversationID}, {$push: {users: id}})
         return user
@@ -40,14 +40,29 @@ class Database {
         let users = await Promise.all(promises)
         return users
     }
-    async addMessage(message) { // feel like i could possibly combine conversations and openconversations?
+    async addUsersToGroupChat(conversationID, users) {
+        let conversation = await this.conversations.findOneAndUpdate(
+            {conversationID: conversationID},
+            {$addToSet: {users: { $each: users }}},
+            {returnDocument: "after"}
+        )
+        await this.users.updateMany(
+            {userID: { $in: users }},
+            {$addToSet: {conversations: conversationID}}
+        )
+        return conversation
+    }
+    async renameGroupChat(conversationID, newName) {
+        return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {conversationName: newName}}, {returnDocument: "after"})
+    }
+    async addMessage(message) {
         let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
             {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID(), date: message.date}}},
             {returnDocument: "after"})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
-            {$addToSet: {openConversations: conversation.conversationID}}
+            {$addToSet: {conversations: conversation.conversationID}}
         )
         return conversation
     }
@@ -85,7 +100,7 @@ class Database {
     async closeConversation(userID, conversationID) {
         return await this.users.findOneAndUpdate(
             {userID: userID},
-            {$pull: {openConversations: conversationID}}
+            {$pull: {conversations: conversationID}}
         )
     }
     async deleteAll() {
