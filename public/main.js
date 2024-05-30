@@ -53,6 +53,11 @@ function connection() {
                 openConversationID = message.conversation.conversationID
                 if (message.conversation.conversationType === group) showNewConversationButton(message.conversation)
                 break
+            case Type.CLOSECONVERSATION:
+                console.log("HERE")
+                updateLocalConversations(message.conversation)
+                updateConversationButton(message.conversation.conversationID)
+                break
             case Type.REQUESTCONVERSATION:
                 updateLocalConversations(message.conversation)
                 showNewConversationButton(message.conversation)
@@ -76,6 +81,7 @@ function connection() {
                 break
             case Type.EDITMESSAGE:
                 receivedEditedMessage(message.message)
+                break
         }
     }
 }
@@ -166,6 +172,7 @@ function showNewConversationButton(conversation) {
 }
 function updateConversationButton(conversationID) {
     let conversation = loadedConversations.get(conversationID)
+    console.log(conversation)
     let stuff = getTextForConversationButton(conversation)
     let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
     conversationButton.find('.activeConversationListButtonText').html(stuff.text)
@@ -177,7 +184,8 @@ function showConversationHoverButtons(div) {
     div.append(`<div class='deleteButton'>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
-        ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: parseInt(div.attr('conversationID'))}))
+        let conversationID = parseInt(div.attr('conversationID'))
+        ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: conversationID, conversationType: loadedConversations.get(conversationID).conversationType}))
         div.remove()
         closeConversationArea()
     })

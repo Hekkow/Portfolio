@@ -1,20 +1,18 @@
 const { MongoClient } = require("mongodb")
 const { readFile } = require('fs').promises
+const Helper = require('./public/helper.js')
 
 class Database {
     constructor() { this.initPromise = this.init() }
     async init() {
         this.uri = JSON.parse(await readFile('private.json')).databaseuri
         this.client = new MongoClient(this.uri)
-
         this.database = this.client.db('ChatApp')
         this.users = this.database.collection('Users')
         this.conversations = this.database.collection('Conversations')
         this.latestIDs = await this.database.collection('LatestIDs')
-
         await this.users.createIndex({userID: 1})
         await this.conversations.createIndex({conversationID: 1})
-
     }
     async createPublicConversation() {
         if (await this.getLatestConversationID() === 2) await this.createConversation([], 1, "Howdy")
@@ -85,7 +83,7 @@ class Database {
     }
     async findConversationWithUsers(users) {
         if (!Array.isArray(users)) return null
-        let conversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, type: 0})
+        let conversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: Helper.direct})
         return conversation
     }
     async findConversation(conversationID) {
@@ -97,11 +95,16 @@ class Database {
         let conversations = await Promise.all(promises)
         return conversations
     }
-    async closeConversation(userID, conversationID) {
-        return await this.users.findOneAndUpdate(
+    async closeConversation(userID, conversationID, conversationType) {
+
+        await this.users.findOneAndUpdate(
             {userID: userID},
             {$pull: {conversations: conversationID}}
         )
+        if (conversationType === Helper.group) {
+            return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$pull: {users: userID}}, {returnDocument: "after"})
+        }
+
     }
     async deleteAll() {
         await this.users.drop()
@@ -110,8 +113,8 @@ class Database {
     }
     async createConversation(users, conversationType, conversationName) {
         if (!Array.isArray(users)) return null
-        if (conversationType === 0) {
-            let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: 0})
+        if (conversationType === Helper.direct) {
+            let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: Helper.direct})
             if (previousConversation) return previousConversation
         }
         let id = await this.getLatestConversationID()

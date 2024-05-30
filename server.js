@@ -75,7 +75,6 @@ function sendRequestedConversation(ws, conversationID, conversationType, type) {
             conversation = await Database.createConversation(conversationID, conversationType)
             type = Helper.Type.CONVERSATIONCREATED
         }
-        console.log({type: type, conversation: conversation})
         ws.send(JSON.stringify({type: type, conversation: conversation}))
     })
 }
@@ -98,7 +97,14 @@ function renameGroupChat(data) {
     })
 }
 function closeConversation(data) {
-    Database.closeConversation(data.userID, data.conversationID)
+    Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
+        if (!conversation || conversation === Helper.direct) return
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation}))
+        }
+    })
 }
 function editMessage(message) {
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
