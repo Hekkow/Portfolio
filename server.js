@@ -3,7 +3,7 @@ const Database = require('./database.js')
 const app = express()
 const loginServer = require('./loginServer.js')
 require('express-ws')(app)
-const helper = require('./public/helper.js')
+const Helper = require('./public/helper.js')
 
 const clients = []
 Database.initPromise.then(async () => {
@@ -11,32 +11,29 @@ Database.initPromise.then(async () => {
     await Database.createLatestIDs()
     await Database.createPublicConversation()
 })
-// conversation types
-// 0: dm
-// 1: group
 app.use(express.static('public'));
 app.use(express.json());
 app.ws('/main', (ws, req) => {
     ws.on('message', (msg) => {
         let data = JSON.parse(msg)
         switch (data.type) {
-            case helper.Type.LOGIN:
+            case Helper.Type.LOGIN:
                 login(ws, data.userID)
                 break
-            case helper.Type.STARTCONVERSATION:
-            case helper.Type.REQUESTCONVERSATION:
+            case Helper.Type.STARTCONVERSATION:
+            case Helper.Type.REQUESTCONVERSATION:
                 sendRequestedConversation(ws, data.conversationID, data.conversationType, data.type)
                 break
-            case helper.Type.NEWMESSAGE:
+            case Helper.Type.NEWMESSAGE:
                 receivedMessage(data.message)
                 break
-            case helper.Type.DELETEMESSAGE:
+            case Helper.Type.DELETEMESSAGE:
                 deleteMessage(data)
                 break
-            case helper.Type.EDITMESSAGE:
+            case Helper.Type.EDITMESSAGE:
                 editMessage(data.message)
                 break
-            case helper.Type.CLOSECONVERSATION:
+            case Helper.Type.CLOSECONVERSATION:
                 closeConversation(data)
                 break
         }
@@ -55,28 +52,24 @@ function disconnect(ws) {
 function login(ws, userID) {
     Database.findUserWithID(userID).then((user) => {
         if (!user) {
-            ws.send(JSON.stringify({type: helper.Type.BACKTOLOGIN}))
+            ws.send(JSON.stringify({type: Helper.Type.BACKTOLOGIN}))
             return
         }
         console.log(user.username + " logged in")
         clients.push({socket: ws, userID: userID})
-        ws.send(JSON.stringify({type: helper.Type.RECEIVEUSERNAME, user: user}))
+        ws.send(JSON.stringify({type: Helper.Type.RECEIVEUSERNAME, user: user}))
         loadLocalData(ws, user)
         updateUserLists()
     })
 }
-function sendRequestedConversation(ws, conversationID, conversationType, type) {
+function sendRequestedConversation(ws, conversationID, conversationType, type) { // conversationID can be users array
     Database.findConversation(conversationID).then(async (conversation) => {
-        if (!conversation && conversationType === 0) {
-            console.log("WOW1")
-            conversation = await Database.findConversationWithUsers(conversationID)
-        }
+        if (!conversation && conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(conversationID)
         if (!conversation) {
-            console.log("WOW2")
             conversation = await Database.createConversation(conversationID, conversationType)
-            type = helper.Type.CONVERSATIONCREATED
+            type = Helper.Type.CONVERSATIONCREATED
         }
-        console.log("WOW3")
+        console.log({type: type, conversation: conversation})
         ws.send(JSON.stringify({type: type, conversation: conversation}))
     })
 }
@@ -88,7 +81,7 @@ function editMessage(message) {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            client.socket.send(JSON.stringify({type: helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
+            client.socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
         }
     })
 }
@@ -97,7 +90,7 @@ function deleteMessage(data) {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            client.socket.send(JSON.stringify({type: helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
+            client.socket.send(JSON.stringify({type: Helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
         }
     })
 }
@@ -108,8 +101,8 @@ function receivedMessage(message) {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
-            if (conversation.texts.length === 1) client.socket.send(JSON.stringify({type: helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
-            else client.socket.send(JSON.stringify({type: helper.Type.NEWMESSAGE, message: message}))
+            if (conversation.texts.length === 1) client.socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
+            else client.socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
 
         }
     })
@@ -119,7 +112,7 @@ function loadLocalData(ws, user) {
     Database.findConversations(user.openConversations).then((conversations) => {
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
-            ws.send(JSON.stringify({type: helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
+            ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
         })
     })
 
@@ -129,10 +122,9 @@ function updateUserLists() {
     Database.findUsersWithID(clients.map(client => client.userID)).then((users) => {
         for (let client of clients) {
             Database.findUserWithID(client.userID).then((user) => { // very very inefficient
-                console.log(user)
                 loadLocalData(client.socket, user)
             })
-            client.socket.send(JSON.stringify({type: helper.Type.ONLINEUSERSUPDATE, users: users}))
+            client.socket.send(JSON.stringify({type: Helper.Type.ONLINEUSERSUPDATE, users: users}))
         }
     })
 }
@@ -145,6 +137,6 @@ app.get('/', (req, res) => {
 })
 
 app.use('/', loginServer)
-app.listen({port: helper.port, host: helper.host}, () => {
+app.listen({port: Helper.port, host: Helper.host}, () => {
     console.log("Server started")
 })

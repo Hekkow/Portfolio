@@ -45,6 +45,7 @@ body {
     width: 250px;
     border: inset 5px blue;
     z-index: 20;
+    overflow-y: auto;
     /*box-shadow: 0 0 10px 10px black;*/
 }
 #conversation {

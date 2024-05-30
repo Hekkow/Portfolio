@@ -46,13 +46,12 @@ function connection() {
                 break
             case Type.STARTCONVERSATION:
                 updateLocalConversations(message.conversation)
-
                 openConversationID = message.conversation.conversationID
                 break
             case Type.CONVERSATIONCREATED:
                 updateLocalConversations(message.conversation)
-                console.log("CONVERSATION ID", message.conversation)
                 openConversationID = message.conversation.conversationID
+                if (message.conversation.conversationType === group) showNewConversationButton(message.conversation)
                 break
             case Type.REQUESTCONVERSATION:
                 updateLocalConversations(message.conversation)
@@ -132,7 +131,7 @@ function showOrUpdateConversationButton(conversationID) {
 }
 function showNewConversationButton(conversation) {
     let conversationID = conversation.conversationID
-    let activeConversationsDiv = $("#activeConversationsList")
+    let activeConversationsDiv = $("#activeConversationsListUp")
     let stuff = getTextForConversationButton(conversation)
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) return
     let newConversationBlock = $(`
@@ -184,24 +183,21 @@ function getTextForConversationButton(conversation) {
     let lastMessageText = lastMessage ? lastMessage.message : ""
     let lastTextUsername = lastMessage ? loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username : ""
     if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
-    console.log(conversation.conversationType)
-    if (conversation.conversationType === 0) {
+    if (conversation.conversationType === direct) {
         conversationName = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
-        console.log(1)
     }
-    else if (conversation.conversationType === 1) {
+    else if (conversation.conversationType === group) {
         conversationName = conversation.conversationName
-        console.log(2)
-
+        if (!conversationName) conversationName = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
     }
-    console.log("COVNERSATIOnad name ", conversationName)
-    let text = conversationName + "<br>" + lastTextUsername + ": " + lastMessageText
+    let text = conversationName
+    if (lastMessage) text += "<br>" + lastTextUsername + ": " + lastMessageText
     return {messageID: lastMessage ? lastMessage.messageID : -1, text: text, date: lastMessage ? lastMessage.date : new Date()}
 }
 
 
 function loadLocalData(data) {
-    $("#activeConversationsList").empty()
+    $("#activeConversationsListUp").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
     for (let conversationID of loadedUsers.get(userID).openConversations) {
@@ -236,15 +232,14 @@ function startNewConversation(receivingUserID) {
     openConversationArea()
     let users = [receivingUserID, userID]
     for (const [key, value] of loadedConversations.entries()) {
-
         value.users.sort()
         users.sort()
-        if (value.type === 0 && value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
+        if (value.conversationType === direct && value.users.length === users.length && value.users.every((user, index) => user === users[index])) {
             openConversation(value.conversationID)
             return
         }
     }
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID], conversationType: 0}))
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID], conversationType: direct}))
 }
 function openConversationArea() {
     $('#messages').empty()
@@ -454,6 +449,28 @@ function updateUserList(users) {
         if (!user) continue
         if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
+}
+
+function showCreateGroupChatPopup() {
+    removeGroupChatPopup()
+    let div = $('#activeConversationsListDown')
+    for (let [key, value] of loadedUsers) {
+        if (key === userID) continue
+        div.append(`<input class="groupChatUserInput" type="checkbox" value=${key}><label class="groupChatUserLabel" for="${key}">${value.username}</label>`)
+    }
+    div.append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
+}
+function createNewGroupChat() {
+    let users = [userID]
+    $('.groupChatUserInput:checked').each(function() { users.push(parseInt($(this).val())) })
+    console.log(users)
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: users, conversationType: group}))
+    removeGroupChatPopup()
+}
+function removeGroupChatPopup() {
+    $('.groupChatUserInput').remove()
+    $('.groupChatUserLabel').remove()
+    $('#groupChatCreateButton').remove()
 }
 
 $(window).on('focus', function() {

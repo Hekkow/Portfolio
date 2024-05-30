@@ -18,6 +18,8 @@ let Type = {
     CLOSECONVERSATION: 'CLOSECONVERSATION',
     CONVERSATIONCREATED: 'CONVERSATIONCREATED'
 }
+let direct = 0
+let group = 1
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = {loginCookie, port, host, Type};
+    module.exports = {loginCookie, port, host, Type, direct, group};
 }

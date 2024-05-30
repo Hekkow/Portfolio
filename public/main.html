@@ -15,7 +15,15 @@
     </div>
     <div id="activeConversations">
         <div class="panelTitle">Active Conversations</div>
-        <div id="activeConversationsList"></div>
+        <div id="activeConversationsListOuter">
+            <div id="activeConversationsListUp"></div>
+            <div id="activeConversationsListDown">
+                <button id="showCreateGroupChatPopupButton" class="conversationBlock" onclick="showCreateGroupChatPopup()">
+                    <div class="userPic"></div>
+                    <div class="activeConversationListButtonText">Create group chat</div>
+                </button>
+            </div>
+        </div>
     </div>
     <div id="conversation">
         <div id="messages"></div>
