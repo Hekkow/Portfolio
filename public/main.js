@@ -49,26 +49,20 @@ function connection() {
                 openConversationID = message.conversation.conversationID
                 break
             case Type.CONVERSATIONCREATED:
-                updateLocalConversations(message.conversation)
-                openConversationID = message.conversation.conversationID
-                if (message.conversation.conversationType === group) showNewConversationButton(message.conversation)
+                conversationCreated(message.conversation)
                 break
             case Type.CLOSECONVERSATION:
-                console.log("HERE")
-                updateLocalConversations(message.conversation)
-                updateConversationButton(message.conversation.conversationID)
+                updateOpenConversation(message.conversation)
                 break
             case Type.REQUESTCONVERSATION:
                 updateLocalConversations(message.conversation)
                 showNewConversationButton(message.conversation)
                 break
             case Type.INVITETOGROUPCHAT:
-                updateLocalConversations(message.conversation)
-                updateConversationButton(message.conversation.conversationID)
+                updateOpenConversation(message.conversation)
                 break
             case Type.RENAMEGROUPCHAT:
-                updateLocalConversations(message.conversation)
-                updateConversationButton(message.conversation.conversationID)
+                updateOpenConversation(message.conversation)
                 break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
@@ -85,10 +79,21 @@ function connection() {
         }
     }
 }
+function updateOpenConversation(conversation) {
+    if (conversation.conversationID !== openConversationID) return
+    updateLocalConversations(conversation)
+    updateConversationButton(conversation.conversationID)
+    updateChatParticipants(conversation)
+}
 function setUp(user) {
     updateLocalUsers(user)
     username = user.username
     // $('#loggedInUsername').text(username)
+}
+function conversationCreated(conversation) {
+    updateLocalConversations(conversation)
+    openConversationID = conversation.conversationID
+    if (conversation.conversationType === group) showNewConversationButton(conversation)
 }
 function receivedNewFirstMessage(data) {
     // for when both users open the conversation before one sends a message
@@ -97,8 +102,6 @@ function receivedNewFirstMessage(data) {
         loadedConversations.set(data.conversation.conversationID, data.conversation)
         showNewConversationButton(data.conversation)
     }
-
-
 }
 function receivedNewMessage(message) {
     if (!loadedConversations.has(message.conversationID)) {
@@ -112,7 +115,6 @@ function receivedNewMessage(message) {
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
     showOrUpdateConversationButton(message.conversationID)
-
 }
 function receivedEditedMessage(message) { // lots of duplicate code here with update message
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
@@ -151,7 +153,7 @@ function showNewConversationButton(conversation) {
     let newConversationBlock = $(`
             <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
                 <div class="userPic"></div>
-                <div class="activeConversationListButtonText">${stuff.text}</div>
+                <div class="blockText">${stuff.text}</div>
             </button>`)
     // places it in order of most recent texts
     let placed = false
@@ -175,7 +177,7 @@ function updateConversationButton(conversationID) {
     console.log(conversation)
     let stuff = getTextForConversationButton(conversation)
     let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
-    conversationButton.find('.activeConversationListButtonText').html(stuff.text)
+    conversationButton.find('.blockText').html(stuff.text)
     conversationButton.attr('messageID', stuff.messageID)
     conversationButton.attr('date', stuff.date)
     if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
@@ -210,8 +212,6 @@ function getTextForConversationButton(conversation) {
     if (lastMessage) text += "<br>" + lastTextUsername + ": " + lastMessageText
     return {messageID: lastMessage ? lastMessage.messageID : -1, text: text, date: lastMessage ? lastMessage.date : new Date()}
 }
-
-
 function loadLocalData(data) {
     $("#activeConversationsListUp").empty()
     updateLocalUsers(data.users)
@@ -237,15 +237,28 @@ function updateLocalConversations(conversations) {
     else loadedConversations.set(conversations.conversationID, conversations)
 }
 function openConversation(conversationID) {
+    closeConversationArea()
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     openConversationID = conversationID
     openConversationArea()
-    for (let message of loadedConversations.get(conversationID).texts) {
+    let conversation = loadedConversations.get(conversationID)
+    for (let message of conversation.texts) {
         showMessage(message, loadedUsers.get(message.userID).username === username)
+    }
+    updateChatParticipants(conversation)
+}
+function updateChatParticipants(conversation) {
+    let chatParticipantsDiv = $('#chatParticipants')
+    chatParticipantsDiv.empty()
+    for (let user of conversation.users.map(userID => loadedUsers.get(userID))) {
+        chatParticipantsDiv.append(
+            `<button class='userBlock' onclick='startNewConversation(${user.userID})'>
+            <div class='userPic'></div>
+            <div class='blockText'>${user.username}</div>
+        </button>`)
     }
 }
 function startNewConversation(receivingUserID) {
-    openConversationArea()
     let users = [receivingUserID, userID]
     for (const [key, value] of loadedConversations.entries()) {
         value.users.sort()
@@ -258,6 +271,12 @@ function startNewConversation(receivingUserID) {
     ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID], conversationType: direct}))
 }
 function openConversationArea() {
+    if (loadedConversations.get(openConversationID).conversationType === group) {
+        let groupChatButtonsDiv = $('#groupChatButtonsDiv')
+        groupChatButtonsDiv.addClass('active')
+        groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showInviteToGroupChatPopup()">+</button>')
+        groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showRenameGroupChatPopup()">✍️</button>')
+    }
     $('#messages').empty()
     loadMessageInput()
 }
@@ -265,6 +284,10 @@ function closeConversationArea() {
     $('#messages').empty()
     openConversationID = -1
     $('#messageInputDiv').empty()
+    $('#chatParticipants').empty()
+    let groupChatButtonsDiv = $('#groupChatButtonsDiv')
+    groupChatButtonsDiv.removeClass('active')
+    groupChatButtonsDiv.empty()
 }
 function loadMessageInput() {
     let conversationDiv = $('#messageInputDiv')
@@ -308,7 +331,7 @@ function sendMessage() {
     resizeMessageInput()
     closeReplyBar()
 }
-function showMessage(message, local) {
+function showMessage(message, local) { // can remove local variable and replace with if message.userid === userid
     let name = getName(message)
     let messages = $('#messages')
     let reply = getReplyAboveText(message)
@@ -468,15 +491,18 @@ function updateUserList(users) {
 }
 
 function showCreateGroupChatPopup() {
+    removeGroupChatPopup()
     showGroupChatUsersList((key, value) => key === userID)
     $('#activeConversationsListDown').append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
 }
 function showInviteToGroupChatPopup() {
+    removeGroupChatPopup()
     if (openConversationID === -1) return
     showGroupChatUsersList((key, value) => key === userID || loadedConversations.get(openConversationID).users.includes(key))
     $('#activeConversationsListDown').append(`<button id="groupChatInviteButton" onclick="inviteToGroupChat()">Invite</button>`)
 }
 function showRenameGroupChatPopup() {
+    removeGroupChatPopup()
     if (openConversationID === -1) return
     $('#activeConversationsListDown').append(`<input type="text" id="groupChatRenameInput"><button id="groupChatRenameButton" onclick="renameGroupChat()">Rename</button>`)
 }

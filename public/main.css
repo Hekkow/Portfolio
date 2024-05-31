@@ -53,6 +53,37 @@ body {
     display: flex;
     flex-direction: column;
 }
+#currentConversationInfo {
+    width: 250px;
+    border: inset 5px green;
+    display: flex;
+    flex-direction: column;
+}
+#groupChatButtonsDiv {
+    height: 0;
+    border: inset 5px red;
+}
+#groupChatButtonsDiv.active {
+    height: 50px;
+}
+.groupChatButton {
+    width: 50px;
+    height: 50px;
+    border-radius: 50px;
+    outline: 0;
+    border: 3px solid #4ab1ef;
+    background-color: transparent;
+    cursor: pointer;
+    transition: 0.15s;
+}
+.groupChatButton:hover {
+    color: white;
+    background-color: #4ab1ef;
+}
+#chatParticipants {
+    border: inset 5px black;
+    flex-grow: 1;
+}
 #messages {
     flex-grow: 1;
     border: inset 5px pink;
@@ -138,7 +169,7 @@ body {
     width: 0;
     font-size: 0;
 }
-.activeConversationListButtonText {
+.blockText {
     text-align: left;
 }
 .userBlock:hover .userPic,

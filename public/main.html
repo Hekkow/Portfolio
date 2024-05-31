@@ -20,15 +20,7 @@
             <div id="activeConversationsListDown">
                 <button id="showCreateGroupChatPopupButton" class="conversationBlock" onclick="showCreateGroupChatPopup()">
                     <div class="userPic"></div>
-                    <div class="activeConversationListButtonText">Create group chat</div>
-                </button>
-                <button id="showInviteToGroupChatPopupButton" class="conversationBlock" onclick="showInviteToGroupChatPopup()">
-                    <div class="userPic"></div>
-                    <div class="activeConversationListButtonText">Invite to group chat</div>
-                </button>
-                <button id="showRenameGroupChatPopupButton" class="conversationBlock" onclick="showRenameGroupChatPopup()">
-                    <div class="userPic"></div>
-                    <div class="activeConversationListButtonText">Rename group chat</div>
+                    <div class="blockText">Create group chat</div>
                 </button>
             </div>
         </div>
@@ -37,6 +29,11 @@
         <div id="messages"></div>
         <div id="replyBar"><div id="replyBarCloseButton"></div></div>
         <div id="messageInputDiv"></div>
+    </div>
+    <div id="currentConversationInfo">
+        <div class="panelTitle">Chat Info</div>
+        <div id="groupChatButtonsDiv"></div>
+        <div id="chatParticipants"></div>
     </div>
 </div>
 </body>
