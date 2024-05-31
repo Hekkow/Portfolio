@@ -95,8 +95,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-top: 20px;
-    padding-bottom: 20px;
+
 }
 #messageInput {
     box-sizing: border-box;
@@ -109,7 +108,8 @@ body {
     background-color: white;
     border-radius: 30px;
     transition: all 0.15s ease;
-
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 #messageInput:focus {
     border: 3px solid #4ab1ef;

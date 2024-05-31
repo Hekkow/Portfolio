@@ -97,14 +97,17 @@ function renameGroupChat(data) {
     })
 }
 function closeConversation(data) {
-    Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
-        if (!conversation || conversation === Helper.direct) return
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation}))
-        }
+    Database.findConversation(data.conversationID).then((originalConversation) => {
+        Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
+            if (!conversation || conversation === Helper.direct) return
+            for (let userID of originalConversation.users) {
+                let client = clients.find(client => client.userID === userID)
+                if (!client) continue
+                client.socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
+            }
+        })
     })
+
 }
 function editMessage(message) {
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
@@ -139,7 +142,9 @@ function receivedMessage(message) {
 }
 
 function loadLocalData(ws, user) {
+    if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
+        if (!conversations) return
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
             ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))

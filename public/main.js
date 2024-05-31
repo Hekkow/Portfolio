@@ -52,17 +52,17 @@ function connection() {
                 conversationCreated(message.conversation)
                 break
             case Type.CLOSECONVERSATION:
-                updateOpenConversation(message.conversation)
+                updateConversation(message.conversation, "close", message.userID)
                 break
             case Type.REQUESTCONVERSATION:
                 updateLocalConversations(message.conversation)
                 showNewConversationButton(message.conversation)
                 break
             case Type.INVITETOGROUPCHAT:
-                updateOpenConversation(message.conversation)
+                updateConversation(message.conversation)
                 break
             case Type.RENAMEGROUPCHAT:
-                updateOpenConversation(message.conversation)
+                updateConversation(message.conversation)
                 break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
@@ -79,11 +79,16 @@ function connection() {
         }
     }
 }
-function updateOpenConversation(conversation) {
-    if (conversation.conversationID !== openConversationID) return
+function updateConversation(conversation, mode, closedUserID) {
     updateLocalConversations(conversation)
     updateConversationButton(conversation.conversationID)
     updateChatParticipants(conversation)
+    console.log("rawr")
+    if (mode === "close" && closedUserID === userID) {
+        console.log("HERERAGa")
+        $(`.conversationBlock[conversationID=${conversation.conversationID}]`).remove()
+        if (openConversationID === conversation.conversationID) closeConversationArea()
+    }
 }
 function setUp(user) {
     updateLocalUsers(user)
@@ -174,7 +179,6 @@ function showNewConversationButton(conversation) {
 }
 function updateConversationButton(conversationID) {
     let conversation = loadedConversations.get(conversationID)
-    console.log(conversation)
     let stuff = getTextForConversationButton(conversation)
     let conversationButton = $(`.conversationBlock[conversationID=${conversation.conversationID}]`)
     conversationButton.find('.blockText').html(stuff.text)
@@ -248,14 +252,27 @@ function openConversation(conversationID) {
     updateChatParticipants(conversation)
 }
 function updateChatParticipants(conversation) {
+    if (conversation.conversationID !== openConversationID) return
     let chatParticipantsDiv = $('#chatParticipants')
     chatParticipantsDiv.empty()
     for (let user of conversation.users.map(userID => loadedUsers.get(userID))) {
         chatParticipantsDiv.append(
-            `<button class='userBlock' onclick='startNewConversation(${user.userID})'>
-            <div class='userPic'></div>
-            <div class='blockText'>${user.username}</div>
-        </button>`)
+            `<button class='userBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
+                <div class='userPic'></div>
+                <div class='blockText'>${user.username}</div>
+            </button>`)
+        let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
+        participantBlock.hover(function() {
+            participantBlock.append(`<div class='deleteButton'>`)
+            participantBlock.find('.deleteButton').click(function(e) {
+                e.stopPropagation()
+                let conversationID = openConversationID
+                ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: user.userID, conversationID: conversationID, conversationType: loadedConversations.get(conversationID).conversationType}))
+                participantBlock.remove()
+            })
+        }, function() {
+            participantBlock.find('.deleteButton').remove()
+        })
     }
 }
 function startNewConversation(receivingUserID) {
