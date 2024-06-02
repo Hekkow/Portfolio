@@ -42,6 +42,9 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.RENAMEGROUPCHAT:
                 renameGroupChat(data)
                 break
+            case Helper.Type.READMESSAGE:
+                readMessage(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -140,11 +143,24 @@ function receivedMessage(message) {
         }
     })
 }
+function readMessage(data) {
+    Database.updateReadMessages([data.userID], data.conversationID, data.messageID).then(() => {
+        Database.findConversation(data.conversationID).then((conversation) => {
+            for (let userID of conversation.users) {
+                let client = clients.find(client => client.userID === userID)
+                if (!client) continue
+                client.socket.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: data.conversationID, userID: data.userID, messageID: data.messageID}))
+            }
+        })
+    })
+
+}
 
 function loadLocalData(ws, user) {
     if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
         if (!conversations) return
+        conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
             ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))

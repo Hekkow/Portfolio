@@ -11,8 +11,10 @@ class Database {
         this.users = this.database.collection('Users')
         this.conversations = this.database.collection('Conversations')
         this.latestIDs = await this.database.collection('LatestIDs')
+        this.readMessages = await this.database.collection('ReadMessages')
         await this.users.createIndex({userID: 1})
         await this.conversations.createIndex({conversationID: 1})
+        await this.readMessages.createIndex({conversationID: 1})
     }
     async createPublicConversation() {
         if (await this.getLatestConversationID() === 2) await this.createConversation([], 1, "Howdy")
@@ -24,9 +26,9 @@ class Database {
     async register(username) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, conversations: [publicConversationID], userID: id}
+        let user = {username: username, conversations: [], userID: id}
         await this.users.insertOne(user)
-        await this.conversations.findOneAndUpdate({conversationID: publicConversationID}, {$push: {users: id}})
+        await this.addUsersToGroupChat(publicConversationID, [id])
         return user
     }
     async findUserWithID(userID) {
@@ -48,16 +50,27 @@ class Database {
             {userID: { $in: users }},
             {$addToSet: {conversations: conversationID}}
         )
+        await this.updateReadMessages(users, conversationID, -1)
         return conversation
+    }
+    async updateReadMessages(users, conversationID, messageID) {
+        if (!users.length || users.length === 0) return
+        return await this.readMessages.updateMany(
+            {userID: {$in: users}, conversationID: conversationID},
+            {$set: {messageID: messageID}},
+            {upsert: true}
+        )
     }
     async renameGroupChat(conversationID, newName) {
         return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {conversationName: newName}}, {returnDocument: "after"})
     }
     async addMessage(message) {
+        let messageID = await this.getLatestMessageID()
         let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: message.conversationID},
-            {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: await this.getLatestMessageID(), date: message.date}}},
+            {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: messageID, date: message.date}}},
             {returnDocument: "after"})
+        await this.readMessages.updateOne({userID: message.userID, conversationID: message.conversationID}, {$set: {messageID: messageID}})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
             {$addToSet: {conversations: conversation.conversationID}}
@@ -110,6 +123,7 @@ class Database {
         await this.users.drop()
         await this.conversations.drop()
         await this.latestIDs.drop()
+        await this.readMessages.drop()
     }
     async createConversation(users, conversationType, conversationName) {
         if (!Array.isArray(users)) return null
@@ -123,6 +137,7 @@ class Database {
         for (let user of users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
+        await this.updateReadMessages(users, id, -1)
         await this.conversations.insertOne(conversation)
         return conversation
     }

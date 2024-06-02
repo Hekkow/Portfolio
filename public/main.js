@@ -4,6 +4,7 @@ let ws
 let openConversationID = -1
 let loadedConversations = new Map()
 let loadedUsers = new Map()
+let loadedReadMessages = [] // possibly switch to another data structure later
 if (!userID) window.location.href = '/'
 else {
     userID = parseInt(userID)
@@ -42,6 +43,7 @@ function connection() {
                 window.location.href = '/'
                 break
             case Type.LOADLOCALDATA:
+                console.log('ere')
                 loadLocalData(message)
                 break
             case Type.STARTCONVERSATION:
@@ -76,6 +78,9 @@ function connection() {
             case Type.EDITMESSAGE:
                 receivedEditedMessage(message.message)
                 break
+            case Type.READMESSAGE:
+                receivedReadMessage(message)
+                break
         }
     }
 }
@@ -83,9 +88,7 @@ function updateConversation(conversation, mode, closedUserID) {
     updateLocalConversations(conversation)
     updateConversationButton(conversation.conversationID)
     updateChatParticipants(conversation)
-    console.log("rawr")
     if (mode === "close" && closedUserID === userID) {
-        console.log("HERERAGa")
         $(`.conversationBlock[conversationID=${conversation.conversationID}]`).remove()
         if (openConversationID === conversation.conversationID) closeConversationArea()
     }
@@ -102,11 +105,13 @@ function conversationCreated(conversation) {
 }
 function receivedNewFirstMessage(data) {
     // for when both users open the conversation before one sends a message
-    if (data.conversation.conversationID === openConversationID) receivedNewMessage(data.message)
-    else {
-        loadedConversations.set(data.conversation.conversationID, data.conversation)
-        showNewConversationButton(data.conversation)
+    if (data.conversation.conversationID === openConversationID) {
+        receivedNewMessage(data.message)
+        return
     }
+    loadedConversations.set(data.conversation.conversationID, data.conversation)
+    showOrUpdateConversationButton(data.conversation.conversationID)
+    showNotification(data.conversation.conversationID.conversationID)
 }
 function receivedNewMessage(message) {
     if (!loadedConversations.has(message.conversationID)) {
@@ -120,6 +125,58 @@ function receivedNewMessage(message) {
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
     showOrUpdateConversationButton(message.conversationID)
+    showNotification(message.conversationID)
+}
+function showNotification(conversationID) {
+    if (conversationID !== openConversationID || !document.hasFocus()) {
+        $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'bold')
+        document.title = "NOTIFICATION"
+    }
+}
+function removeNotification(conversationID) {
+    if (conversationID === -1) return
+    let conversation = loadedConversations.get(conversationID)
+    $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'normal')
+    document.title = "Title"
+    let message = conversation.texts[conversation.texts.length - 1]
+    if (!message) return
+    let messageID = message.messageID
+    if (messageID === -1) return
+    // sends even if already read
+    ws.send(JSON.stringify({type: Type.READMESSAGE, userID: userID, conversationID: conversationID, messageID: messageID}))
+}
+$(window).on('focus', function() {
+    removeNotification(openConversationID)
+})
+function receivedReadMessage(message) {
+    let readMessage
+    for (let entry of loadedReadMessages) {
+        if (entry.userID === message.userID && entry.conversationID === message.conversationID) {
+            readMessage = entry
+            break
+        }
+    }
+
+    if (readMessage && readMessage.messageID === message.messageID) return
+    if (!readMessage) loadedReadMessages.push({userID: message.userID, conversationID: message.conversationID, messageID: message.messageID})
+    console.log(loadedReadMessages)
+    $(`.readIndicator[userID=${message.userID}]`).remove()
+    if (message.conversationID === openConversationID) {
+        $(`.messageDiv[messageID=${message.messageID}]`).append(`<div class="readIndicator" userID=${message.userID}>READ BY ${loadedUsers.get(message.userID).username}</div>`)
+    }
+
+}
+function openConversation(conversationID) {
+    closeConversationArea()
+    if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
+    openConversationID = conversationID
+    openConversationArea()
+    removeNotification(conversationID)
+    let conversation = loadedConversations.get(conversationID)
+    for (let message of conversation.texts) {
+        showMessage(message, loadedUsers.get(message.userID).username === username)
+    }
+    updateChatParticipants(conversation)
 }
 function receivedEditedMessage(message) { // lots of duplicate code here with update message
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
@@ -187,7 +244,7 @@ function updateConversationButton(conversationID) {
     if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
 }
 function showConversationHoverButtons(div) {
-    div.append(`<div class='deleteButton'>`)
+    div.append(`<button class='deleteButton'></button>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
         let conversationID = parseInt(div.attr('conversationID'))
@@ -220,8 +277,11 @@ function loadLocalData(data) {
     $("#activeConversationsListUp").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
+
     for (let conversationID of loadedUsers.get(userID).conversations) {
-        showNewConversationButton(loadedConversations.get(conversationID))
+        let conversation = loadedConversations.get(conversationID)
+        updateConversation(conversation)
+        showNewConversationButton(conversation)
     }
 }
 function updateLocalUsers(users) {
@@ -240,17 +300,7 @@ function updateLocalConversations(conversations) {
     }
     else loadedConversations.set(conversations.conversationID, conversations)
 }
-function openConversation(conversationID) {
-    closeConversationArea()
-    if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
-    openConversationID = conversationID
-    openConversationArea()
-    let conversation = loadedConversations.get(conversationID)
-    for (let message of conversation.texts) {
-        showMessage(message, loadedUsers.get(message.userID).username === username)
-    }
-    updateChatParticipants(conversation)
-}
+
 function updateChatParticipants(conversation) {
     if (conversation.conversationID !== openConversationID) return
     let chatParticipantsDiv = $('#chatParticipants')
@@ -263,7 +313,7 @@ function updateChatParticipants(conversation) {
             </button>`)
         let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
         participantBlock.hover(function() {
-            participantBlock.append(`<div class='deleteButton'>`)
+            participantBlock.append(`<button class='deleteButton'></button>`)
             participantBlock.find('.deleteButton').click(function(e) {
                 e.stopPropagation()
                 let conversationID = openConversationID
@@ -422,8 +472,8 @@ function addLinks(text) {
     return text;
 }
 function showMessageHoverButtons(div, local) {
-    if (local) div.prepend(`<div class='deleteButton'></div><div class='replyButton'></div><div class='editButton'></div>`)
-    else div.append(`<div class='replyButton'></div>`)
+    if (local) div.prepend(`<button class='deleteButton'></button><button class='replyButton'></button><button class='editButton'></button>`)
+    else div.append(`<button class='replyButton'></button>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
         deleteMessage(div)
