@@ -43,7 +43,6 @@ function connection() {
                 window.location.href = '/'
                 break
             case Type.LOADLOCALDATA:
-                console.log('ere')
                 loadLocalData(message)
                 break
             case Type.STARTCONVERSATION:
@@ -132,39 +131,30 @@ function showNotification(conversationID) {
         $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'bold')
         document.title = "NOTIFICATION"
     }
+    else sendReadReceipt(conversationID)
 }
 function removeNotification(conversationID) {
     if (conversationID === -1) return
     let conversation = loadedConversations.get(conversationID)
     $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'normal')
     document.title = "Title"
+    sendReadReceipt(conversationID)
+}
+function sendReadReceipt(conversationID) {
+    let conversation = loadedConversations.get(conversationID)
     let message = conversation.texts[conversation.texts.length - 1]
     if (!message) return
     let messageID = message.messageID
     if (messageID === -1) return
-    // sends even if already read
+    // sends even if already read, fix this
     ws.send(JSON.stringify({type: Type.READMESSAGE, userID: userID, conversationID: conversationID, messageID: messageID}))
 }
 $(window).on('focus', function() {
     removeNotification(openConversationID)
 })
 function receivedReadMessage(message) {
-    let readMessage
-    for (let entry of loadedReadMessages) {
-        if (entry.userID === message.userID && entry.conversationID === message.conversationID) {
-            readMessage = entry
-            break
-        }
-    }
-
-    if (readMessage && readMessage.messageID === message.messageID) return
-    if (!readMessage) loadedReadMessages.push({userID: message.userID, conversationID: message.conversationID, messageID: message.messageID})
-    console.log(loadedReadMessages)
-    $(`.readIndicator[userID=${message.userID}]`).remove()
-    if (message.conversationID === openConversationID) {
-        $(`.messageDiv[messageID=${message.messageID}]`).append(`<div class="readIndicator" userID=${message.userID}>READ BY ${loadedUsers.get(message.userID).username}</div>`)
-    }
-
+    updateLocalReadMessages(message)
+    if (message.conversationID === openConversationID) updateReadMessages(openConversationID)
 }
 function openConversation(conversationID) {
     closeConversationArea()
@@ -177,6 +167,16 @@ function openConversation(conversationID) {
         showMessage(message, loadedUsers.get(message.userID).username === username)
     }
     updateChatParticipants(conversation)
+    updateReadMessages()
+}
+function updateReadMessages() {
+    for (let entry of loadedReadMessages) {
+        if (entry.conversationID === openConversationID)  {
+            $(`.readIndicator[userID=${entry.userID}]`).remove()
+            $(`.messageDiv[messageID=${entry.messageID}]`).append(`<div class="readIndicator" userID=${entry.userID}>READ BY ${loadedUsers.get(entry.userID).username}</div>`)
+        }
+    }
+
 }
 function receivedEditedMessage(message) { // lots of duplicate code here with update message
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
@@ -277,11 +277,25 @@ function loadLocalData(data) {
     $("#activeConversationsListUp").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
-
+    updateLocalReadMessages(data.readMessages)
     for (let conversationID of loadedUsers.get(userID).conversations) {
         let conversation = loadedConversations.get(conversationID)
         updateConversation(conversation)
         showNewConversationButton(conversation)
+    }
+}
+function updateLocalReadMessages(readMessages) {
+    if (!Array.isArray(readMessages)) readMessages = [readMessages]
+    for (let readMessage of readMessages) {
+        let found = false
+        for (let entry of loadedReadMessages) {
+            if (readMessage.conversationID === entry.conversationID && readMessage.userID === entry.userID) {
+                entry.messageID = readMessage.messageID
+                found = true
+                break
+            }
+        }
+        if (!found) loadedReadMessages.push({userID: readMessage.userID, conversationID: readMessage.conversationID, messageID: readMessage.messageID})
     }
 }
 function updateLocalUsers(users) {

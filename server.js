@@ -163,7 +163,10 @@ function loadLocalData(ws, user) {
         conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
-            ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
+            Database.getReadMessages(conversations.map(conversation => conversation.conversationID)).then((readMessages) => {
+                ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users, readMessages: readMessages}))
+            })
+
         })
     })
 

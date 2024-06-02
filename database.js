@@ -61,6 +61,12 @@ class Database {
             {upsert: true}
         )
     }
+    async getReadMessages(conversationIDs) {
+        console.log("conversationID", conversationIDs)
+        let readMessages = await this.readMessages.find({conversationID: {$in: conversationIDs}}).toArray()
+        console.log("readMessages", readMessages)
+        return readMessages
+    }
     async renameGroupChat(conversationID, newName) {
         return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {conversationName: newName}}, {returnDocument: "after"})
     }
