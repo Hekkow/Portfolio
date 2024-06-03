@@ -81,6 +81,18 @@ class Database {
         )
         return conversation
     }
+    async addServerMessage(text, conversationID) {
+        let messageID = await this.getLatestMessageID()
+        let conversation = await this.conversations.findOneAndUpdate(
+            {conversationID: conversationID},
+            {$push: {texts: {userID: -1, message: text, messageID: messageID, date: new Date()}}},
+            {returnDocument: "after"})
+        await this.users.updateMany(
+            {userID: {$in: conversation.users} },
+            {$addToSet: {conversations: conversation.conversationID}}
+        )
+        return conversation
+    }
     async deleteMessage(conversationID, messageID) {
         return await this.conversations.findOneAndUpdate(
             {conversationID: conversationID},
@@ -130,6 +142,7 @@ class Database {
         await this.readMessages.drop()
     }
     async createConversation(users, conversationType, conversationName) {
+        console.log(users, conversationType, conversationName)
         if (!Array.isArray(users)) return null
         if (conversationType === Helper.direct) {
             let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: Helper.direct})
@@ -143,6 +156,7 @@ class Database {
         }
         await this.updateReadMessages(users, id, -1)
         await this.conversations.insertOne(conversation)
+        console.log(conversation)
         return conversation
     }
     async getLatestUserID() {

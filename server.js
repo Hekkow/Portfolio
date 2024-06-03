@@ -106,11 +106,26 @@ function sendRequestedConversation(ws, conversationID, conversationType, type) {
     })
 }
 function inviteToGroupChat(data) {
+    console.log(data)
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
             client.socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
+        }
+        Database.findUsersWithID(data.users).then(users => {
+            for (let user of users) sendServerMessage(data.conversationID, user.username + " just joined")
+        })
+    })
+
+}
+function sendServerMessage(conversationID, text) {
+    Database.addServerMessage(text, conversationID).then(conversation => {
+        let messageID = conversation.texts[conversation.texts.length - 1].messageID
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            client.socket.send(JSON.stringify({type: Helper.Type.NEWSERVERMESSAGE, text: text, conversationID: conversationID, messageID: messageID}))
         }
     })
 }
@@ -132,8 +147,13 @@ function closeConversation(data) {
                 if (!client) continue
                 client.socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
             }
+            if (data.conversationType === Helper.group) {
+                Database.findUserWithID(data.userID).then(user => sendServerMessage(data.conversationID,user.username + " just left"))
+            }
         })
+
     })
+
 
 }
 function editMessage(message) {

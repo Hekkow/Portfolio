@@ -1,3 +1,6 @@
+// TONS of glitches now, gotta fix em all
+// - remove read receipts from users that left conversation
+// - notification remains if kicked from group chat
 let userID = Cookies.get(loginCookie)
 let username
 let ws
@@ -84,6 +87,9 @@ function connection() {
             case Type.TYPING:
                 receivedTyping(message)
                 break
+            case Type.NEWSERVERMESSAGE:
+                receivedNewServerMessage(message)
+                break
         }
     }
 }
@@ -121,18 +127,32 @@ function receivedNewFirstMessage(data) {
     showNotification(data.conversation.conversationID.conversationID)
 }
 function receivedNewMessage(message) {
-    if (!loadedConversations.has(message.conversationID)) {
-        ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: message.conversationID}))
-        return
-    }
+    if (!requestConversationIfNeeded(message.conversationID)) return
     loadedConversations.get(message.conversationID).texts.push(message)
 
     if (message.conversationID === openConversationID) {
-        updateMessageID(message)
+        updateMessageID(message) // seems like it could be possibly weird?
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
     }
     showOrUpdateConversationButton(message.conversationID)
     showNotification(message.conversationID)
+}
+function requestConversationIfNeeded(conversationID) {
+    if (!loadedConversations.has(conversationID)) {
+        ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: conversationID}))
+        return false
+    }
+    return true
+}
+function receivedNewServerMessage(message) {
+    if (!requestConversationIfNeeded(message.conversationID)) return
+    loadedConversations.get(message.conversationID).texts.push({conversationID: message.conversationID, message: message.text, date: new Date(), userID: -1, messageID: message.messageID})
+    if (message.conversationID === openConversationID) {
+        showServerMessage(message.text, message.messageID)
+    }
+    showOrUpdateConversationButton(message.conversationID)
+    showNotification(message.conversationID)
+
 }
 function showNotification(conversationID) {
     if (conversationID !== openConversationID || !document.hasFocus()) {
@@ -172,7 +192,8 @@ function openConversation(conversationID) {
     removeNotification(conversationID)
     let conversation = loadedConversations.get(conversationID)
     for (let message of conversation.texts) {
-        showMessage(message, loadedUsers.get(message.userID).username === username)
+        if (message.userID === -1) showServerMessage(message.message, message.messageID)
+        else showMessage(message, loadedUsers.get(message.userID).username === username)
     }
     updateChatParticipants(conversation)
     updateReadMessages()
@@ -269,7 +290,12 @@ function getTextForConversationButton(conversation) {
     let conversationName
     let lastMessage = conversation.texts[conversation.texts.length - 1]
     let lastMessageText = lastMessage ? lastMessage.message : ""
-    let lastTextUsername = lastMessage ? loadedUsers.get(conversation.users.filter(userID => loadedUsers.get(userID).userID === lastMessage.userID)[0]).username : ""
+    let lastTextUsername = ""
+    if (lastMessage) {
+        console.log(lastMessage)
+        if (lastMessage.userID === -1) lastTextUsername = "Server"
+        else lastTextUsername = loadedUsers.get(lastMessage.userID).username
+    }
     if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
     if (conversation.conversationType === direct) {
         conversationName = conversation.users.map(userID => loadedUsers.get(userID).username).filter(user => user !== username)
@@ -459,6 +485,10 @@ function showMessage(message, local) { // can remove local variable and replace 
         })
     }
 }
+function showServerMessage(text, messageID) {
+    $('#messages').append(`<div class='messageDiv' messageID=-1 replyingTo=${messageID}><div class='messageTextDiv'><p class='messageText'>${text}</p></div></div>`)
+    scrollToBottom()
+}
 function updateMessage(message) {
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
     messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
@@ -615,7 +645,9 @@ function inviteToGroupChat() {
     removeGroupChatPopup()
 }
 function createNewGroupChat() {
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: getCheckedUsers(), conversationType: group})) // conversationID here is users array
+    let checkedUsers = getCheckedUsers()
+    checkedUsers.push(userID)
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: checkedUsers, conversationType: group})) // conversationID here is users array
     removeGroupChatPopup()
 }
 function renameGroupChat() {
@@ -623,7 +655,7 @@ function renameGroupChat() {
     removeGroupChatPopup()
 }
 function getCheckedUsers() {
-    let users = [userID]
+    let users = []
     $('.groupChatUserInput:checked').each(function() { users.push(parseInt($(this).val())) })
     return users
 }
