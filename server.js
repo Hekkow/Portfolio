@@ -5,7 +5,8 @@ const loginServer = require('./loginServer.js')
 require('express-ws')(app)
 const Helper = require('./public/helper.js')
 
-const clients = []
+let clients = []
+let typing = new Map()
 Database.initPromise.then(async () => {
     await Database.deleteAll()
     await Database.createLatestIDs()
@@ -45,6 +46,12 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.READMESSAGE:
                 readMessage(data)
                 break
+            case Helper.Type.TYPING:
+                updateTyping(data)
+                break
+            case Helper.Type.REQUESTTYPING:
+                sendTyping(ws, data.conversationID)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -70,6 +77,23 @@ function login(ws, userID) {
         loadLocalData(ws, user)
         updateUserLists()
     })
+}
+function updateTyping(data) {
+    if (!typing.has(data.conversationID)) typing.set(data.conversationID, [])
+    let conversationTyping = typing.get(data.conversationID)
+    if (!data.typing) conversationTyping.splice(conversationTyping.indexOf(data.userID), 1)
+    else conversationTyping.push(data.userID)
+    Database.findConversation(data.conversationID).then((conversation) => {
+        for (let userID of conversation.users) {
+            let client = clients.find(client => client.userID === userID)
+            if (!client) continue
+            sendTyping(client.socket, data.conversationID)
+        }
+    })
+}
+function sendTyping(ws, conversationID) {
+    if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))
+    else ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: typing.get(conversationID)}))
 }
 function sendRequestedConversation(ws, conversationID, conversationType, type) { // conversationID can be users array
     Database.findConversation(conversationID).then(async (conversation) => {
@@ -113,6 +137,7 @@ function closeConversation(data) {
 
 }
 function editMessage(message) {
+    updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
@@ -131,15 +156,14 @@ function deleteMessage(data) {
     })
 }
 function receivedMessage(message) {
+    updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
-
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
             if (conversation.texts.length === 1) client.socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
             else client.socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
-
         }
     })
 }

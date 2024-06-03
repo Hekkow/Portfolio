@@ -12,6 +12,7 @@ else {
 }
 let replyingTo = -1
 let editing = -1
+let typing = false
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
@@ -80,6 +81,9 @@ function connection() {
             case Type.READMESSAGE:
                 receivedReadMessage(message)
                 break
+            case Type.TYPING:
+                receivedTyping(message)
+                break
         }
     }
 }
@@ -91,6 +95,10 @@ function updateConversation(conversation, mode, closedUserID) {
         $(`.conversationBlock[conversationID=${conversation.conversationID}]`).remove()
         if (openConversationID === conversation.conversationID) closeConversationArea()
     }
+}
+function receivedTyping(message) {
+    if (message.conversationID !== openConversationID) return
+    $('#typingIndicatorDiv').text(message.conversationTyping.filter(thisUserID => thisUserID !== userID).map(userID => loadedUsers.get(userID).username + " is typing, "))
 }
 function setUp(user) {
     updateLocalUsers(user)
@@ -135,7 +143,6 @@ function showNotification(conversationID) {
 }
 function removeNotification(conversationID) {
     if (conversationID === -1) return
-    let conversation = loadedConversations.get(conversationID)
     $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'normal')
     document.title = "Title"
     sendReadReceipt(conversationID)
@@ -157,6 +164,7 @@ function receivedReadMessage(message) {
     if (message.conversationID === openConversationID) updateReadMessages(openConversationID)
 }
 function openConversation(conversationID) {
+    ws.send(JSON.stringify({type: Type.REQUESTTYPING, conversationID: conversationID}))
     closeConversationArea()
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     openConversationID = conversationID
@@ -171,14 +179,15 @@ function openConversation(conversationID) {
 }
 function updateReadMessages() {
     for (let entry of loadedReadMessages) {
-        if (entry.conversationID === openConversationID)  {
+        if (entry.conversationID === openConversationID && entry.userID !== userID)  {
             $(`.readIndicator[userID=${entry.userID}]`).remove()
+            if (!loadedUsers.has(entry.userID)) continue // possibly weird, fix this later maybe
             $(`.messageDiv[messageID=${entry.messageID}]`).append(`<div class="readIndicator" userID=${entry.userID}>READ BY ${loadedUsers.get(entry.userID).username}</div>`)
         }
     }
 
 }
-function receivedEditedMessage(message) { // lots of duplicate code here with update message
+function receivedEditedMessage(message) {
     let messageDiv = $(`.messageDiv[messageID=${message.messageID}]`)
     messageDiv.find('.messageText').text(`${loadedUsers.get(message.userID).username}: ${message.message}`)
     messageDiv.removeClass('localMessage')
@@ -359,7 +368,11 @@ function openConversationArea() {
         groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showRenameGroupChatPopup()">✍️</button>')
     }
     $('#messages').empty()
+    loadTypingIndicatorArea()
     loadMessageInput()
+}
+function loadTypingIndicatorArea() {
+    $('#messages').append(`<div id="typingIndicatorDiv"></div>`)
 }
 function closeConversationArea() {
     $('#messages').empty()
@@ -377,6 +390,12 @@ function loadMessageInput() {
     let messageInput = $('#messageInput')
     messageInput.on('input', function() {
         resizeMessageInput()
+        let originalTyping = typing
+        typing = true
+        let text = messageInput.val().trim()
+        if (!text || !text.trim()) typing = false
+        if (typing === originalTyping) return
+        sendTyping()
     })
     messageInput.focus()
 
@@ -387,6 +406,9 @@ function loadMessageInput() {
         }
     })
 }
+function sendTyping() {
+    ws.send(JSON.stringify({type: Type.TYPING, conversationID: openConversationID, userID: userID, typing: typing}))
+}
 function resizeMessageInput() {
     let messageInput = $('#messageInput')
     messageInput.css('height', 'auto')
@@ -394,6 +416,7 @@ function resizeMessageInput() {
     scrollToBottom()
 }
 function sendMessage() {
+    typing = false
     let messageInput = $('#messageInput')
     let text = messageInput.val().trim()
     messageInput.val("")
