@@ -23,7 +23,7 @@ app.ws('/main', (ws, req) => {
                 break
             case Helper.Type.STARTCONVERSATION:
             case Helper.Type.REQUESTCONVERSATION:
-                sendRequestedConversation(ws, data.conversationID, data.conversationType, data.type)
+                sendRequestedConversation(ws, data)
                 break
             case Helper.Type.NEWMESSAGE:
                 receivedMessage(data.message)
@@ -43,6 +43,9 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.RENAMEGROUPCHAT:
                 renameGroupChat(data)
                 break
+            case Helper.Type.TRANSFERLEADER:
+                transferLeader(data)
+                break
             case Helper.Type.READMESSAGE:
                 readMessage(data)
                 break
@@ -52,6 +55,7 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.REQUESTTYPING:
                 sendTyping(ws, data.conversationID)
                 break
+
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -95,14 +99,14 @@ function sendTyping(ws, conversationID) {
     if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))
     else ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: typing.get(conversationID)}))
 }
-function sendRequestedConversation(ws, conversationID, conversationType, type) { // conversationID can be users array
-    Database.findConversation(conversationID).then(async (conversation) => {
-        if (!conversation && conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(conversationID)
+function sendRequestedConversation(ws, data) { // conversationID can be users array
+    Database.findConversation(data.conversationID).then(async (conversation) => {
+        if (!conversation && data.conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(data.conversationID)
         if (!conversation) {
-            conversation = await Database.createConversation(conversationID, conversationType)
-            type = Helper.Type.CONVERSATIONCREATED
+            conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
+            data.type = Helper.Type.CONVERSATIONCREATED
         }
-        ws.send(JSON.stringify({type: type, conversation: conversation}))
+        ws.send(JSON.stringify({type: data.type, conversation: conversation}))
     })
 }
 function inviteToGroupChat(data) {
@@ -134,6 +138,13 @@ function renameGroupChat(data) {
             let client = clients.find(client => client.userID === userID)
             if (!client) continue
             client.socket.send(JSON.stringify({type: Helper.Type.RENAMEGROUPCHAT, conversation: conversation})) // can be optimzied
+        }
+    })
+}
+function transferLeader(data) {
+    Database.transferLeader(data.conversationID, data.newLeader).then(conversation => {
+        for (let socket of clients.filter(client => [data.newLeader, data.originalLeader].includes(client.userID)).map(client => client.socket)) {
+            socket.send(JSON.stringify({type: Helper.Type.TRANSFERLEADER, conversation: conversation}))
         }
     })
 }

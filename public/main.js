@@ -1,6 +1,8 @@
 // TONS of glitches now, gotta fix em all
 // - remove read receipts from users that left conversation
 // - notification remains if kicked from group chat
+// - notification doesnt work often
+// - doesn't work if multiple tabs of same user open
 let userID = Cookies.get(loginCookie)
 let username
 let ws
@@ -90,6 +92,11 @@ function connection() {
             case Type.NEWSERVERMESSAGE:
                 receivedNewServerMessage(message)
                 break
+            case Type.TRANSFERLEADER:
+                updateConversation(message.conversation)
+                if (message.conversation.conversationID === openConversationID) {
+                    openConversation(openConversationID)
+                }
         }
     }
 }
@@ -112,6 +119,7 @@ function setUp(user) {
     // $('#loggedInUsername').text(username)
 }
 function conversationCreated(conversation) {
+    console.log(conversation)
     updateLocalConversations(conversation)
     openConversationID = conversation.conversationID
     if (conversation.conversationType === group) showNewConversationButton(conversation)
@@ -186,6 +194,7 @@ function receivedReadMessage(message) {
 function openConversation(conversationID) {
     ws.send(JSON.stringify({type: Type.REQUESTTYPING, conversationID: conversationID}))
     closeConversationArea()
+    removeGroupChatPopup()
     if (loadedConversations.get(conversationID).texts.length > 0) showNewConversationButton(loadedConversations.get(conversationID))
     openConversationID = conversationID
     openConversationArea()
@@ -361,6 +370,7 @@ function updateChatParticipants(conversation) {
             </button>`)
         let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
         participantBlock.hover(function() {
+            if (conversation.leader !== userID) return
             participantBlock.append(`<button class='deleteButton'></button>`)
             participantBlock.find('.deleteButton').click(function(e) {
                 e.stopPropagation()
@@ -386,11 +396,15 @@ function startNewConversation(receivingUserID) {
     ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: [receivingUserID, userID], conversationType: direct}))
 }
 function openConversationArea() {
-    if (loadedConversations.get(openConversationID).conversationType === group) {
+    let conversation = loadedConversations.get(openConversationID)
+    if (conversation.conversationType === group) {
         let groupChatButtonsDiv = $('#groupChatButtonsDiv')
         groupChatButtonsDiv.addClass('active')
         groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showInviteToGroupChatPopup()">+</button>')
-        groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showRenameGroupChatPopup()">✍️</button>')
+        if (conversation.leader === userID) {
+            groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showRenameGroupChatPopup()">✍️</button>')
+            groupChatButtonsDiv.append('<button class="groupChatButton" onclick="showTransferLeaderPopup()">>></button>')
+        }
     }
     $('#messages').empty()
     loadTypingIndicatorArea()
@@ -639,14 +653,24 @@ function updateUserList(users) {
 
 function showCreateGroupChatPopup() {
     removeGroupChatPopup()
-    showGroupChatUsersList((key, value) => key === userID)
+    showGroupChatUsersList((key, value) => key === userID, "checkbox")
     $('#activeConversationsListDown').append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
 }
 function showInviteToGroupChatPopup() {
     removeGroupChatPopup()
     if (openConversationID === -1) return
-    showGroupChatUsersList((key, value) => key === userID || loadedConversations.get(openConversationID).users.includes(key))
+    showGroupChatUsersList((key, value) => key === userID || loadedConversations.get(openConversationID).users.includes(key), "checkbox")
     $('#activeConversationsListDown').append(`<button id="groupChatInviteButton" onclick="inviteToGroupChat()">Invite</button>`)
+}
+function showTransferLeaderPopup() {
+    removeGroupChatPopup()
+    showGroupChatUsersList((key, value) => key === userID, "radio")
+    $('#activeConversationsListDown').append(`<button id="groupChatTransferLeaderButton" onclick="transferLeader()">Transfer</button>`)
+}
+function transferLeader() {
+    if (getCheckedUsers().length !== 1) return
+    ws.send(JSON.stringify({type: Type.TRANSFERLEADER, conversationID: openConversationID, newLeader: getCheckedUsers()[0], originalLeader: userID}))
+    removeGroupChatPopup()
 }
 function showRenameGroupChatPopup() {
     removeGroupChatPopup()
@@ -660,7 +684,7 @@ function inviteToGroupChat() {
 function createNewGroupChat() {
     let checkedUsers = getCheckedUsers()
     checkedUsers.push(userID)
-    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: checkedUsers, conversationType: group})) // conversationID here is users array
+    ws.send(JSON.stringify({type: Type.STARTCONVERSATION, conversationID: checkedUsers, conversationType: group, leader: userID})) // conversationID here is users array
     removeGroupChatPopup()
 }
 function renameGroupChat() {
@@ -672,13 +696,12 @@ function getCheckedUsers() {
     $('.groupChatUserInput:checked').each(function() { users.push(parseInt($(this).val())) })
     return users
 }
-function showGroupChatUsersList(condition) {
-
+function showGroupChatUsersList(condition, type) {
     removeGroupChatPopup()
     let div = $('#activeConversationsListDown')
     for (let [key, value] of loadedUsers) {
         if (condition(key, value)) continue
-        div.append(`<input class="groupChatUserInput" type="checkbox" value=${key}><label class="groupChatUserLabel" for="${key}">${value.username}</label>`)
+        div.append(`<input class="groupChatUserInput" type=${type} value=${key} name="groupChatPopup"><label class="groupChatUserLabel" for="${key}">${value.username}</label>`)
     }
 }
 function removeGroupChatPopup() {
@@ -688,6 +711,7 @@ function removeGroupChatPopup() {
     $('#groupChatInviteButton').remove()
     $('#groupChatRenameInput').remove()
     $('#groupChatRenameButton').remove()
+    $('#groupChatTransferLeaderButton').remove()
 }
 
 $(window).on('focus', function() {

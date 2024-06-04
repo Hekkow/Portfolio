@@ -17,7 +17,7 @@ class Database {
         await this.readMessages.createIndex({conversationID: 1})
     }
     async createPublicConversation() {
-        if (await this.getLatestConversationID() === 2) await this.createConversation([], 1, "Howdy")
+        if (await this.getLatestConversationID() === 2) await this.createConversation({users: [], conversationType: Helper.group, conversationName: "Howdy"})
     }
     async createLatestIDs() {
         let latestIDs = await this.latestIDs.findOne()
@@ -67,6 +67,9 @@ class Database {
     }
     async renameGroupChat(conversationID, newName) {
         return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {conversationName: newName}}, {returnDocument: "after"})
+    }
+    async transferLeader(conversationID, newLeader) {
+        return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {leader: newLeader}}, {returnDocument: "after"})
     }
     async addMessage(message) {
         let messageID = await this.getLatestMessageID()
@@ -141,19 +144,20 @@ class Database {
         await this.latestIDs.drop()
         await this.readMessages.drop()
     }
-    async createConversation(users, conversationType, conversationName) {
-        if (!Array.isArray(users)) return null
-        if (conversationType === Helper.direct) {
-            let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: Helper.direct})
+    async createConversation(data) {
+        if (!Array.isArray(data.users)) return null
+        if (data.conversationType === Helper.direct) {
+            let previousConversation = await this.conversations.findOne({users: {$all: data.users, $size: data.users.length}, conversationType: Helper.direct})
             if (previousConversation) return previousConversation
         }
         let id = await this.getLatestConversationID()
-        let conversation = {conversationID: id, texts: [], users: users, conversationType: conversationType}
-        if (conversationName) conversation.conversationName = conversationName
-        for (let user of users) {
+        let conversation = {conversationID: id, texts: [], users: data.users, conversationType: data.conversationType}
+        if (data.leader) conversation.leader = data.leader
+        if (data.conversationName) conversation.conversationName = data.conversationName
+        for (let user of data.users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
-        await this.updateReadMessages(users, id, -1)
+        await this.updateReadMessages(data.users, id, -1)
         await this.conversations.insertOne(conversation)
         return conversation
     }
