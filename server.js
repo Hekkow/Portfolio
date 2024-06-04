@@ -106,7 +106,6 @@ function sendRequestedConversation(ws, conversationID, conversationType, type) {
     })
 }
 function inviteToGroupChat(data) {
-    console.log(data)
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
         for (let userID of conversation.users) {
             let client = clients.find(client => client.userID === userID)

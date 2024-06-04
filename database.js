@@ -142,7 +142,6 @@ class Database {
         await this.readMessages.drop()
     }
     async createConversation(users, conversationType, conversationName) {
-        console.log(users, conversationType, conversationName)
         if (!Array.isArray(users)) return null
         if (conversationType === Helper.direct) {
             let previousConversation = await this.conversations.findOne({users: {$all: users, $size: users.length}, conversationType: Helper.direct})
@@ -156,7 +155,6 @@ class Database {
         }
         await this.updateReadMessages(users, id, -1)
         await this.conversations.insertOne(conversation)
-        console.log(conversation)
         return conversation
     }
     async getLatestUserID() {

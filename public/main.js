@@ -292,7 +292,6 @@ function getTextForConversationButton(conversation) {
     let lastMessageText = lastMessage ? lastMessage.message : ""
     let lastTextUsername = ""
     if (lastMessage) {
-        console.log(lastMessage)
         if (lastMessage.userID === -1) lastTextUsername = "Server"
         else lastTextUsername = loadedUsers.get(lastMessage.userID).username
     }
@@ -521,7 +520,7 @@ function scrollToBottom() {
     $('#messages').scrollTop($('#messages').prop("scrollHeight"))
 }
 function addLinks(text) {
-    let pattern = /\b(?:https?:\/\/)?(?:www\.)?\w+\.\w+(?:\/\S*)?\b/g;
+    let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&\/=]*)/g
     let match;
     let indices = [];
     while ((match = pattern.exec(text)) !== null) {
@@ -530,10 +529,24 @@ function addLinks(text) {
     for (let i = indices.length - 1; i >= 0; i--) {
         let url = indices[i].match;
         if (!(url.startsWith('http://') || url.startsWith('https://'))) url = 'https://' + url;
+        let extension = url.split('.').pop().toLowerCase()
         let start = indices[i].index;
         let end = start + indices[i].match.length;
-        text = text.slice(0, end) + '</a>' + text.slice(end);
-        text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+        if (['mp4', 'flv', 'mov', 'avi', 'webm', 'mkv'].includes(extension)) {
+            text = text.slice(0, end) + '</a>' + text.slice(end);
+            text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+            text += `<video controls><source src=${url} type="video/${extension}"></video>`
+        }
+        else if (['jpeg', 'jpg', 'gif', 'png', 'avif', 'svg']) {
+            text = text.slice(0, end) + '</a>' + text.slice(end);
+            text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+            text += `<img alt="" src="${url}">`
+        }
+        else {
+            text = text.slice(0, end) + '</a>' + text.slice(end);
+            text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+        }
+
     }
 
     return text;
