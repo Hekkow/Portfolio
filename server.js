@@ -88,10 +88,8 @@ function updateTyping(data) {
     if (!data.typing) conversationTyping.splice(conversationTyping.indexOf(data.userID), 1)
     else conversationTyping.push(data.userID)
     Database.findConversation(data.conversationID).then((conversation) => {
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            sendTyping(client.socket, data.conversationID)
+        for (let socket of getSockets(conversation.users)) {
+            sendTyping(socket, data.conversationID)
         }
     })
 }
@@ -111,10 +109,8 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
 }
 function inviteToGroupChat(data) {
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
         }
         Database.findUsersWithID(data.users).then(users => {
             for (let user of users) sendServerMessage(data.conversationID, user.username + " just joined")
@@ -125,19 +121,15 @@ function inviteToGroupChat(data) {
 function sendServerMessage(conversationID, text) {
     Database.addServerMessage(text, conversationID).then(conversation => {
         let messageID = conversation.texts[conversation.texts.length - 1].messageID
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.NEWSERVERMESSAGE, text: text, conversationID: conversationID, messageID: messageID}))
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.NEWSERVERMESSAGE, text: text, conversationID: conversationID, messageID: messageID}))
         }
     })
 }
 function renameGroupChat(data) {
     Database.renameGroupChat(data.conversationID, data.newName).then((conversation) => {
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.RENAMEGROUPCHAT, conversation: conversation})) // can be optimzied
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.RENAMEGROUPCHAT, conversation: conversation})) // can be optimzied
         }
     })
 }
@@ -152,10 +144,8 @@ function closeConversation(data) {
     Database.findConversation(data.conversationID).then((originalConversation) => {
         Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
             if (!conversation || conversation === Helper.direct) return
-            for (let userID of originalConversation.users) {
-                let client = clients.find(client => client.userID === userID)
-                if (!client) continue
-                client.socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
+            for (let socket of getSockets(originalConversation.users)) {
+                socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
             }
             if (data.conversationType === Helper.group) {
                 Database.findUserWithID(data.userID).then(user => sendServerMessage(data.conversationID,user.username + " just left"))
@@ -169,19 +159,15 @@ function closeConversation(data) {
 function editMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
         }
     })
 }
 function deleteMessage(data) {
     Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            client.socket.send(JSON.stringify({type: Helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
         }
     })
 }
@@ -189,21 +175,21 @@ function receivedMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
-        for (let userID of conversation.users) {
-            let client = clients.find(client => client.userID === userID)
-            if (!client) continue
-            if (conversation.texts.length === 1) client.socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
-            else client.socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
+        for (let socket of getSockets(conversation.users)) {
+            if (conversation.texts.length === 1) socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
+            else socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
         }
     })
+}
+function getSockets(users) {
+    return users.flatMap(userID => clients.filter(client => client.userID === userID)).map(client => client.socket)
 }
 function readMessage(data) {
     Database.updateReadMessages([data.userID], data.conversationID, data.messageID).then(() => {
         Database.findConversation(data.conversationID).then((conversation) => {
-            for (let userID of conversation.users) {
-                let client = clients.find(client => client.userID === userID)
-                if (!client) continue
-                client.socket.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: data.conversationID, userID: data.userID, messageID: data.messageID}))
+            if (!conversation) return
+            for (let socket of getSockets(conversation.users)) {
+                socket.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: data.conversationID, userID: data.userID, messageID: data.messageID}))
             }
         })
     })
@@ -227,7 +213,7 @@ function loadLocalData(ws, user) {
 }
 
 function updateUserLists() {
-    Database.findUsersWithID(clients.map(client => client.userID)).then((users) => {
+    Database.findUsersWithID(Array.from(new Set(clients.map(client => client.userID)))).then((users) => {
         for (let client of clients) {
             Database.findUserWithID(client.userID).then((user) => { // very very inefficient
                 loadLocalData(client.socket, user)

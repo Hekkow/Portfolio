@@ -119,9 +119,8 @@ function setUp(user) {
     // $('#loggedInUsername').text(username)
 }
 function conversationCreated(conversation) {
-    console.log(conversation)
     updateLocalConversations(conversation)
-    openConversationID = conversation.conversationID
+    openConversation(conversation.conversationID)
     if (conversation.conversationType === group) showNewConversationButton(conversation)
 }
 function receivedNewFirstMessage(data) {
@@ -141,6 +140,7 @@ function receivedNewMessage(message) {
     if (message.conversationID === openConversationID) {
         updateMessageID(message) // seems like it could be possibly weird?
         if (loadedUsers.get(message.userID).username !== username) showMessage(message, false)
+        else if (!$(`.messageDiv[messageID=${message.messageID}]`).length) showMessage(message, true)
     }
     showOrUpdateConversationButton(message.conversationID)
     showNotification(message.conversationID)
