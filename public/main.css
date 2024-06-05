@@ -18,21 +18,76 @@ body {
 button {
     outline: 0;
     border: 0;
+    cursor: pointer;
 }
+/* main panels */
 #mainContainer {
     width: 80%;
     height: 80%;
     display: flex;
 }
-#leftPanel, #activeConversations {
-    transition: 0.4s ease-in;
-}
-#leftPanel {
-    width: 100px;
+#mainPanel {
     border: inset 5px red;
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+#chatInfoPanel {
+    width: 250px;
+    border: inset 5px blue;
+}
+#mainPanelTop {
+    border: inset 5px pink;
+    flex-grow: 1;
+    display: flex;
+    height: 0; /* needed for children to grow */
+}
+#currentlyOnlineUsersPanel {
+    width: 100px;
+    border: inset 5px purple;
+}
+#activeConversationsPanel {
+    width: 250px;
+    border: inset 5px yellow;
+}
+#currentConversation {
+    flex-grow: 1;
+    border: inset 5px black;
     display: flex;
     flex-direction: column;
 }
+#messages {
+    flex-grow: 1;
+    border: inset 5px pink;
+    overflow: auto;
+}
+/*#conversation {*/
+/*    flex-grow: 1;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+/*#messages {*/
+/*    flex-grow: 1;*/
+/*    border: inset 5px pink;*/
+/*    z-index: 30;*/
+/*    overflow: auto;*/
+/*}*/
+#mainPanelBottom {
+    height: 55px;
+    border: inset 5px green;
+    display: flex;
+}
+#userInfo {
+    width: 360px; /* temporary, remove 10px after */
+    border: inset 5px purple;
+}
+#messageInputDiv {
+    flex-grow: 1;
+    border: inset 5px black;
+}
+
+
+
 .panelTitle {
     height: 70px;
     line-height: 70px;
@@ -40,146 +95,20 @@ button {
     vertical-align: middle;
     font-size: 16px;
 }
-#currentlyOnlineUsers {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-#activeConversations {
-    width: 250px;
-    border: inset 5px blue;
-    z-index: 20;
-    overflow-y: auto;
-    /*box-shadow: 0 0 10px 10px black;*/
-}
-#conversation {
-    flex-grow: 1;
+.panelList {
     display: flex;
     flex-direction: column;
 }
-#currentConversationInfo {
-    width: 250px;
-    border: inset 5px green;
+.hoverButton {
+    width: 30px;
+    height: 30px;
+}
+.itemBlock {
     display: flex;
-    flex-direction: column;
-}
-#groupChatButtonsDiv {
-    height: 0;
-    border: inset 5px red;
-}
-#groupChatButtonsDiv.active {
-    height: 50px;
-}
-.groupChatButton {
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    outline: 0;
-    border: 3px solid #4ab1ef;
-    background-color: transparent;
-    cursor: pointer;
-    transition: 0.15s;
-}
-.groupChatButton:hover {
-    color: white;
-    background-color: #4ab1ef;
-}
-#chatParticipants {
-    border: inset 5px black;
-    flex-grow: 1;
-}
-#messages {
-    flex-grow: 1;
-    border: inset 5px pink;
-    z-index: 30;
-    overflow: auto;
-}
-#messageInputDiv {
-    border: inset 5px purple;
-    display: flex;
-    justify-content: center;
     align-items: center;
-
-}
-#messageInput {
-    box-sizing: border-box;
-    width: 80%;
-    height: 55px;
-    font-size: 16px;
-    padding-left: 20px;
-    outline: 0;
-    border: 1px solid #4ab1ef;
-    background-color: white;
-    border-radius: 30px;
-    transition: all 0.15s ease;
-    margin-top: 20px;
-    margin-bottom: 20px;
-}
-#messageInput:focus {
-    border: 3px solid #4ab1ef;
-}
-#messageSendButton {
-    box-sizing: border-box;
-    height: 55px;
-    width: 55px;
-    margin-left: 30px;
-    border-radius: 60px;
-    outline: 0;
-    border: 3px solid #4ab1ef;
-    background-color: white;
-    transition: all 0.15s ease;
-    cursor: pointer;
-}
-#messageSendButton:hover {
-    border: 3px solid #4ab1ef;
-    background-color: #4ab1ef;
-}
-.conversationBlock, .userBlock {
-    height: 80px;
-    width: 100%;
-    background-color: transparent;
-    border: 0;
-    outline: 0;
-    font-family: Arial, serif;
-    font-size: 16px;
-    /*font-weight: bold;*/
-    padding: 0;
-    display: flex;
-    /*justify-content: center;*/
-    align-items: center;
-    border-radius: 3px;
-}
-.conversationBlock:hover, .userBlock:hover {
-    background-color: #4ab1ef;
-    border-radius: 10px;
-    cursor: pointer;
-    color: white;
-    transition: all 0.15s ease;
-}
-.userBlock {
     text-align: left;
 }
-.userPic {
-    height: 60px;
-    width: 60px;
-    border-radius: 60px;
-    border: 3px solid #4ab1ef;
-    margin-left: 15px;
-    margin-right: 10px;
-    transition: all 0.15s ease;
 
-}
-.onlineUserListButtonText {
-    width: 0;
-    font-size: 0;
-}
-.blockText {
-    text-align: left;
-}
-.userBlock:hover .userPic,
-.conversationBlock:hover .userPic{
-    border: 3px solid white;
-}
 .messageDiv {
     width: 100%;
     min-height: 50px;
@@ -188,65 +117,235 @@ button {
     display: flex;
     align-items: flex-start;
 }
-.messageDiv:hover {
-    background-color: #c7f5ff;
-}
-.messageTextDiv {
-    max-width: 500px;
-}
-.messageText, .replyText {
-    overflow-wrap: break-word;
-    white-space: pre-line;
-    /*text-align: left;*/
-}
-
-.messageDiv.localMessage .messageText {
-    color: gray;
-}
-p {
-    margin: 0;
-}
-textarea {
-    resize: none;
-    overflow: hidden;
-}
-
 .myText {
     text-align: right;
     justify-content: flex-end;
 }
-.deleteButton, .replyButton, .editButton, #replyBarCloseButton {
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-}
-.deleteButton {
-    background-color: red;
-}
-.replyButton {
-    background-color: blue;
-}
-.editButton {
-    background-color: green;
-}
-#replyBarCloseButton {
-    height: 0;
-    background-color: black;
-}
-#replyBar {
-    height: 0;
-    border: inset 0 black;
-    white-space: pre-line;
-}
-#replyBar.active {
-    min-height: 30px;
-    height: auto;
-    border: inset 5px black;
-    overflow-wrap: break-word;
-    max-width: 100%;
-    word-break: break-word;
-}
-#replyBar.active #replyBarCloseButton {
-    height: 30px;
 
-}
+/*#leftPanel, #activeConversations {*/
+/*    transition: 0.4s ease-in;*/
+/*}*/
+/*#leftPanel {*/
+/*    width: 100px;*/
+/*    border: inset 5px red;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+/*.panelTitle {*/
+/*    height: 70px;*/
+/*    line-height: 70px;*/
+/*    text-align: center;*/
+/*    vertical-align: middle;*/
+/*    font-size: 16px;*/
+/*}*/
+/*#currentlyOnlineUsers {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    align-items: center;*/
+/*}*/
+/*#activeConversations {*/
+/*    width: 250px;*/
+/*    border: inset 5px blue;*/
+/*    z-index: 20;*/
+/*    overflow-y: auto;*/
+/*    !*box-shadow: 0 0 10px 10px black;*!*/
+/*}*/
+/*#conversation {*/
+/*    flex-grow: 1;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+/*#messages {*/
+/*    flex-grow: 1;*/
+/*    border: inset 5px pink;*/
+/*    z-index: 30;*/
+/*    overflow: auto;*/
+/*}*/
+/*#currentConversationInfo {*/
+/*    width: 250px;*/
+/*    border: inset 5px green;*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+/*#groupChatButtonsDiv {*/
+/*    height: 0;*/
+/*    border: inset 5px red;*/
+/*}*/
+/*#groupChatButtonsDiv.active {*/
+/*    height: 50px;*/
+/*}*/
+/*.groupChatButton {*/
+/*    width: 50px;*/
+/*    height: 50px;*/
+/*    border-radius: 50px;*/
+/*    outline: 0;*/
+/*    border: 3px solid #4ab1ef;*/
+/*    background-color: transparent;*/
+/*    cursor: pointer;*/
+/*    transition: 0.15s;*/
+/*}*/
+/*.groupChatButton:hover {*/
+/*    color: white;*/
+/*    background-color: #4ab1ef;*/
+/*}*/
+/*#chatParticipants {*/
+/*    border: inset 5px black;*/
+/*    flex-grow: 1;*/
+/*}*/
+
+/*#messageInputDiv {*/
+/*    border: inset 5px purple;*/
+/*    display: flex;*/
+/*    justify-content: center;*/
+/*    align-items: center;*/
+
+/*}*/
+/*#messageInput {*/
+/*    box-sizing: border-box;*/
+/*    width: 80%;*/
+/*    height: 55px;*/
+/*    font-size: 16px;*/
+/*    padding-left: 20px;*/
+/*    outline: 0;*/
+/*    border: 1px solid #4ab1ef;*/
+/*    background-color: white;*/
+/*    border-radius: 30px;*/
+/*    transition: all 0.15s ease;*/
+/*    margin-top: 20px;*/
+/*    margin-bottom: 20px;*/
+/*}*/
+/*#messageInput:focus {*/
+/*    border: 3px solid #4ab1ef;*/
+/*}*/
+/*#messageSendButton {*/
+/*    box-sizing: border-box;*/
+/*    height: 55px;*/
+/*    width: 55px;*/
+/*    margin-left: 30px;*/
+/*    border-radius: 60px;*/
+/*    outline: 0;*/
+/*    border: 3px solid #4ab1ef;*/
+/*    background-color: white;*/
+/*    transition: all 0.15s ease;*/
+/*    cursor: pointer;*/
+/*}*/
+/*#messageSendButton:hover {*/
+/*    border: 3px solid #4ab1ef;*/
+/*    background-color: #4ab1ef;*/
+/*}*/
+/*.conversationBlock, .userBlock {*/
+/*    height: 80px;*/
+/*    width: 100%;*/
+/*    background-color: transparent;*/
+/*    border: 0;*/
+/*    outline: 0;*/
+/*    font-family: Arial, serif;*/
+/*    font-size: 16px;*/
+/*    !*font-weight: bold;*!*/
+/*    padding: 0;*/
+/*    display: flex;*/
+/*    !*justify-content: center;*!*/
+/*    align-items: center;*/
+/*    border-radius: 3px;*/
+/*}*/
+/*.conversationBlock:hover, .userBlock:hover {*/
+/*    background-color: #4ab1ef;*/
+/*    border-radius: 10px;*/
+/*    cursor: pointer;*/
+/*    color: white;*/
+/*    transition: all 0.15s ease;*/
+/*}*/
+/*.userBlock {*/
+/*    text-align: left;*/
+/*}*/
+/*.userPic {*/
+/*    height: 60px;*/
+/*    width: 60px;*/
+/*    border-radius: 60px;*/
+/*    border: 3px solid #4ab1ef;*/
+/*    margin-left: 15px;*/
+/*    margin-right: 10px;*/
+/*    transition: all 0.15s ease;*/
+
+/*}*/
+/*.onlineUserListButtonText {*/
+/*    width: 0;*/
+/*    font-size: 0;*/
+/*}*/
+/*.blockText {*/
+/*    text-align: left;*/
+/*}*/
+/*.userBlock:hover .userPic,*/
+/*.conversationBlock:hover .userPic{*/
+/*    border: 3px solid white;*/
+/*}*/
+/*.messageDiv {*/
+/*    width: 100%;*/
+/*    min-height: 50px;*/
+/*    height: auto;*/
+/*    margin: 0;*/
+/*    display: flex;*/
+/*    align-items: flex-start;*/
+/*}*/
+/*.messageDiv:hover {*/
+/*    background-color: #c7f5ff;*/
+/*}*/
+/*.messageTextDiv {*/
+/*    max-width: 500px;*/
+/*}*/
+/*.messageText, .replyText {*/
+/*    overflow-wrap: break-word;*/
+/*    white-space: pre-line;*/
+/*    !*text-align: left;*!*/
+/*}*/
+
+/*.messageDiv.localMessage .messageText {*/
+/*    color: gray;*/
+/*}*/
+/*p {*/
+/*    margin: 0;*/
+/*}*/
+/*textarea {*/
+/*    resize: none;*/
+/*    overflow: hidden;*/
+/*}*/
+
+/*.myText {*/
+/*    text-align: right;*/
+/*    justify-content: flex-end;*/
+/*}*/
+/*.deleteButton, .replyButton, .editButton, #replyBarCloseButton {*/
+/*    width: 30px;*/
+/*    height: 30px;*/
+/*    cursor: pointer;*/
+/*}*/
+/*.deleteButton {*/
+/*    background-color: red;*/
+/*}*/
+/*.replyButton {*/
+/*    background-color: blue;*/
+/*}*/
+/*.editButton {*/
+/*    background-color: green;*/
+/*}*/
+/*#replyBarCloseButton {*/
+/*    height: 0;*/
+/*    background-color: black;*/
+/*}*/
+/*#replyBar {*/
+/*    height: 0;*/
+/*    border: inset 0 black;*/
+/*    white-space: pre-line;*/
+/*}*/
+/*#replyBar.active {*/
+/*    min-height: 30px;*/
+/*    height: auto;*/
+/*    border: inset 5px black;*/
+/*    overflow-wrap: break-word;*/
+/*    max-width: 100%;*/
+/*    word-break: break-word;*/
+/*}*/
+/*#replyBar.active #replyBarCloseButton {*/
+/*    height: 30px;*/
+
+/*}*/

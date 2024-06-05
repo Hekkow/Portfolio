@@ -8,33 +8,63 @@
 </head>
 <body>
 <div id="mainContainer">
-    <div id="leftPanel">
-        <div class="panelTitle">Users</div>
-        <div id="currentlyOnlineUsers">
-        </div>
-    </div>
-    <div id="activeConversations">
-        <div class="panelTitle">Active Conversations</div>
-        <div id="activeConversationsListOuter">
-            <div id="activeConversationsListUp"></div>
-            <div id="activeConversationsListDown">
-                <button id="showCreateGroupChatPopupButton" class="conversationBlock" onclick="showCreateGroupChatPopup()">
-                    <div class="userPic"></div>
-                    <div class="blockText">Create group chat</div>
-                </button>
+    <div id="mainPanel">
+        <div id="mainPanelTop">
+            <div id="currentlyOnlineUsersPanel">
+                <div class="panelTitle">Users</div>
+                <div id="currentlyOnlineUsers" class="panelList"></div>
+            </div>
+            <div id="activeConversationsPanel">
+                <div class="panelTitle">Active Conversations</div>
+                <div id="activeConversations" class="panelList"></div>
+                <div id="activeConversationsExtraButtons" class="panelList">
+                    <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
+                        <div class="userPic"></div>
+                        <div class="blockText">Create group chat</div>
+                    </button>
+                </div>
+            </div>
+            <div id="currentConversation">
+                <div class="panelTitle">Conversation Name</div>
+                <div id="messages"></div>
+                <div id="replyBar"><div id="replyBarCloseButton"></div></div>
             </div>
         </div>
+        <div id="mainPanelBottom">
+            <div id="userInfo"></div>
+            <div id="messageInputDiv"></div>
+        </div>
     </div>
-    <div id="conversation">
-        <div id="messages"></div>
-        <div id="replyBar"><div id="replyBarCloseButton"></div></div>
-        <div id="messageInputDiv"></div>
-    </div>
-    <div id="currentConversationInfo">
+    <div id="chatInfoPanel">
         <div class="panelTitle">Chat Info</div>
-        <div id="groupChatButtonsDiv"></div>
-        <div id="chatParticipants"></div>
     </div>
+<!--    <div id="leftPanel">-->
+<!--        <div class="panelTitle">Users</div>-->
+<!--        <div id="currentlyOnlineUsers">-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div id="activeConversations">-->
+<!--        <div class="panelTitle">Active Conversations</div>-->
+<!--        <div id="activeConversationsListOuter">-->
+<!--            <div id="activeConversationsListUp"></div>-->
+<!--            <div id="activeConversationsListDown">-->
+<!--                <button id="showCreateGroupChatPopupButton" class="conversationBlock" onclick="showCreateGroupChatPopup()">-->
+<!--                    <div class="userPic"></div>-->
+<!--                    <div class="blockText">Create group chat</div>-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div id="conversation">-->
+<!--        <div id="messages"></div>-->
+<!--        <div id="replyBar"><div id="replyBarCloseButton"></div></div>-->
+<!--        <div id="messageInputDiv"></div>-->
+<!--    </div>-->
+<!--    <div id="currentConversationInfo">-->
+<!--        <div class="panelTitle">Chat Info</div>-->
+<!--        <div id="groupChatButtonsDiv"></div>-->
+<!--        <div id="chatParticipants"></div>-->
+<!--    </div>-->
 </div>
 </body>
 <script src="js.cookie.min.js"></script>

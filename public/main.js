@@ -164,10 +164,13 @@ function receivedNewServerMessage(message) {
 }
 function showNotification(conversationID) {
     if (conversationID !== openConversationID || !document.hasFocus()) {
-        $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'bold')
-        document.title = "NOTIFICATION"
+        actuallyShowNotification(conversationID)
     }
     else sendReadReceipt(conversationID)
+}
+function actuallyShowNotification(conversationID) {
+    $(`.conversationBlock[conversationID=${conversationID}]`).css('font-weight', 'bold')
+    document.title = "NOTIFICATION"
 }
 function removeNotification(conversationID) {
     if (conversationID === -1) return
@@ -248,11 +251,11 @@ function showOrUpdateConversationButton(conversationID) {
 }
 function showNewConversationButton(conversation) {
     let conversationID = conversation.conversationID
-    let activeConversationsDiv = $("#activeConversationsListUp")
+    let activeConversationsDiv = $("#activeConversations")
     let stuff = getTextForConversationButton(conversation)
     if ($(`.conversationBlock[conversationID=${conversationID}]`).length) return
     let newConversationBlock = $(`
-            <button class="conversationBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
+            <button class="conversationBlock itemBlock" conversationID="${conversationID}" onclick="openConversation(${conversationID})" messageID="${stuff.messageID}" date="${stuff.date}">
                 <div class="userPic"></div>
                 <div class="blockText">${stuff.text}</div>
             </button>`)
@@ -283,7 +286,7 @@ function updateConversationButton(conversationID) {
     if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
 }
 function showConversationHoverButtons(div) {
-    div.append(`<button class='deleteButton'></button>`)
+    div.append(`<button class='deleteButton hoverButton'></button>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
         let conversationID = parseInt(div.attr('conversationID'))
@@ -317,7 +320,7 @@ function getTextForConversationButton(conversation) {
     return {messageID: lastMessage ? lastMessage.messageID : -1, text: text, date: lastMessage ? lastMessage.date : new Date()}
 }
 function loadLocalData(data) {
-    $("#activeConversationsListUp").empty()
+    $("#activeConversations").empty()
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
     updateLocalReadMessages(data.readMessages)
@@ -326,6 +329,14 @@ function loadLocalData(data) {
         updateConversation(conversation)
         showNewConversationButton(conversation)
     }
+    showOfflineNotifications()
+}
+function showOfflineNotifications() {
+    $('.conversationBlock').each(function() {
+        let entry = loadedReadMessages.find(entry => entry.conversationID === parseInt($(this).attr('conversationID')) && entry.userID === userID)
+        if (!entry) return
+        if (parseInt($(this).attr('messageID')) > entry.messageID) actuallyShowNotification(entry.conversationID)
+    })
 }
 function updateLocalReadMessages(readMessages) {
     if (!Array.isArray(readMessages)) readMessages = [readMessages]
@@ -371,7 +382,7 @@ function updateChatParticipants(conversation) {
         let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
         participantBlock.hover(function() {
             if (conversation.leader !== userID) return
-            participantBlock.append(`<button class='deleteButton'></button>`)
+            participantBlock.append(`<button class='deleteButton hoverButton'></button>`)
             participantBlock.find('.deleteButton').click(function(e) {
                 e.stopPropagation()
                 let conversationID = openConversationID
@@ -566,7 +577,7 @@ function addLinks(text) {
     return text;
 }
 function showMessageHoverButtons(div, local) {
-    if (local) div.prepend(`<button class='deleteButton'></button><button class='replyButton'></button><button class='editButton'></button>`)
+    if (local) div.prepend(`<button class='deleteButton hoverButton'></button><button class='replyButton hoverButton'></button><button class='editButton hoverButton'></button>`)
     else div.append(`<button class='replyButton'></button>`)
     div.find('.deleteButton').click(function(e) {
         e.stopPropagation()
@@ -582,9 +593,7 @@ function showMessageHoverButtons(div, local) {
     })
 }
 function hideMessageHoverButtons(div) {
-    div.find('.replyButton').remove()
-    div.find('.deleteButton').remove()
-    div.find('.editButton').remove()
+    div.find('.hoverButton').remove()
 }
 function scrollToMessage(messageID) {
     let scrollToMessage = $(`.messageDiv[messageID=${messageID}]`)
@@ -647,25 +656,25 @@ function updateUserList(users) {
     updateLocalUsers(users)
     for (let user of users) {
         if (!user) continue
-        if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
+        if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock itemBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
 }
 
 function showCreateGroupChatPopup() {
     removeGroupChatPopup()
     showGroupChatUsersList((key, value) => key === userID, "checkbox")
-    $('#activeConversationsListDown').append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
+    $('#activeConversationsExtraButtons').append(`<button id="groupChatCreateButton" onclick="createNewGroupChat()">Create</button>`)
 }
 function showInviteToGroupChatPopup() {
     removeGroupChatPopup()
     if (openConversationID === -1) return
     showGroupChatUsersList((key, value) => key === userID || loadedConversations.get(openConversationID).users.includes(key), "checkbox")
-    $('#activeConversationsListDown').append(`<button id="groupChatInviteButton" onclick="inviteToGroupChat()">Invite</button>`)
+    $('#activeConversationsExtraButtons').append(`<button id="groupChatInviteButton" onclick="inviteToGroupChat()">Invite</button>`)
 }
 function showTransferLeaderPopup() {
     removeGroupChatPopup()
     showGroupChatUsersList((key, value) => key === userID, "radio")
-    $('#activeConversationsListDown').append(`<button id="groupChatTransferLeaderButton" onclick="transferLeader()">Transfer</button>`)
+    $('#activeConversationsExtraButtons').append(`<button id="groupChatTransferLeaderButton" onclick="transferLeader()">Transfer</button>`)
 }
 function transferLeader() {
     if (getCheckedUsers().length !== 1) return
@@ -675,7 +684,7 @@ function transferLeader() {
 function showRenameGroupChatPopup() {
     removeGroupChatPopup()
     if (openConversationID === -1) return
-    $('#activeConversationsListDown').append(`<input type="text" id="groupChatRenameInput"><button id="groupChatRenameButton" onclick="renameGroupChat()">Rename</button>`)
+    $('#activeConversationsExtraButtons').append(`<input type="text" id="groupChatRenameInput"><button id="groupChatRenameButton" onclick="renameGroupChat()">Rename</button>`)
 }
 function inviteToGroupChat() {
     ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: openConversationID, users: getCheckedUsers()}))
@@ -698,7 +707,7 @@ function getCheckedUsers() {
 }
 function showGroupChatUsersList(condition, type) {
     removeGroupChatPopup()
-    let div = $('#activeConversationsListDown')
+    let div = $('#activeConversationsExtraButtons')
     for (let [key, value] of loadedUsers) {
         if (condition(key, value)) continue
         div.append(`<input class="groupChatUserInput" type=${type} value=${key} name="groupChatPopup"><label class="groupChatUserLabel" for="${key}">${value.username}</label>`)
