@@ -13,8 +13,7 @@ if (message) {
 $('#loginForm').submit(function(e) {
     let username = $('#usernameInput').val()
     e.preventDefault();
-
-    console.log(username)
+    startLoadingAnimation()
     if (!username || !username.trim()) return
 
     $.post('attemptLogin', $(this).serialize(), (response) => {
@@ -28,3 +27,10 @@ $('#loginForm').submit(function(e) {
         }
     })
 });
+function startLoadingAnimation() {
+    let button = $('#loginButton')
+    setInterval(() => {
+        button.attr('Value', button.attr('Value') + ".")
+    }, 1000)
+
+}

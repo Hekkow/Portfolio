@@ -10,6 +10,7 @@ let openConversationID = -1
 let loadedConversations = new Map()
 let loadedUsers = new Map()
 let loadedReadMessages = [] // possibly switch to another data structure later
+let contextMenuOpen = false
 if (!userID) window.location.href = '/'
 else {
     userID = parseInt(userID)
@@ -271,12 +272,7 @@ function showNewConversationButton(conversation) {
         }
     })
     if (!placed) activeConversationsDiv.append(newConversationBlock)
-    let conversationDiv = $(`.conversationBlock[conversationID="${conversationID}"]`)
-    conversationDiv.hover(function() {
-        showConversationHoverButtons($(this))
-    }, function() {
-        hideConversationHoverButtons($(this))
-    })
+    $(`.conversationBlock`).contextmenu((e) => showConversationContextMenu(e))
 }
 function updateConversationButton(conversationID) {
     let conversation = loadedConversations.get(conversationID)
@@ -287,18 +283,10 @@ function updateConversationButton(conversationID) {
     conversationButton.attr('date', stuff.date)
     if ($('.conversationBlock').length > 1) conversationButton.detach().insertBefore('.conversationBlock:first')
 }
-function showConversationHoverButtons(div) {
-    div.append(`<button class='deleteButton hoverButton'></button>`)
-    div.find('.deleteButton').click(function(e) {
-        e.stopPropagation()
-        let conversationID = parseInt(div.attr('conversationID'))
-        ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: conversationID, conversationType: loadedConversations.get(conversationID).conversationType}))
-        div.remove()
-        closeConversationArea()
-    })
-}
-function hideConversationHoverButtons(div) {
-    div.find('.deleteButton').remove()
+function removeConversation(conversationID) {
+    $(`.conversationBlock[conversationID=${conversationID}]`).remove()
+    ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: conversationID, conversationType: loadedConversations.get(conversationID).conversationType}))
+    closeConversationArea()
 }
 function getTextForConversationButton(conversation) {
     let conversationName
@@ -377,24 +365,16 @@ function updateChatParticipants(conversation) {
     chatParticipantsDiv.empty()
     for (let user of conversation.users.map(userID => loadedUsers.get(userID))) {
         chatParticipantsDiv.append(
-            `<button class='userBlock itemBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
+            `<button class='participantBlock itemBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
                 <div class='userPic'></div>
                 <div class='blockText'>${user.username}</div>
             </button>`)
-        let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
-        participantBlock.hover(function() {
-            if (conversation.leader !== userID || conversation.conversationType !== group) return
-            participantBlock.append(`<button class='deleteButton hoverButton'></button>`)
-            participantBlock.find('.deleteButton').click(function(e) {
-                e.stopPropagation()
-                let conversationID = openConversationID
-                ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: user.userID, conversationID: conversationID, conversationType: loadedConversations.get(conversationID).conversationType}))
-                participantBlock.remove()
-            })
-        }, function() {
-            participantBlock.find('.deleteButton').remove()
-        })
     }
+    $('.participantBlock').contextmenu((e) => showParticipantContextMenu(e))
+}
+function removeParticipant(participantUserID) {
+    ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: participantUserID, conversationID: openConversationID, conversationType: loadedConversations.get(openConversationID).conversationType}))
+    $(`.participantBlock[participantUserID=${participantUserID}]`).remove()
 }
 function startNewConversation(receivingUserID) {
     let users = [receivingUserID, userID]
@@ -500,11 +480,7 @@ function showMessage(message, local) { // can remove local variable and replace 
         if (message.messageID === undefined) messageDiv.addClass('localMessage')
     }
     scrollToBottom()
-    messageDiv.hover(function() {
-        showMessageHoverButtons($(this), local)
-    }, function() {
-        hideMessageHoverButtons($(this))
-    })
+    $('.messageDiv').contextmenu((e) => showMessageContextMenu(e))
     if (message.replyingTo !== -1) {
         messageDiv.click(function() {
             scrollToMessage(message.replyingTo)
@@ -564,7 +540,7 @@ function addLinks(text) {
             text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
             text += `<video controls><source src=${url} type="video/${extension}"></video>`
         }
-        else if (['jpeg', 'jpg', 'gif', 'png', 'avif', 'svg']) {
+        else if (['jpeg', 'jpg', 'gif', 'png', 'avif', 'svg'].includes(extension)) {
             text = text.slice(0, end) + '</a>' + text.slice(end);
             text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
             text += `<img alt="" src="${url}">`
@@ -578,25 +554,6 @@ function addLinks(text) {
 
     return text;
 }
-function showMessageHoverButtons(div, local) {
-    if (local) div.prepend(`<button class='deleteButton hoverButton'></button><button class='replyButton hoverButton'></button><button class='editButton hoverButton'></button>`)
-    else div.append(`<button class='replyButton'></button>`)
-    div.find('.deleteButton').click(function(e) {
-        e.stopPropagation()
-        deleteMessage(div)
-    })
-    div.find('.replyButton').click(function(e) {
-        e.stopPropagation()
-        replyMessage(div)
-    })
-    div.find('.editButton').click(function(e) {
-        e.stopPropagation()
-        editMessage(div)
-    })
-}
-function hideMessageHoverButtons(div) {
-    div.find('.hoverButton').remove()
-}
 function scrollToMessage(messageID) {
     let scrollToMessage = $(`.messageDiv[messageID=${messageID}]`)
     let messages = $('#messages')
@@ -605,25 +562,28 @@ function scrollToMessage(messageID) {
     scrollToMessage.css('background-color', 'red')
     scrollToMessage.animate({backgroundColor: 'white'}, 500)
 }
-function replyMessage(messageDiv) {
-    showReplyBar(messageDiv, "Reply")
+function replyMessage(messageID) {
+    showReplyBar(messageID, "Reply")
     if (editing !== -1) {
         editing = -1
         $('#messageInput').val("")
     }
 }
-function editMessage(messageDiv) {
-    showReplyBar(messageDiv, "Edit")
+function editMessage(messageID) {
+    showReplyBar(messageID, "Edit")
     $('#messageInput').val(loadedConversations.get(openConversationID).texts.find(text => text.messageID === editing).message)
 }
-function showReplyBar(messageDiv, mode) {
+function deleteMessage(messageID) {
+    $(`.messageDiv[messageID=${messageID}]`).remove()
+    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: userID, conversationID: openConversationID}))
+}
+function showReplyBar(messageID, mode) {
     let replyBar = $('#replyBar')
     replyBar.addClass('active')
-    let messageID = parseInt(messageDiv.attr('messageID'))
     let replyBarText
     if (mode === "Reply") {
         replyingTo = messageID
-        replyBarText = getMessageText(messageDiv)
+        replyBarText = $(`messageDiv[messageID=${messageID}]`).find('p.messageText').text()
     }
     else if (mode === "Edit") {
         editing = messageID
@@ -631,7 +591,7 @@ function showReplyBar(messageDiv, mode) {
     }
     replyBar.text(replyBarText)
     replyBar.html(replyBar.html() + '<div id="replyBarCloseButton"></div>')
-    $('#replyBarCloseButton').click(() => { closeReplyBar() })
+    $('#replyBarCloseButton').click(() => closeReplyBar() )
     scrollToBottom()
     $('#messageInput').focus()
 }
@@ -646,12 +606,6 @@ function closeReplyBar() {
 function getMessageText(messageDiv) {
     return messageDiv.find('p.messageText').text()
 }
-
-function deleteMessage(messageDiv) {
-    let messageID = parseInt(messageDiv.attr('messageID'))
-    messageDiv.remove()
-    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: userID, conversationID: openConversationID}))
-}
 function updateUserList(users) {
     let currentlyOnlineUsersDiv = $('#currentlyOnlineUsers')
     currentlyOnlineUsersDiv.empty()
@@ -660,6 +614,7 @@ function updateUserList(users) {
         if (!user) continue
         if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock itemBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
+    $('.userBlock').contextmenu((e) => showUserContextMenu(e))
 }
 
 function showCreateGroupChatPopup() {
@@ -732,4 +687,67 @@ function logout() {
 
 $(window).on('focus', function() {
     $('#messageInput').focus()
+})
+function showUserContextMenu(e) {
+    showContextMenu(e)
+    $('#contextMenu').append(`<button class="contextButton">Message</button><button class="contextButton">Block</button>`)
+}
+function showParticipantContextMenu(e) {
+    showContextMenu(e)
+    let contextMenu = $('#contextMenu')
+    contextMenu.append(`<button class="contextButton">Message</button><button class="contextButton">Block</button>`)
+    let participantID =  getAttr(e, 'participantBlock', 'participantUserID')
+    if (iAmLeader()) {
+        contextMenu.append(`<button class="contextButton" onclick="removeParticipant(${participantID})">Kick</button>`)
+    }
+}
+function showConversationContextMenu(e) {
+    showContextMenu(e)
+    let conversationID = getAttr(e, 'conversationBlock', 'conversationID')
+    $('#contextMenu').append(`<button class="contextButton" onclick="removeConversation(${conversationID})">Leave</button>`)
+}
+function showMessageContextMenu(e) {
+    showContextMenu(e)
+    let contextMenu = $('#contextMenu')
+    let messageID = getAttr(e, 'messageDiv', 'messageID')
+    contextMenu.append(`<button class='contextButton' onclick="replyMessage(${messageID})">Reply</button>`)
+    if ($(e.target).closest('.messageDiv').hasClass('myText')) {
+        contextMenu.append(`<button class='contextButton' onclick="deleteMessage(${messageID})">Delete</button><button class='contextButton' onclick="editMessage(${messageID})">Edit</button>`)
+    }
+}
+function getAttr(e, div, attr) {
+    return parseInt($(e.target).closest(`.${div}`).attr(attr))
+}
+
+function iAmLeader() {
+    if (openConversationID === -1) return false
+    return loadedConversations.get(openConversationID).leader === userID
+}
+function showContextMenu(e) {
+    e.preventDefault()
+    let contextMenu = $('#contextMenu')
+    contextMenu.empty()
+    contextMenu.css('display', 'flex')
+    contextMenu.css({left: e.pageX, top: e.pageY})
+}
+// $(window).on('contextmenu', function(e) {
+//     console.log($(e.target))
+//     let target = $(e.target)
+//     if (target.closest('.conversationBlock').length > 0) {
+//         console.log("clicked conversation")
+//     }
+//     else if (target.closest('.userBlock').length > 0) {
+//         console.log('clicked user')
+//     }
+//     if (contextMenuOpen) return
+//     contextMenuOpen = true
+//     e.preventDefault()
+//     $('#contextMenu').css('display', 'block')
+//     console.log(e)
+//     console.log(e.pageX, e.pageY)
+//     $('#contextMenu').css({left: e.pageX, top: e.pageY})
+// })
+$(window).click(function() {
+    contextMenuOpen = false
+    $('#contextMenu').css('display', 'none')
 })

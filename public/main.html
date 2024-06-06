@@ -10,38 +10,36 @@
 <div id="loadingOverlay">Loading</div>
 <div id="mainContainer">
     <div id="mainPanel">
-        <div id="mainPanelTop">
-            <div id="currentlyOnlineUsersPanel">
-                <div class="panelTitle">Users</div>
-                <div id="currentlyOnlineUsers" class="panelList"></div>
-            </div>
-            <div id="activeConversationsPanel">
-                <div id="activeConversationsMain">
-                    <div class="panelTitle">Active Conversations</div>
-                    <div id="activeConversations" class="panelList"></div>
-                    <div id="activeConversationsExtraButtons" class="panelList">
-                        <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
-                            <div class="userPic"></div>
-                            <div class="blockText">Create group chat</div>
-                        </button>
-                    </div>
-                </div>
-                <div id="userInfo">
-                    <button id="logOutButton" class="hoverButton" onclick="logout()">Logout</button>
+        <div id="currentlyOnlineUsersPanel">
+            <div class="panelTitle">Users</div>
+            <div id="currentlyOnlineUsers" class="panelList"></div>
+        </div>
+        <div id="activeConversationsPanel">
+            <div id="activeConversationsMain">
+                <div class="panelTitle">Active Conversations</div>
+                <div id="activeConversations" class="panelList"></div>
+                <div id="activeConversationsExtraButtons" class="panelList">
+                    <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
+                        <div class="userPic"></div>
+                        <div class="blockText">Create group chat</div>
+                    </button>
                 </div>
             </div>
-            <div id="currentConversation">
-                <div class="panelTitle">Conversation Name</div>
-                <div id="messages"></div>
-                <div id="replyBar"><div id="replyBarCloseButton"></div></div>
-                <div id="messageInputDiv"></div>
+            <div id="userInfo">
+                <button id="logOutButton" class="hoverButton" onclick="logout()">Logout</button>
             </div>
         </div>
+        <div id="currentConversation">
+            <div class="panelTitle">Conversation Name</div>
+            <div id="messages"></div>
+            <div id="replyBar"><div id="replyBarCloseButton"></div></div>
+            <div id="messageInputDiv"></div>
+        </div>
+    </div>
 <!--        <div id="mainPanelBottom">-->
 <!--            -->
 <!--            -->
 <!--        </div>-->
-    </div>
     <div id="chatInfoPanel">
         <div class="panelTitle">Chat Info</div>
         <div id="chatParticipants" class="panelList"></div>
@@ -73,6 +71,9 @@
 <!--        <div id="groupChatButtonsDiv"></div>-->
 <!--        <div id="chatParticipants"></div>-->
 <!--    </div>-->
+</div>
+<div id="contextMenu">
+<!--    <button onclick="console.log(1)">button 1</button>-->
 </div>
 </body>
 <script src="js.cookie.min.js"></script>
