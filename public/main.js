@@ -375,13 +375,13 @@ function updateChatParticipants(conversation) {
     chatParticipantsDiv.empty()
     for (let user of conversation.users.map(userID => loadedUsers.get(userID))) {
         chatParticipantsDiv.append(
-            `<button class='userBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
+            `<button class='userBlock itemBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
                 <div class='userPic'></div>
                 <div class='blockText'>${user.username}</div>
             </button>`)
         let participantBlock = $(`.userBlock[participantUserID=${user.userID}]`)
         participantBlock.hover(function() {
-            if (conversation.leader !== userID) return
+            if (conversation.leader !== userID || conversation.conversationType !== group) return
             participantBlock.append(`<button class='deleteButton hoverButton'></button>`)
             participantBlock.find('.deleteButton').click(function(e) {
                 e.stopPropagation()

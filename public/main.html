@@ -15,28 +15,33 @@
                 <div id="currentlyOnlineUsers" class="panelList"></div>
             </div>
             <div id="activeConversationsPanel">
-                <div class="panelTitle">Active Conversations</div>
-                <div id="activeConversations" class="panelList"></div>
-                <div id="activeConversationsExtraButtons" class="panelList">
-                    <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
-                        <div class="userPic"></div>
-                        <div class="blockText">Create group chat</div>
-                    </button>
+                <div id="activeConversationsMain">
+                    <div class="panelTitle">Active Conversations</div>
+                    <div id="activeConversations" class="panelList"></div>
+                    <div id="activeConversationsExtraButtons" class="panelList">
+                        <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
+                            <div class="userPic"></div>
+                            <div class="blockText">Create group chat</div>
+                        </button>
+                    </div>
                 </div>
+                <div id="userInfo"></div>
             </div>
             <div id="currentConversation">
                 <div class="panelTitle">Conversation Name</div>
                 <div id="messages"></div>
                 <div id="replyBar"><div id="replyBarCloseButton"></div></div>
+                <div id="messageInputDiv"></div>
             </div>
         </div>
-        <div id="mainPanelBottom">
-            <div id="userInfo"></div>
-            <div id="messageInputDiv"></div>
-        </div>
+<!--        <div id="mainPanelBottom">-->
+<!--            -->
+<!--            -->
+<!--        </div>-->
     </div>
     <div id="chatInfoPanel">
         <div class="panelTitle">Chat Info</div>
+        <div id="chatParticipants" class="panelList"></div>
     </div>
 <!--    <div id="leftPanel">-->
 <!--        <div class="panelTitle">Users</div>-->
