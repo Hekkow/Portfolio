@@ -25,8 +25,10 @@ function connection() {
         ws.send(JSON.stringify({type: Type.LOGIN, userID: userID}))
         console.log("Connected")
         clearInterval(connectionRepeater) // stops repeated reconnection attempts
+        $('#loadingOverlay').css('display', 'none')
     }
     ws.onclose = () => {
+        $('#loadingOverlay').css('display', 'block')
         connectionRepeater = setInterval(() => { // when connection broking, every 400ms, try to reconnect if possible
             if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                 console.log("Attempting to reconnect")
@@ -721,6 +723,11 @@ function removeGroupChatPopup() {
     $('#groupChatRenameInput').remove()
     $('#groupChatRenameButton').remove()
     $('#groupChatTransferLeaderButton').remove()
+}
+
+function logout() {
+    Cookies.remove(loginCookie)
+    window.location.href = '/'
 }
 
 $(window).on('focus', function() {
