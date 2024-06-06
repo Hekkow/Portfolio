@@ -55,6 +55,8 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.REQUESTTYPING:
                 sendTyping(ws, data.conversationID)
                 break
+            case Helper.Type.BLOCKUSER:
+                blockUser(data)
 
         }
     })
@@ -91,6 +93,11 @@ function updateTyping(data) {
         for (let socket of getSockets(conversation.users)) {
             sendTyping(socket, data.conversationID)
         }
+    })
+}
+function blockUser(data) {
+    Database.block(data.userID, data.blockedUserID).then(() => {
+
     })
 }
 function sendTyping(ws, conversationID) {

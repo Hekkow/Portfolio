@@ -26,10 +26,13 @@ class Database {
     async register(username) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, conversations: [], userID: id}
+        let user = {username: username, conversations: [], userID: id, blocked: []}
         await this.users.insertOne(user)
         await this.addUsersToGroupChat(publicConversationID, [id])
         return user
+    }
+    async block(userID, blockedUserID) {
+        await this.users.findOneAndUpdate({userID: userID}, {$push: {blocked: blockedUserID}})
     }
     async findUserWithID(userID) {
         let user = await this.users.findOne({userID: userID})

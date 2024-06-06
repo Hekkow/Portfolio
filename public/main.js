@@ -218,6 +218,7 @@ function updateReadMessages() {
         if (entry.conversationID === openConversationID && entry.userID !== userID)  {
             $(`.readIndicator[userID=${entry.userID}]`).remove()
             if (!loadedUsers.has(entry.userID)) continue // possibly weird, fix this later maybe
+            if (loadedUsers.get(userID).blocked.includes(entry.userID)) continue
             $(`.messageDiv[messageID=${entry.messageID}]`).append(`<div class="readIndicator" userID=${entry.userID}>READ BY ${loadedUsers.get(entry.userID).username}</div>`)
         }
     }
@@ -473,7 +474,8 @@ function showMessage(message, local) { // can remove local variable and replace 
     let reply = getReplyAboveText(message)
     let sendableMessage = message.message
     sendableMessage = addLinks(sendableMessage)
-    messages.append(`<div class='messageDiv' messageID=${message.messageID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
+    if (loadedUsers.get(userID).blocked.includes(message.userID)) sendableMessage = "Message from blocked user"
+    messages.append(`<div class='messageDiv' messageID=${message.messageID} userID=${message.userID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) {
         messageDiv.addClass('myText');
@@ -612,7 +614,9 @@ function updateUserList(users) {
     updateLocalUsers(users)
     for (let user of users) {
         if (!user) continue
-        if (user.userID !== userID) currentlyOnlineUsersDiv.append(`<button class="userBlock itemBlock" onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
+        if (user.userID === userID) continue
+        if (loadedUsers.get(userID).blocked.includes(user.userID)) continue
+        currentlyOnlineUsersDiv.append(`<button class="userBlock itemBlock" userID=${user.userID} onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
     }
     $('.userBlock').contextmenu((e) => showUserContextMenu(e))
 }
@@ -690,13 +694,27 @@ $(window).on('focus', function() {
 })
 function showUserContextMenu(e) {
     showContextMenu(e)
-    $('#contextMenu').append(`<button class="contextButton">Message</button><button class="contextButton">Block</button>`)
+    let selectedUserID = getAttr(e, 'userBlock', 'userID')
+    let contextMenu = $('#contextMenu')
+    if (selectedUserID !== userID) {
+        contextMenu.append(`<button class="contextButton">Message</button><button class="contextButton" onclick="blockUser(${selectedUserID})">Block</button>`)
+    }
+}
+function blockUser(blockedUserID) {
+    $(`.userBlock[userID=${blockedUserID}]`).remove()
+    $(`.messageDiv[userID=${blockedUserID}]`).find('p.messageText').text("Message from blocked user")
+    $(`.readIndicator[userID=${blockedUserID}]`).remove()
+    loadedUsers.get(userID).blocked.push(blockedUserID)
+    loadedReadMessages = loadedReadMessages.filter(entry => entry.userID !== blockedUserID)
+    ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: userID, blockedUserID: blockedUserID}))
 }
 function showParticipantContextMenu(e) {
     showContextMenu(e)
     let contextMenu = $('#contextMenu')
-    contextMenu.append(`<button class="contextButton">Message</button><button class="contextButton">Block</button>`)
     let participantID =  getAttr(e, 'participantBlock', 'participantUserID')
+    if (participantID !== userID) {
+        contextMenu.append(`<button class="contextButton">Message</button><button class="contextButton">Block</button>`)
+    }
     if (iAmLeader()) {
         contextMenu.append(`<button class="contextButton" onclick="removeParticipant(${participantID})">Kick</button>`)
     }
