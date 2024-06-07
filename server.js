@@ -57,7 +57,10 @@ app.ws('/main', (ws, req) => {
                 break
             case Helper.Type.BLOCKUSER:
                 blockUser(data)
-
+                break
+            case Helper.Type.UNBLOCKUSER:
+                unblockUser(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -96,9 +99,10 @@ function updateTyping(data) {
     })
 }
 function blockUser(data) {
-    Database.block(data.userID, data.blockedUserID).then(() => {
-
-    })
+    Database.block(data.userID, data.blockedUserID)
+}
+function unblockUser(data) {
+    Database.unblock(data.userID, data.blockedUserID)
 }
 function sendTyping(ws, conversationID) {
     if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))

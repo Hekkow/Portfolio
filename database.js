@@ -34,6 +34,9 @@ class Database {
     async block(userID, blockedUserID) {
         await this.users.findOneAndUpdate({userID: userID}, {$push: {blocked: blockedUserID}})
     }
+    async unblock(userID, blockedUserID) {
+        await this.users.findOneAndUpdate({userID: userID}, {$pull: {blocked: blockedUserID}})
+    }
     async findUserWithID(userID) {
         let user = await this.users.findOne({userID: userID})
         return user
