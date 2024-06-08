@@ -4,6 +4,7 @@
 // - notification doesnt work often
 // - doesn't work if multiple tabs of same user open
 let sessionID = Cookies.get(loginCookie)
+let userID
 let username
 let ws
 let openConversationID = -1
@@ -120,6 +121,7 @@ function receivedTyping(message) {
 function setUp(user) {
     updateLocalUsers(user)
     username = user.username
+    userID = user.userID
     // $('#loggedInUsername').text(username)
 }
 

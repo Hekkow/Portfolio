@@ -75,9 +75,7 @@ function disconnect(ws) {
     }
 }
 function login(ws, sessionID) {
-    console.log("sess", sessionID)
     let userID = loginServer.getUser(sessionID)
-    console.log(userID)
     Database.findUserWithID(userID).then((user) => {
         if (!user) {
             ws.send(JSON.stringify({type: Helper.Type.BACKTOLOGIN}))
