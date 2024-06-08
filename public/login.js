@@ -1,6 +1,6 @@
-let message = Cookies.get(loginCookie)
-if (message) {
-    $.post('attemptLoginID', {userID: message}, (response) => {
+let sessionID = Cookies.get(loginCookie)
+if (sessionID) {
+    $.post('attemptLoginID', {sessionID: sessionID}, (response) => {
         if (response.userID) {
             if (response.userID === -1) {
                 Cookies.remove(loginCookie)
@@ -12,17 +12,23 @@ if (message) {
 }
 $('#loginForm').submit(function(e) {
     let username = $('#usernameInput').val()
+    let password = $('#passwordInput').val()
     e.preventDefault();
-    startLoadingAnimation()
-    if (!username || !username.trim()) return
 
+    if (!username || !username.trim() || !password || !password.trim()) {
+        alert("Missing something")
+        return
+    }
+    startLoadingAnimation()
     $.post('attemptLogin', $(this).serialize(), (response) => {
-        if (response.userID) {
-            if (response.userID === -1) {
+        if (response.sessionID) {
+            console.log(response.sessionID)
+            if (response.sessionID === -1) {
+                alert("Invalid username or password")
                 Cookies.remove(loginCookie)
                 return
             }
-            Cookies.set(loginCookie, response.userID)
+            Cookies.set(loginCookie, response.sessionID)
             window.location.href = '/main'
         }
     })

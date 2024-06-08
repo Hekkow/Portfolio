@@ -19,7 +19,7 @@ app.ws('/main', (ws, req) => {
         let data = JSON.parse(msg)
         switch (data.type) {
             case Helper.Type.LOGIN:
-                login(ws, data.userID)
+                login(ws, data.sessionID)
                 break
             case Helper.Type.STARTCONVERSATION:
             case Helper.Type.REQUESTCONVERSATION:
@@ -74,7 +74,10 @@ function disconnect(ws) {
         }
     }
 }
-function login(ws, userID) {
+function login(ws, sessionID) {
+    console.log("sess", sessionID)
+    let userID = loginServer.getUser(sessionID)
+    console.log(userID)
     Database.findUserWithID(userID).then((user) => {
         if (!user) {
             ws.send(JSON.stringify({type: Helper.Type.BACKTOLOGIN}))
@@ -86,6 +89,7 @@ function login(ws, userID) {
         loadLocalData(ws, user)
         updateUserLists()
     })
+
 }
 function updateTyping(data) {
     if (!typing.has(data.conversationID)) typing.set(data.conversationID, [])
@@ -214,6 +218,7 @@ function loadLocalData(ws, user) {
         conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
+            console.log(users)
             Database.getReadMessages(conversations.map(conversation => conversation.conversationID)).then((readMessages) => {
                 ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users, readMessages: readMessages}))
             })
@@ -241,7 +246,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/login.html')
 })
 
-app.use('/', loginServer)
+app.use('/', loginServer.router)
 app.listen({port: Helper.port, host: Helper.host}, () => {
     console.log("Server started")
 })

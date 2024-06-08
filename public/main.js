@@ -3,7 +3,7 @@
 // - notification remains if kicked from group chat
 // - notification doesnt work often
 // - doesn't work if multiple tabs of same user open
-let userID = Cookies.get(loginCookie)
+let sessionID = Cookies.get(loginCookie)
 let username
 let ws
 let openConversationID = -1
@@ -11,11 +11,8 @@ let loadedConversations = new Map()
 let loadedUsers = new Map()
 let loadedReadMessages = [] // possibly switch to another data structure later
 let contextMenuOpen = false
-if (!userID) window.location.href = '/'
-else {
-    userID = parseInt(userID)
-    connection()
-}
+if (!sessionID) window.location.href = '/'
+else connection()
 let replyingTo = -1
 let editing = -1
 let typing = false
@@ -24,7 +21,7 @@ function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
     ws.onopen = () => {
-        ws.send(JSON.stringify({type: Type.LOGIN, userID: userID}))
+        ws.send(JSON.stringify({type: Type.LOGIN, sessionID: sessionID}))
         console.log("Connected")
         clearInterval(connectionRepeater) // stops repeated reconnection attempts
         $('#loadingOverlay').css('display', 'none')
@@ -865,43 +862,44 @@ $(window).on('focus', function () {
 function showUserContextMenu(e) {
     showContextMenu(e)
     let selectedUserID = getAttr(e, 'userBlock', 'userID')
-    let contextMenu = $('#contextMenu')
     if (selectedUserID !== userID) {
-        contextMenu.append(`<button class="contextButton">Message</button><button class="contextButton" onclick="blockUser(${selectedUserID})">Block</button>`)
+        showContextButton("", 0, "Message")
+        showContextButton("blockUser", selectedUserID, "Block")
     }
 }
 
 function showParticipantContextMenu(e) {
     showContextMenu(e)
-    let contextMenu = $('#contextMenu')
     let participantID = getAttr(e, 'participantBlock', 'participantUserID')
     if (participantID !== userID) {
-        contextMenu.append(`<button class="contextButton">Message</button>`)
+        showContextButton("", 0, "Message")
         if (!loadedUsers.get(userID).blocked.includes(participantID)) {
-            contextMenu.append(`<button class="contextButton" onclick="blockUser(${participantID})">Block</button>`)
+            showContextButton("blockUser", participantID, "Block")
         }
         else {
-            contextMenu.append(`<button class="contextButton" onclick="unblockUser(${participantID})">Unblock</button>`)
+            showContextButton("unblockUser", participantID, "Unblock")
         }
     }
     if (iAmLeader()) {
-        contextMenu.append(`<button class="contextButton" onclick="removeParticipant(${participantID})">Kick</button>`)
+        showContextButton("removeParticipant", participantID, "Kick")
     }
 }
-
+function showContextButton(functionString, parameter, buttonText) {
+    $('#contextMenu').append(`<button class="contextButton" onclick="${functionString}(${parameter})">${buttonText}</button>`)
+}
 function showConversationContextMenu(e) {
     showContextMenu(e)
     let conversationID = getAttr(e, 'conversationBlock', 'conversationID')
-    $('#contextMenu').append(`<button class="contextButton" onclick="removeConversation(${conversationID})">Leave</button>`)
+    showContextButton("removeConversation", conversationID, "Leave")
 }
 
 function showMessageContextMenu(e) {
     showContextMenu(e)
-    let contextMenu = $('#contextMenu')
     let messageID = getAttr(e, 'messageDiv', 'messageID')
-    contextMenu.append(`<button class='contextButton' onclick="replyMessage(${messageID})">Reply</button>`)
+    showContextButton("replyMessage", messageID, "Reply")
     if ($(e.target).closest('.messageDiv').hasClass('myText')) {
-        contextMenu.append(`<button class='contextButton' onclick="deleteMessage(${messageID})">Delete</button><button class='contextButton' onclick="editMessage(${messageID})">Edit</button>`)
+        showContextButton("deleteMessage", messageID, "Delete")
+        showContextButton("editMessage", messageID, "Edit")
     }
 }
 

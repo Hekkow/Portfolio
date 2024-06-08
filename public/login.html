@@ -11,8 +11,10 @@
 
             <form action="/attemptLogin" method="post" id="loginForm">
                 <div class="formSection">
-                    <label class="inputLabel">Name</label>
-                    <input type="text" name="identification" id="usernameInput" class="loginInput" placeholder="" autocomplete="off" autofocus>
+                    <label class="inputLabel" for="usernameInput">Name</label>
+                    <input type="text" name="username" id="usernameInput" class="loginInput" placeholder="" autocomplete="off" autofocus>
+                    <label class="inputLabel" for="passwordInput">Password</label>
+                    <input type="password" name="password" id="passwordInput" class="loginInput" placeholder="" autocomplete="off" autofocus>
                 </div>
                 <div class="formSection">
                     <input type="submit" id="loginButton" value="Login">

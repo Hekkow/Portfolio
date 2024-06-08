@@ -1,4 +1,4 @@
-let loginCookie = 'username'
+let loginCookie = 'sessionID'
 let port = 6969
 // let host = '192.168.2.17'
 let host = 'localhost'

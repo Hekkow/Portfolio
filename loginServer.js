@@ -1,17 +1,26 @@
 const express = require('express')
 const Database = require('./database.js')
 const router = express.Router()
+let sessionIDs = new Map()
 router.use(express.urlencoded({ extended: true }))
 router.post('/attemptLogin', (req, res) => {
-    Database.loginOrRegister(req.body.identification).then((user) => {
-        if (user) res.send({userID: user.userID})
-        else res.send({userID: -1})
+    Database.loginOrRegister(req.body.username, req.body.password).then((user) => {
+        if (user) {
+            let sessionID = crypto.randomUUID()
+            sessionIDs.set(sessionID, user.userID)
+            res.send({sessionID: sessionID})
+        }
+        else res.send({sessionID: -1})
     })
+    console.log(sessionIDs)
 })
 router.post('/attemptLoginID', (req, res) => {
-    Database.findUserWithID(req.body.userID).then((user) => {
-        if (user) res.send({userID: user.userID})
-        else res.send({userID: -1})
-    })
+    if (!sessionIDs.has(req.body.sessionID)) res.send({sessionID: -1})
+    else res.send({sessionID: req.body.sessionID})
+    console.log(sessionIDs)
 })
-module.exports = router
+function getUser(sessionID) {
+    console.log(sessionID, sessionIDs)
+    return sessionIDs.get(sessionID) || null
+}
+module.exports = { router, getUser }

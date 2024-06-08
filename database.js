@@ -23,12 +23,14 @@ class Database {
         let latestIDs = await this.latestIDs.findOne()
         if (!latestIDs) await this.latestIDs.insertOne({ latestConversationID: 1, latestUserID: 1, latestMessageID: 1 });
     }
-    async register(username) {
+    async register(username, password) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, conversations: [], userID: id, blocked: []}
+        let user = {username: username, password: password, conversations: [], userID: id, blocked: []}
+        console.log(user)
         await this.users.insertOne(user)
         await this.addUsersToGroupChat(publicConversationID, [id])
+        user.password = null
         return user
     }
     async block(userID, blockedUserID) {
@@ -39,6 +41,7 @@ class Database {
     }
     async findUserWithID(userID) {
         let user = await this.users.findOne({userID: userID})
+        if (user) user.password = null
         return user
     }
     async findUsersWithID(userIDs) {
@@ -134,7 +137,6 @@ class Database {
         return conversations
     }
     async closeConversation(userID, conversationID, conversationType) {
-
         await this.users.findOneAndUpdate(
             {userID: userID},
             {$pull: {conversations: conversationID}}
@@ -142,7 +144,6 @@ class Database {
         if (conversationType === Helper.group) {
             return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$pull: {users: userID}}, {returnDocument: "after"})
         }
-
     }
     async deleteAll() {
         await this.users.drop()
@@ -185,10 +186,16 @@ class Database {
         this.latestIDs.updateOne({}, { $set: { latestMessageID: latestMessageID } })
         return latestMessageID
     }
-    async loginOrRegister(username) {
-        let user = await this.findUserWithName(username)
-        if (!user) user = await this.register(username)
-        return user
+    async loginOrRegister(username, password) {
+        let user = await this.findUserWithName(username, password)
+        if (user) {
+            if (user.password === password) {
+                user.password = null
+                return user
+            }
+            return null
+        }
+        else return await this.register(username, password)
     }
 }
 module.exports = new Database();
