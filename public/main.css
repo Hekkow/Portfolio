@@ -153,8 +153,22 @@ button {
     background-color: gray;
     flex-direction: column;
     flex-grow: 1;
-
 }
+#popupBackground {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(173, 216, 230, 0.37);
+    align-items: center;
+    justify-content: center;
+}
+#popup {
+    width: 400px;
+    height: 300px;
+    background-color: gray;
+}
+
 
 /*#leftPanel, #activeConversations {*/
 /*    transition: 0.4s ease-in;*/

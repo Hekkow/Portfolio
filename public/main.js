@@ -12,8 +12,8 @@ let loadedConversations = new Map()
 let loadedUsers = new Map()
 let loadedReadMessages = [] // possibly switch to another data structure later
 let contextMenuOpen = false
-if (!sessionID) window.location.href = '/'
-else connection()
+// if (!sessionID) window.location.href = '/' // bring this back later
+// else connection()
 let replyingTo = -1
 let editing = -1
 let typing = false
@@ -866,7 +866,8 @@ function showUserContextMenu(e) {
     let selectedUserID = getAttr(e, 'userBlock', 'userID')
     if (selectedUserID !== userID) {
         showContextButton("", 0, "Message")
-        showContextButton("blockUser", selectedUserID, "Block")
+        // showContextButton("blockUser", selectedUserID, "Block")
+        showContextButton("showBlockUserPopup", selectedUserID, "Block")
     }
 }
 
@@ -876,7 +877,8 @@ function showParticipantContextMenu(e) {
     if (participantID !== userID) {
         showContextButton("", 0, "Message")
         if (!loadedUsers.get(userID).blocked.includes(participantID)) {
-            showContextButton("blockUser", participantID, "Block")
+            // showContextButton("blockUser", participantID, "Block")
+            showContextButton("showBlockUserPopup", participantID, "Block")
         }
         else {
             showContextButton("unblockUser", participantID, "Unblock")
@@ -894,7 +896,22 @@ function showConversationContextMenu(e) {
     let conversationID = getAttr(e, 'conversationBlock', 'conversationID')
     showContextButton("removeConversation", conversationID, "Leave")
 }
-
+function showBlockUserPopup(userID) {
+    showPopup()
+    $('#popup').append(`<button class="popupButton" onclick=blockUser(${userID})>Confirm</button><button class="popupButton" onclick="hidePopup()">Nevermind</button>`)
+    $('.popupButton').click(() => hidePopup())
+}
+function showPopup() {
+    let popupBackground = $("#popupBackground")
+    let popup = $('#popup')
+    popupBackground.css('display', 'flex')
+    popupBackground.click(() => hidePopup())
+    popup.click(e => e.stopPropagation())
+    popup.empty()
+}
+function hidePopup() {
+    $('#popupBackground').css('display', 'none')
+}
 function showMessageContextMenu(e) {
     showContextMenu(e)
     let messageID = getAttr(e, 'messageDiv', 'messageID')
@@ -921,24 +938,9 @@ function showContextMenu(e) {
     contextMenu.css('display', 'flex')
     contextMenu.css({left: e.pageX, top: e.pageY})
 }
-
-// $(window).on('contextmenu', function(e) {
-//     console.log($(e.target))
-//     let target = $(e.target)
-//     if (target.closest('.conversationBlock').length > 0) {
-//         console.log("clicked conversation")
-//     }
-//     else if (target.closest('.userBlock').length > 0) {
-//         console.log('clicked user')
-//     }
-//     if (contextMenuOpen) return
-//     contextMenuOpen = true
-//     e.preventDefault()
-//     $('#contextMenu').css('display', 'block')
-//     console.log(e)
-//     console.log(e.pageX, e.pageY)
-//     $('#contextMenu').css({left: e.pageX, top: e.pageY})
-// })
+function startProfilePicCreator() {
+    $('#profilePicCreatorBackground').css('display', 'flex')
+}
 $(window).click(function () {
     contextMenuOpen = false
     $('#contextMenu').css('display', 'none')

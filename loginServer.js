@@ -12,15 +12,12 @@ router.post('/attemptLogin', (req, res) => {
         }
         else res.send({sessionID: -1})
     })
-    console.log(sessionIDs)
 })
 router.post('/attemptLoginID', (req, res) => {
     if (!sessionIDs.has(req.body.sessionID)) res.send({sessionID: -1})
     else res.send({sessionID: req.body.sessionID})
-    console.log(sessionIDs)
 })
 function getUser(sessionID) {
-    console.log(sessionID, sessionIDs)
     return sessionIDs.get(sessionID) || null
 }
 module.exports = { router, getUser }

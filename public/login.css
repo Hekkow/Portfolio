@@ -27,7 +27,6 @@ body {
 #loginFormContainerInner {
     width: 80%;
     height: 60%;
-    /*background-color: blue;*/
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,12 +64,6 @@ body {
     box-sizing: border-box;
     text-indent: 15px;
 }
-/*.loginInput:focus {*/
-/*    border-bottom: 5px solid #2eebff;*/
-/*    outline: 0;*/
-/*    border-radius: 0;*/
-/*    !*border-radius: 15px 15px 0 0;*!*/
-/*}*/
 #loginButton {
     outline: 0;
     width: 100%;
@@ -82,10 +75,6 @@ body {
     height: 40px;
 
 }
-/*#loginButton:hover {*/
-/*    border-bottom: 5px solid #2eebff;*/
-/*    border-radius: 0;*/
-/*}*/
 #loginButton:focus {
     border: 10px;
     outline: 0;
