@@ -26,19 +26,16 @@ function drawShape() {
                 ctx.arc(shape.x+shape.r, shape.y+shape.r, shape.r, 0, Math.PI * 2)
                 ctx.closePath()
                 ctx.fill()
-
                 break
-            case Shapes.Polygon:
-                let lines = [{ angle: 60, length: 100 }, { angle: 180, length: 100 }, { angle: -60, length: 100 }]
+            case Shapes.Triangle:
                 ctx.beginPath()
-                let previous = {x: 150, y: 100}
-                ctx.moveTo(previous.x, previous.y)
-                for (let line of lines) {
-                    previous = {x: previous.x+Math.cos(rad(line.angle)) * line.length, y: previous.y+Math.sin(rad(line.angle)) * line.length}
-                    console.log(previous)
-                    ctx.lineTo(previous.x, previous.y)
+                ctx.moveTo(shape.x + shape.r * Math.cos(0), shape.y + shape.r * Math.sin(0))
+                for (let i = 0; i < shape.sides; i++) {
+                    let angle = (Math.PI * 2 * (i + 1)) / shape.sides
+                    let x = shape.x + shape.r * Math.cos(angle)
+                    let y = shape.y + shape.r * Math.sin(angle)
+                    ctx.lineTo(x, y)
                 }
-
                 ctx.closePath()
                 ctx.fill()
                 break
@@ -46,11 +43,16 @@ function drawShape() {
         ctx.restore()
     })
 }
+function increaseSides(shapeID) {
+    let shape = shapes.get(shapeID)
+    shape.sides++
+    drawShape();
+}
 
 const Shapes = {
     Rectangle: 0,
     Circle: 1,
-    Polygon: 2,
+    Triangle: 2,
 }
 
 
@@ -97,8 +99,8 @@ function showSliders(shapeID, shape) {
     if (![Shapes.Circle].includes(shape.shape)) {
         div += `${continuousInput(shapeID, 'Rotation', shape.rotationRange, shape.rotationStep)}`
     }
-    if ([Shapes.Polygon].includes(shape.shape)) {
-        div += `<button onclick="increaseSides(shapeID)">Increase sides</button>`
+    if ([Shapes.Triangle].includes(shape.shape)) {
+        div += `<button onclick="increaseSides(${shapeID})">Increase sides</button>`
     }
     div += '</div>'
     shapesList.append(div)
@@ -202,7 +204,6 @@ class Shape {
     setColor(color) {
         this.color = color
     }
-
 }
 class Rectangle extends Shape {
     constructor(shapeID = -1, x = canvasWidth/2-50/2, y = canvasHeight/2-50/2, color = "#FF0000") {
@@ -259,10 +260,13 @@ class Circle extends Shape {
         this.y += difference
     }
 }
-class Polygon extends Shape {
+class Triangle extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         super(shapeID, x, y, color)
-        this.shape = Shapes.Polygon
+        this.shape = Shapes.Triangle
+        this.a1 = 60
+        this.a2 = 60
+        this.a3 = 60
     }
 }
 function shapeFactory(shape, newShape, shapeID) {
@@ -271,7 +275,7 @@ function shapeFactory(shape, newShape, shapeID) {
             return new Rectangle(shapeID, shape.x, shape.y, shape.color)
         case Shapes.Circle:
             return new Circle(shapeID, shape.x, shape.y, shape.color)
-        case Shapes.Polygon:
+        case Shapes.Triangle:
             return new Polygon(shapeID, shape.x, shape.y, shape.color)
     }
 }
