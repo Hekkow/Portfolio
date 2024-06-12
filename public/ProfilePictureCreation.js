@@ -1,61 +1,86 @@
+// very weird glitch where moving sliders right then left repeatedly without letting go increases speed over time
 let canvasWidth = 300
 let canvasHeight = 300
-let canvas = $('canvas')[0]
-let ctx = canvas.getContext("2d")
+// let canvas = $('#editCanvas')[0]
+// let ctx = canvas.getContext("2d")
 $('#profilePicCreatorBackground').css('display', 'flex') // remove
 let moving = false
-function drawShape() {
+function drawShapes(name) {
+    let ctx = $(`canvas[canvasID=${name}]`)[0].getContext('2d')
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
     // draws each shape starting from the last in the list
     // so that the ones on top of the list show above the ones at the bottom
     $($('#shapesList').children().get().reverse()).each(function() {
-        let shape = shapes.get(parseInt($(this).attr('shapeID')))
-        ctx.save();
-        ctx.fillStyle = shape.color
-        ctx.translate(shape.rotationTranslationX, shape.rotationTranslationY)
-        ctx.rotate(shape.rotation)
-        ctx.translate(-shape.rotationTranslationX, -shape.rotationTranslationY)
-        switch (shape.shape) {
-            case Shapes.Rectangle:
-                ctx.fillRect(shape.x, shape.y, shape.w, shape.h)
-                break
-            case Shapes.Circle:
-                ctx.beginPath()
-                // + shape.r to center it around x, y
-                ctx.arc(shape.x+shape.r, shape.y+shape.r, shape.r, 0, Math.PI * 2)
-                ctx.closePath()
-                ctx.fill()
-                break
-            case Shapes.Triangle:
-                ctx.beginPath()
-                ctx.moveTo(shape.x + shape.r * Math.cos(0), shape.y + shape.r * Math.sin(0))
-                for (let i = 0; i < shape.sides; i++) {
-                    let angle = (Math.PI * 2 * (i + 1)) / shape.sides
-                    let x = shape.x + shape.r * Math.cos(angle)
-                    let y = shape.y + shape.r * Math.sin(angle)
-                    ctx.lineTo(x, y)
-                }
-                ctx.closePath()
-                ctx.fill()
-                break
-        }
-        ctx.restore()
+        drawShape(ctx, shapes.get(parseInt($(this).attr('shapeID'))))
     })
 }
-function increaseSides(shapeID) {
-    let shape = shapes.get(shapeID)
-    shape.sides++
-    drawShape();
+function drawShape(ctx, shape) {
+    ctx.save()
+    ctx.fillStyle = shape.color
+    ctx.translate(shape.rotationTranslationX, shape.rotationTranslationY)
+    ctx.rotate(shape.rotation)
+    ctx.translate(-shape.rotationTranslationX, -shape.rotationTranslationY)
+    switch (shape.shape) {
+        case Shapes.Rectangle:
+            ctx.fillRect(shape.x, shape.y, shape.w, shape.h)
+            break
+        case Shapes.Circle:
+            ctx.beginPath()
+            // + shape.r to center it around x, y
+            ctx.arc(shape.x+shape.r, shape.y+shape.r, shape.r, 0, Math.PI * 2)
+            ctx.closePath()
+            ctx.fill()
+            break
+        case Shapes.Triangle:
+            ctx.beginPath()
+            ctx.moveTo(shape.vertexA.x, shape.vertexA.y)
+            ctx.lineTo(shape.vertexB.x, shape.vertexB.y)
+            ctx.lineTo(shape.vertexC.x, shape.vertexC.y)
+            ctx.closePath()
+            ctx.fill()
+            break
+    }
+    ctx.restore()
 }
-
 const Shapes = {
     Rectangle: 0,
     Circle: 1,
     Triangle: 2,
 }
-
-
+const Modes = {
+    Move: 0,
+    Width: 1,
+    Height: 2,
+    Size: 3,
+    Rotation: 4,
+    Radius: 5,
+}
+let dragging = false
+let lastMousePosition = {x: 0, y: 0}
+let currentShapeID = 2
+$(`canvas[canvasID=editCanvas]`).mousedown(function(event) {
+    dragging = true
+})
+$(document).mouseup(function(event) {
+    dragging = false
+})
+$(document).mousemove(function(event) {
+    let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
+    lastMousePosition = {x: event.clientX, y: event.clientY}
+    if (!dragging) return
+    if (mode === Modes.Move) shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+    else if (mode === Modes.Width) shapes.get(currentShapeID).addW(deltaMouse.x)
+    else if (mode === Modes.Height) shapes.get(currentShapeID).addH(-deltaMouse.y)
+    else if (mode === Modes.Size) {
+        shapes.get(currentShapeID).addW(deltaMouse.x)
+        shapes.get(currentShapeID).addH(-deltaMouse.y)
+    }
+    else if (mode === Modes.Rotation) shapes.get(currentShapeID).addRotation(deltaMouse.x)
+    else if (mode === Modes.Radius) shapes.get(currentShapeID).addR(deltaMouse.x)
+    drawShapes('editCanvas')
+    console.log(deltaMouse)
+})
 
 let shapes = new Map()
 let latestShapeID = 2
@@ -68,12 +93,29 @@ function shapesDropdown(shapeID) {
 }
 function createShape() {
     let shape = new Rectangle()
-    console.log(shape)
     let shapeID = shape.shapeID
     shapes.set(shapeID, shape)
     showSliders(shapeID, shape)
-    drawShape()
-
+    drawShapes('editCanvas')
+}
+let mode = Modes.Move
+function setModeMove() {
+    mode = Modes.Move
+}
+function setModeWidth() {
+    mode = Modes.Width
+}
+function setModeHeight() {
+    mode = Modes.Height
+}
+function setModeSize() {
+    mode = Modes.Size
+}
+function setModeRotation() {
+    mode = Modes.Rotation
+}
+function setModeRadius() {
+    mode = Modes.Radius
 }
 function showSliders(shapeID, shape) {
     let shapesList = $('#shapesList')
@@ -83,93 +125,57 @@ function showSliders(shapeID, shape) {
         <button onclick="up(${shapeID})">^</button>
         <button onclick="down(${shapeID})">v</button>
         ${shapesDropdown(shapeID)}
-        ${continuousInput(shapeID, 'x', shape.moveRange, shape.moveStep)}
-        ${continuousInput(shapeID, 'y', shape.moveRange, shape.moveStep)}
         ${createLabel(shapeID, "Color")}
         <input type="color" name="color${shapeID}" class="colorSlider pfpInput" value="${shape.color}"></div>
+        <button onclick="setModeMove()">Move</button>
     `
-    if ([Shapes.Rectangle].includes(shape.shape)) {
+    if ([Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)) {
         div += `
-        ${continuousInput(shapeID, 'Width', shape.sizeRange, shape.sizeStep)}
-        ${continuousInput(shapeID, 'Height', shape.sizeRange, shape.sizeStep)}`
+        <button onclick="setModeWidth()">Width</button>
+        <button onclick="setModeHeight()">Height</button>
+        <button onclick="setModeSize()">Size</button>`
     }
     if ([Shapes.Circle].includes(shape.shape)) {
-        div += `${continuousInput(shapeID, 'Radius', shape.radiusRange, shape.radiusStep)}`
+        div += `<button onclick="setModeRadius()">Radius</button>`
     }
     if (![Shapes.Circle].includes(shape.shape)) {
-        div += `${continuousInput(shapeID, 'Rotation', shape.rotationRange, shape.rotationStep)}`
+
+        div += `<button onclick="setModeRotation()">Rotation</button>`
     }
     if ([Shapes.Triangle].includes(shape.shape)) {
-        div += `<button onclick="increaseSides(${shapeID})">Increase sides</button>`
+
     }
     div += '</div>'
     shapesList.append(div)
     shapesList.find(`#selectShape${shapeID}`).val(shape.shape)
-    $('.xSlider').on('mousedown', function (event) { // could possibly change this to get just added slider instead of class
-        startMoving(event, shapes.get(getShapeID(event)).addX)
-    })
-    $('.ySlider').on('mousedown', function (event) {
-        startMoving(event, shapes.get(getShapeID(event)).addY)
-    })
-    $('.WidthSlider').on('input', function (event) {
-        startMoving(event, shapes.get(getShapeID(event)).addW)
-    })
-    $('.HeightSlider').on('input', function (event) {
-        startMoving(event, shapes.get(getShapeID(event)).addH)
-    })
-    $('.RadiusSlider').on('input', function (event) {
-        startMoving(event, shapes.get(getShapeID(event)).addR)
-    })
-    $('.RotationSlider').on('input', function (event) {
-        startMoving(event, shapes.get(getShapeID(event)).addRotation)
-    })
     $('.colorSlider').on('input', function (event) {
         shapes.get(getShapeID(event)).setColor(event.target.value)
-        drawShape()
+        drawShapes('editCanvas')
     })
     $('.shapeSelect').on('change', function (event) {
         let shapeID = getShapeID(event)
         shapes.set(shapeID, shapeFactory(shape, event.target.value, shapeID))
-        drawShape()
+        drawShapes('editCanvas')
         showSliders(shapeID, shapes.get(shapeID))
+        setModeMove()
 
-    })
-    $('.continuousSlider').on('change', e => {
-        moving = false
-        $(e.target).val(0)
     })
 }
 
 function up(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertBefore(shape.prev())
-    drawShape()
+    drawShapes('editCanvas')
 }
 function down(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertAfter(shape.next())
-    drawShape()
+    drawShapes('editCanvas')
 }
-function startMoving(event, f) {
-    moving = true
-    let shape = shapes.get(getShapeID(event))
-    requestAnimationFrame(function animate() {
-        if (!moving) return
-        f.call(shape, event.target.value)
-        drawShape()
-        requestAnimationFrame(animate)
-    })
-}
-
 
 function createLabel(shapeID, name) {
     return `<div class="sliderRow"><label for="${name}${shapeID}">${name}</label>`
 }
-function continuousInput(shapeID, name, range, step) {
-    return `${createLabel(shapeID, name)}
-    <input type="range" name="${name}${shapeID}" class="${name}Slider continuousSlider pfpInput" value=${0} min=${-range} max=${range} step=${step}></div>`
-}
-
 function getShapeID(event) {
     return parseInt($(event.target).closest(".shapeDiv").attr('shapeID'))
 }
@@ -187,19 +193,13 @@ class Shape {
         this.y = y
         this.color = color
         this.rotation = 0
-        this.moveRange = 5
-        this.moveStep = 0.1
-        this.rotationRange = 0.1
-        this.rotationStep = 0.001
     }
     addRotation(rotation) {
-        this.rotation += rad(parseFloat(rotation))
+        this.rotation += rad(rotation)
     }
-    addX(x) {
-        this.x += parseFloat(x)
-    }
-    addY(y) {
-        this.y += parseFloat(y)
+    addXY(x, y) {
+        this.x += x
+        this.y += y
     }
     setColor(color) {
         this.color = color
@@ -209,37 +209,28 @@ class Rectangle extends Shape {
     constructor(shapeID = -1, x = canvasWidth/2-50/2, y = canvasHeight/2-50/2, color = "#FF0000") {
         super(shapeID, x, y, color)
         this.shape = Shapes.Rectangle
-        this.sizeRange = 0.15
-        this.sizeStep = 0.0001
         this.w = 50
         this.h = 50
-        this.updateRotationTranslationX()
-        this.updateRotationTranslationY()
+        this.updateRotationTranslation()
     }
-    addX(x) {
-        super.addX(x)
-        this.updateRotationTranslationX()
-    }
-    addY(y) {
-        super.addY(y)
-        this.updateRotationTranslationY()
+    addXY(x, y) {
+        super.addXY(x, y)
+        this.updateRotationTranslation()
     }
     addW(w) {
         let oldCenterX = this.rotationTranslationX
-        this.w += parseFloat(w)
+        this.w += w
         this.x = oldCenterX - this.w / 2
-        this.updateRotationTranslationX()
+        this.updateRotationTranslation()
     }
     addH(h) {
         let oldCenterY = this.rotationTranslationY
-        this.h += parseFloat(h)
+        this.h += h
         this.y = oldCenterY - this.h / 2
-        this.updateRotationTranslationY()
+        this.updateRotationTranslation()
     }
-    updateRotationTranslationX() {
+    updateRotationTranslation() {
         this.rotationTranslationX = this.x + this.w/2
-    }
-    updateRotationTranslationY() {
         this.rotationTranslationY = this.y + this.h/2
     }
 }
@@ -248,12 +239,10 @@ class Circle extends Shape {
         super(shapeID, x, y, color)
         this.shape = Shapes.Circle
         this.r = 25
-        this.radiusRange = 0.1
-        this.radiusStep = 0.0001
     }
     addR(r) {
         let difference = this.r
-        this.r += parseFloat(r)
+        this.r += r
         if (this.r <= 0) this.r = 0
         difference -= this.r
         this.x += difference
@@ -264,9 +253,40 @@ class Triangle extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         super(shapeID, x, y, color)
         this.shape = Shapes.Triangle
-        this.a1 = 60
-        this.a2 = 60
-        this.a3 = 60
+        this.angleA = rad(60)
+        this.minAngle = rad(1)
+        this.maxAngle = rad(179)
+        this.minLength = 1
+        this.lengthB = 100
+        this.lengthC = 100
+        this.updateVertices()
+    }
+    addXY(x, y) {
+        super.addXY(x, y)
+        this.updateVertices()
+    }
+    addW(w) {
+        this.lengthB += w
+        if (this.lengthB <= this.minLength) this.lengthB = this.minLength
+        this.updateVertices()
+    }
+    addH(h) {
+        this.lengthC += h
+        if (this.lengthC <= this.minLength) this.lengthC = this.minLength
+        this.updateVertices()
+    }
+    updateVertices() {
+        this.vertexA = { x: this.x, y: this.y }
+        this.vertexB = { x: this.x + this.lengthB * Math.cos(this.angleA), y: this.y + this.lengthB * Math.sin(this.angleA) }
+        this.vertexC = { x: this.x + this.lengthC, y: this.y }
+        this.rotationTranslationX = (this.vertexA.x + this.vertexB.x + this.vertexC.x) / 3
+        this.rotationTranslationY = (this.vertexA.y + this.vertexB.y + this.vertexC.y) / 3
+    }
+    addAngleA(delta) {
+        this.angleA += delta
+        if (this.angleA <= this.minAngle) this.angleA = this.minAngle
+        if (this.angleA >= this.maxAngle) this.angleA = this.maxAngle
+        this.updateVertices()
     }
 }
 function shapeFactory(shape, newShape, shapeID) {
@@ -276,6 +296,11 @@ function shapeFactory(shape, newShape, shapeID) {
         case Shapes.Circle:
             return new Circle(shapeID, shape.x, shape.y, shape.color)
         case Shapes.Triangle:
-            return new Polygon(shapeID, shape.x, shape.y, shape.color)
+            return new Triangle(shapeID, shape.x, shape.y, shape.color)
     }
+}
+function saveProfilePicture() {
+    $('#profilePicCreatorMainPanel').append(`<canvas id="profilePic" width="100" height="100"></canvas>`)
+
+    console.log(shapes)
 }
