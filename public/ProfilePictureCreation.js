@@ -3,20 +3,41 @@ let canvasWidth = 300
 let canvasHeight = 300
 // let canvas = $('#editCanvas')[0]
 // let ctx = canvas.getContext("2d")
-$('#profilePicCreatorBackground').css('display', 'flex') // remove
-let moving = false
-function drawShapes(name) {
-    let ctx = $(`canvas[canvasID=${name}]`)[0].getContext('2d')
-    ctx.fillStyle = "black"
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight)
-    // draws each shape starting from the last in the list
-    // so that the ones on top of the list show above the ones at the bottom
-    $($('#shapesList').children().get().reverse()).each(function() {
-        drawShape(ctx, shapes.get(parseInt($(this).attr('shapeID'))))
+// $('#profilePicCreatorBackground').css('display', 'flex') // remove
+function drawShapes(name, shapes) {
+    console.log(name, shapes)
+    let canvases = $(`canvas[canvasID=${name}]`)
+    console.log(canvases)
+    canvases.each(function() {
+        let ctx = this.getContext('2d')
+        let scale = canvasWidth/parseFloat($(this).attr('width'))
+        ctx.fillStyle = "black"
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+        if (!shapes) return
+        // draws each shape starting from the last in the list
+        // so that the ones on top of the list show above the ones at the bottom
+        if (name === 'editCanvas') {
+            $($('#shapesList').children().get().reverse()).each(function(index) {
+                let shape = shapes.get(parseInt($(this).attr('shapeID')))
+                shape.z = index
+                drawShape(ctx, shape, scale)
+            })
+        }
+        else {
+            if (!(shapes instanceof Map)) {
+                shapes = new Map(Object.entries(shapes))
+            }
+            console.log("ARRIVED HERE")
+            for (let shape of Array.from(shapes.values()).sort((a, b) => a.z - b.z)) {
+                console.log("SHAPES", ctx, shape, "scale", scale)
+                drawShape(ctx, shape, scale)
+            }
+        }
     })
 }
-function drawShape(ctx, shape) {
+function drawShape(ctx, shape, scale) {
     ctx.save()
+    ctx.scale(1/scale, 1/scale)
     ctx.fillStyle = shape.color
     ctx.translate(shape.rotationTranslationX, shape.rotationTranslationY)
     ctx.rotate(shape.rotation)
@@ -78,8 +99,7 @@ $(document).mousemove(function(event) {
     }
     else if (mode === Modes.Rotation) shapes.get(currentShapeID).addRotation(deltaMouse.x)
     else if (mode === Modes.Radius) shapes.get(currentShapeID).addR(deltaMouse.x)
-    drawShapes('editCanvas')
-    console.log(deltaMouse)
+    drawShapes('editCanvas', shapes)
 })
 
 let shapes = new Map()
@@ -96,7 +116,7 @@ function createShape() {
     let shapeID = shape.shapeID
     shapes.set(shapeID, shape)
     showSliders(shapeID, shape)
-    drawShapes('editCanvas')
+    drawShapes('editCanvas', shapes)
 }
 let mode = Modes.Move
 function setModeMove() {
@@ -150,12 +170,12 @@ function showSliders(shapeID, shape) {
     shapesList.find(`#selectShape${shapeID}`).val(shape.shape)
     $('.colorSlider').on('input', function (event) {
         shapes.get(getShapeID(event)).setColor(event.target.value)
-        drawShapes('editCanvas')
+        drawShapes('editCanvas', shapes)
     })
     $('.shapeSelect').on('change', function (event) {
         let shapeID = getShapeID(event)
         shapes.set(shapeID, shapeFactory(shape, event.target.value, shapeID))
-        drawShapes('editCanvas')
+        drawShapes('editCanvas', shapes)
         showSliders(shapeID, shapes.get(shapeID))
         setModeMove()
 
@@ -165,12 +185,12 @@ function showSliders(shapeID, shape) {
 function up(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertBefore(shape.prev())
-    drawShapes('editCanvas')
+    drawShapes('editCanvas', shapes)
 }
 function down(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertAfter(shape.next())
-    drawShapes('editCanvas')
+    drawShapes('editCanvas', shapes)
 }
 
 function createLabel(shapeID, name) {
@@ -193,6 +213,7 @@ class Shape {
         this.y = y
         this.color = color
         this.rotation = 0
+        this.z = 0
     }
     addRotation(rotation) {
         this.rotation += rad(rotation)
@@ -298,9 +319,4 @@ function shapeFactory(shape, newShape, shapeID) {
         case Shapes.Triangle:
             return new Triangle(shapeID, shape.x, shape.y, shape.color)
     }
-}
-function saveProfilePicture() {
-    $('#profilePicCreatorMainPanel').append(`<canvas id="profilePic" width="100" height="100"></canvas>`)
-
-    console.log(shapes)
 }

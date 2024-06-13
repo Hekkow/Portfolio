@@ -12,8 +12,8 @@ let loadedConversations = new Map()
 let loadedUsers = new Map()
 let loadedReadMessages = [] // possibly switch to another data structure later
 let contextMenuOpen = false
-// if (!sessionID) window.location.href = '/' // bring this back later
-// else connection()
+if (!sessionID) window.location.href = '/' // bring this back later
+else connection()
 let replyingTo = -1
 let editing = -1
 let typing = false
@@ -99,10 +99,16 @@ function connection() {
                 if (message.conversation.conversationID === openConversationID) {
                     openConversation(openConversationID)
                 }
+                break
+            case Type.PROFILEPICUPDATE:
+                if (message.userID === userID) break
+                console.log(message.userID, message.profilePic)
+                loadedUsers.get(message.userID).profilePic = message.profilePic
+                drawShapes(`${message.userID}`, message.profilePic)
+                break
         }
     }
 }
-
 function updateConversation(conversation, mode, closedUserID) {
     updateLocalConversations(conversation)
     updateConversationButton(conversation.conversationID)
@@ -416,10 +422,12 @@ function updateChatParticipants(conversation) {
     for (let user of conversation.users.map(userID => loadedUsers.get(userID))) {
         chatParticipantsDiv.append(
             `<button class='participantBlock itemBlock' participantUserID=${user.userID} onclick='startNewConversation(${user.userID})'>
-                <div class='userPic'></div>
+                ${showProfilePic(user.userID, 100)}
                 <div class='blockText'>${user.username}</div>
             </button>`)
+        drawShapes(`${user.userID}`, user.profilePic)
     }
+
     $('.participantBlock').contextmenu((e) => showParticipantContextMenu(e))
 }
 
@@ -721,8 +729,12 @@ function updateUserList(users) {
 }
 
 function addToUserList(user) {
-    $('#currentlyOnlineUsers').append(`<button class="userBlock itemBlock" userID=${user.userID} onclick="startNewConversation(${user.userID})"><div class="userPic"></div><div class="onlineUserListButtonText">${user.username}</div></button>`)
+    $('#currentlyOnlineUsers').append(`<button class="userBlock itemBlock" userID=${user.userID} onclick="startNewConversation(${user.userID})">
+        ${showProfilePic(user.userID, 50)}
+        <div class="onlineUserListButtonText">${user.username}</div>
+    </button>`)
     $(`.userBlock[userID=${user.userID}]`).contextmenu((e) => showUserContextMenu(e))
+    drawShapes(`${user.userID}`, loadedUsers.get(user.userID).profilePic)
 }
 
 function showCreateGroupChatPopup() {
@@ -775,7 +787,6 @@ function unblockUsers() {
 
 function blockUser(blockedUserID) {
     $('.conversationBlock').filter((index, conversationBlock) => {
-        console.log($(conversationBlock).attr('conversationID'))
         let conversation = loadedConversations.get(parseInt($(conversationBlock).attr('conversationID')))
         return conversation.users.length === 2 && conversation.users.includes(blockedUserID) && conversation.users.includes(userID)
     }).remove()
@@ -941,7 +952,19 @@ function showContextMenu(e) {
 function startProfilePicCreator() {
     $('#profilePicCreatorBackground').css('display', 'flex')
 }
+function closeProfilePicCreator() {
+    $('#profilePicCreatorBackground').css('display', 'none')
+}
 $(window).click(function () {
     contextMenuOpen = false
     $('#contextMenu').css('display', 'none')
 })
+function saveProfilePicture() {
+    ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: userID, profilePic: Object.fromEntries([...shapes])}))
+    closeProfilePicCreator()
+    loadedUsers.get(userID).profilePic = shapes
+    drawShapes(`${userID}`, shapes)
+}
+function showProfilePic(userID, size) {
+    return `<div class='userPic' style="clip-path: circle(${size/2}px at center);"><canvas width=${size} height=${size} canvasID=${userID}></canvas></div>`
+}

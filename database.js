@@ -23,11 +23,13 @@ class Database {
         let latestIDs = await this.latestIDs.findOne()
         if (!latestIDs) await this.latestIDs.insertOne({ latestConversationID: 1, latestUserID: 1, latestMessageID: 1 });
     }
+    async saveProfilePicture(userID, shapes) {
+        return await this.users.findOneAndUpdate({userID: userID}, {$set: {profilePic: shapes}}, {returnDocument: 'after'})
+    }
     async register(username, password) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, password: password, conversations: [], userID: id, blocked: []}
-        console.log(user)
+        let user = {username: username, password: password, conversations: [], userID: id, blocked: [], profilePic: ""}
         await this.users.insertOne(user)
         await this.addUsersToGroupChat(publicConversationID, [id])
         user.password = null

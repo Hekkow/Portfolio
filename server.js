@@ -61,6 +61,9 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.UNBLOCKUSER:
                 unblockUser(data)
                 break
+            case Helper.Type.SAVEPROFILEPIC:
+                saveProfilePicture(data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -88,6 +91,18 @@ function login(ws, sessionID) {
         updateUserLists()
     })
 
+}
+function saveProfilePicture(data) {
+    Database.saveProfilePicture(data.userID, data.profilePic).then(user => {
+        Database.findConversations(user.conversations).then((conversations) => {
+            if (!conversations) return
+            conversations = conversations.filter(conversation => conversation)
+            let userIDs = Array.from(new Set(conversations.flatMap(conversation => conversation.users)))
+            for (let socket of getSockets(userIDs)) {
+                socket.send(JSON.stringify({type: Helper.Type.PROFILEPICUPDATE, userID: data.userID, profilePic: data.profilePic}))
+            }
+        })
+    }) // send this back somehow? not sure who to send it back to though. maybe all users in all conversatiosn
 }
 function updateTyping(data) {
     if (!typing.has(data.conversationID)) typing.set(data.conversationID, [])
@@ -195,6 +210,7 @@ function receivedMessage(message) {
     })
 }
 function getSockets(users) {
+    console.log(users)
     return users.flatMap(userID => clients.filter(client => client.userID === userID)).map(client => client.socket)
 }
 function readMessage(data) {
@@ -213,6 +229,7 @@ function loadLocalData(ws, user) {
     if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
         if (!conversations) return
+        console.log(conversations)
         conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
