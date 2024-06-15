@@ -116,7 +116,11 @@ function updateTyping(data) {
     })
 }
 function blockUser(data) {
-    Database.block(data.userID, data.blockedUserID)
+    Database.block(data.userID, data.blockedUserID).then(user => {
+        let client = clients.find(client => client.userID === data.blockedUserID)
+        if (!client) return
+        client.socket.send(JSON.stringify({type: Helper.Type.BLOCKUSER, userID: data.userID}))
+    })
 }
 function unblockUser(data) {
     Database.unblock(data.userID, data.blockedUserID)

@@ -105,6 +105,9 @@ function connection() {
                 loadedUsers.get(message.userID).profilePic = message.profilePic
                 drawShapes(`${message.userID}`, message.profilePic)
                 break
+            case Type.BLOCKUSER:
+                loadedUsers.get(message.userID).blocked.push(userID)
+                break
         }
     }
 }
@@ -791,15 +794,25 @@ function unblockUsers() {
 }
 
 function blockUser(blockedUserID) {
+    let conversationID
     $('.conversationBlock').filter((index, conversationBlock) => {
-        let conversation = loadedConversations.get(parseInt($(conversationBlock).attr('conversationID')))
-        return conversation.users.length === 2 && conversation.users.includes(blockedUserID) && conversation.users.includes(userID)
+        let thisConversationID = parseInt($(conversationBlock).attr('conversationID'))
+        let conversation = loadedConversations.get(thisConversationID)
+        if (!conversation) return false
+        let found = conversation.conversationType === direct && conversation.users.includes(blockedUserID) && conversation.users.includes(userID)
+        if (found) conversationID = thisConversationID
+        return found
     }).remove()
     $(`.userBlock[userID=${blockedUserID}]`).remove()
     $(`.messageDiv[userID=${blockedUserID}]`).find('p.messageText').text("Message from blocked user")
     $(`.readIndicator[userID=${blockedUserID}]`).remove()
     loadedUsers.get(userID).blocked.push(blockedUserID)
     loadedReadMessages = loadedReadMessages.filter(entry => entry.userID !== blockedUserID)
+    console.log("heraefa", conversationID, openConversationID)
+    if (conversationID === openConversationID) {
+        console.log("AGOEAAEJG")
+        closeConversationArea()
+    }
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: userID, blockedUserID: blockedUserID}))
 }
 
