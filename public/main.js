@@ -102,7 +102,6 @@ function connection() {
                 break
             case Type.PROFILEPICUPDATE:
                 if (message.userID === userID) break
-                console.log(message.userID, message.profilePic)
                 loadedUsers.get(message.userID).profilePic = message.profilePic
                 drawShapes(`${message.userID}`, message.profilePic)
                 break
@@ -567,7 +566,13 @@ function showMessage(message, local) { // can remove local variable and replace 
     let sendableMessage = message.message
     sendableMessage = addLinks(sendableMessage)
     if (loadedUsers.get(userID).blocked.includes(message.userID)) sendableMessage = "Message from blocked user"
-    messages.append(`<div class='messageDiv' messageID=${message.messageID} userID=${message.userID} replyingTo=${message.replyingTo}><div class='messageTextDiv'>${reply}<p class='messageText'>${name}: ${sendableMessage}</p></div></div>`)
+    messages.append(`<div class='messageDiv' messageID=${message.messageID} userID=${message.userID} replyingTo=${message.replyingTo}>
+            ${showProfilePic(message.userID, 40)}
+            <div class='messageTextDiv'>
+                ${reply}<p class='messageText'>${name}: ${sendableMessage}</p>
+            </div>
+        </div>`)
+    drawShapes(`${message.userID}`, loadedUsers.get(message.userID).profilePic)
     let messageDiv = $('.messageDiv[messageID=' + message.messageID + ']')
     if (local) {
         messageDiv.addClass('myText');

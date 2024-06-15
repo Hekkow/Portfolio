@@ -102,7 +102,7 @@ function saveProfilePicture(data) {
                 socket.send(JSON.stringify({type: Helper.Type.PROFILEPICUPDATE, userID: data.userID, profilePic: data.profilePic}))
             }
         })
-    }) // send this back somehow? not sure who to send it back to though. maybe all users in all conversatiosn
+    })
 }
 function updateTyping(data) {
     if (!typing.has(data.conversationID)) typing.set(data.conversationID, [])
@@ -210,7 +210,6 @@ function receivedMessage(message) {
     })
 }
 function getSockets(users) {
-    console.log(users)
     return users.flatMap(userID => clients.filter(client => client.userID === userID)).map(client => client.socket)
 }
 function readMessage(data) {
@@ -229,7 +228,6 @@ function loadLocalData(ws, user) {
     if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
         if (!conversations) return
-        console.log(conversations)
         conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {

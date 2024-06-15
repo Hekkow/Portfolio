@@ -5,9 +5,7 @@ let canvasHeight = 300
 // let ctx = canvas.getContext("2d")
 // $('#profilePicCreatorBackground').css('display', 'flex') // remove
 function drawShapes(name, shapes) {
-    console.log(name, shapes)
     let canvases = $(`canvas[canvasID=${name}]`)
-    console.log(canvases)
     canvases.each(function() {
         let ctx = this.getContext('2d')
         let scale = canvasWidth/parseFloat($(this).attr('width'))
@@ -27,9 +25,7 @@ function drawShapes(name, shapes) {
             if (!(shapes instanceof Map)) {
                 shapes = new Map(Object.entries(shapes))
             }
-            console.log("ARRIVED HERE")
             for (let shape of Array.from(shapes.values()).sort((a, b) => a.z - b.z)) {
-                console.log("SHAPES", ctx, shape, "scale", scale)
                 drawShape(ctx, shape, scale)
             }
         }
