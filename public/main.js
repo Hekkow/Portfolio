@@ -699,7 +699,8 @@ function showReplyBar(messageID, mode) {
     let replyBarText
     if (mode === "Reply") {
         replyingTo = messageID
-        replyBarText = $(`messageDiv[messageID=${messageID}]`).find('p.messageText').text()
+        console.log("HERE", $(`.messageDiv[messageID=${messageID}]`))
+        replyBarText = $(`.messageDiv[messageID=${messageID}]`).find('p.messageText').text()
     } else if (mode === "Edit") {
         editing = messageID
         replyBarText = "Editing"
