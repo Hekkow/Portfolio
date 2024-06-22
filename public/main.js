@@ -17,7 +17,7 @@ else connection()
 let replyingTo = -1
 let editing = -1
 let typing = false
-
+ 
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
