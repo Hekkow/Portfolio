@@ -627,7 +627,9 @@ function getName(message) {
 }
 
 function scrollToBottom() {
-    $('#messages').scrollTop($('#messages').prop("scrollHeight"))
+    let messages = $('#messages')
+    if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return
+    messages.scrollTop(messages.prop("scrollHeight"))
 }
 
 function addLinks(text) {
@@ -699,7 +701,6 @@ function showReplyBar(messageID, mode) {
     let replyBarText
     if (mode === "Reply") {
         replyingTo = messageID
-        console.log("HERE", $(`.messageDiv[messageID=${messageID}]`))
         replyBarText = $(`.messageDiv[messageID=${messageID}]`).find('p.messageText').text()
     } else if (mode === "Edit") {
         editing = messageID
@@ -809,11 +810,7 @@ function blockUser(blockedUserID) {
     $(`.readIndicator[userID=${blockedUserID}]`).remove()
     loadedUsers.get(userID).blocked.push(blockedUserID)
     loadedReadMessages = loadedReadMessages.filter(entry => entry.userID !== blockedUserID)
-    console.log("heraefa", conversationID, openConversationID)
-    if (conversationID === openConversationID) {
-        console.log("AGOEAAEJG")
-        closeConversationArea()
-    }
+    if (conversationID === openConversationID) closeConversationArea()
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: userID, blockedUserID: blockedUserID}))
 }
 
