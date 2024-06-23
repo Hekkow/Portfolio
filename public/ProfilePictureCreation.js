@@ -1,11 +1,10 @@
-// very weird glitch where moving sliders right then left repeatedly without letting go increases speed over time
 let canvasWidth = 300
 let canvasHeight = 300
 // let canvas = $('#editCanvas')[0]
 // let ctx = canvas.getContext("2d")
 // $('#profilePicCreatorBackground').css('display', 'flex') // remove
 function drawShapes(name, shapes) {
-    let canvases = $(`canvas[canvasID=${name}]`)
+    let canvases = $(`canvas[data-canvasid="${name}"]`)
     canvases.each(function() {
         let ctx = this.getContext('2d')
         let scale = canvasWidth/parseFloat($(this).attr('width'))

@@ -19,7 +19,8 @@ let editing = -1
 let typing = false
 
 import App from '/components/App.js'
-Vue.createApp(App).mount('#app');
+// Vue.createApp(App).mount('#app');
+App.mount('#app')
 import {store} from '/components/data.js'
 function connection() {
     let connectionRepeater

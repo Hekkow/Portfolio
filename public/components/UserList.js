@@ -8,9 +8,8 @@ export default {
     },
     template: `
       <div v-for="user in store.currentlyOnlineUsers">
-        <button>
-          {{user.username}}
-        </button>
+        <user-block :user="user"></user-block>
       </div>
     `,
 }
+
