@@ -177,6 +177,15 @@ button {
 canvas {
     vertical-align: middle;
 }
+.redButton {
+    background-color: red;
+}
+.blueButton {
+    background-color: blue;
+}
+.roundedButton {
+    border-radius: 20px;
+}
 /*#leftPanel, #activeConversations {*/
 /*    transition: 0.4s ease-in;*/
 /*}*/

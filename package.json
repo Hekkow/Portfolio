@@ -2,7 +2,6 @@
   "dependencies": {
     "express": "^4.19.2",
     "express-ws": "^5.0.2",
-    "mongodb": "^6.5.0",
-    "ws": "^8.17.0"
+    "mongodb": "^6.5.0"
   }
 }

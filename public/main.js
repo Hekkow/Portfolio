@@ -12,12 +12,15 @@ let loadedConversations = new Map()
 let loadedUsers = new Map()
 let loadedReadMessages = [] // possibly switch to another data structure later
 let contextMenuOpen = false
-if (!sessionID) window.location.href = '/' // bring this back later
+if (!sessionID) window.location.href = '/'
 else connection()
 let replyingTo = -1
 let editing = -1
 let typing = false
- 
+
+import App from '/components/App.js'
+Vue.createApp(App).mount('#app');
+import {store} from '/components/data.js'
 function connection() {
     let connectionRepeater
     ws = new WebSocket('ws://' + host + ':' + port + '/main')
@@ -29,7 +32,7 @@ function connection() {
     }
     ws.onclose = () => {
         $('#loadingOverlay').css('display', 'block')
-        connectionRepeater = setInterval(() => { // when connection broking, every 400ms, try to reconnect if possible
+        connectionRepeater = setInterval(() => { // when connection broken, every 400ms, try to reconnect if possible
             if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                 console.log("Attempting to reconnect")
                 connection()
@@ -42,7 +45,13 @@ function connection() {
         let type = message.type
         switch (type) {
             case Type.ONLINEUSERSUPDATE:
-                updateUserList(message.users)
+                if (Array.isArray(message.users)) {
+                    for (let user of message.users) {
+                        store.loadedUsers.set(user.userID, user)
+                    }
+                } else store.loadedUsers.set(message.users.userID, message.users)
+                store.currentlyOnlineUsers = message.users.filter(user => user && user.userID !== userID && !loadedUsers.get(userID).blocked.includes(user.userID))
+                // updateUserList(message.users)
                 break
             case Type.RECEIVEUSERNAME:
                 setUp(message.user)
@@ -730,10 +739,12 @@ function updateUserList(users) {
     let currentlyOnlineUsersDiv = $('#currentlyOnlineUsers')
     currentlyOnlineUsersDiv.empty()
     updateLocalUsers(users)
+    store.currentlyOnlineUsers = users.filter(user => user && user.userID !== userID && !loadedUsers.get(userID).blocked.includes(user.userID))
     for (let user of users) {
         if (!user) continue
         if (user.userID === userID) continue
         if (loadedUsers.get(userID).blocked.includes(user.userID)) continue
+
         addToUserList(user)
     }
 }
