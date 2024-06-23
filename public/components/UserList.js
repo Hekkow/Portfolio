@@ -1,15 +1,26 @@
-import {store} from "./data.js";
+import {data} from "./data.js";
 
 export default {
     data() {
         return {
-            store
+            data: data
         }
     },
     template: `
-      <div v-for="user in store.currentlyOnlineUsers">
-        <user-block :user="user"></user-block>
+      <div class="panelList">
+        <user-block v-if="type==='user-block'" v-for="user in data.currentlyOnlineUsers" :user="user"></user-block>
+        <conversation-block 
+            v-if="type==='conversation-block' && data.userID !== -1" 
+            v-for="conversation in data.loadedUsers.get(data.userID).conversations.filter(conversationID => data.loadedConversations.has(conversationID)).map(conversationID => data.loadedConversations.get(conversationID))"
+            :conversation="conversation"
+        >
+        </conversation-block>
       </div>
     `,
+    props: {
+        type: {
+            type: String
+        },
+    },
 }
 

@@ -1,8 +1,7 @@
-export const store = Vue.reactive({
-    count: 0,
+export const data = Vue.reactive({
     loadedUsers: new Map(),
+    loadedConversations: new Map(),
     currentlyOnlineUsers: [],
-    increment() {
-        this.count++
-    }
+    userID: -1,
+    openConversationID: -1
 })
