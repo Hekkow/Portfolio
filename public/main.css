@@ -191,6 +191,10 @@ canvas {
     border: 3px solid #4ab1ef;
     background-color: #4ab1ef;
 }
+.blockText {
+    text-align: left;
+    white-space: pre-line;
+}
 /*#leftPanel, #activeConversations {*/
 /*    transition: 0.4s ease-in;*/
 /*}*/
