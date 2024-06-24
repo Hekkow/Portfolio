@@ -41,9 +41,7 @@
                     <messages></messages>
                 </div>
                 <div id="replyBar"><div id="replyBarCloseButton"></div></div>
-                <div id="messageInputDiv" v-show="data.openConversationID !== -1">
-                    <textarea id="messageInput" autofocus></textarea><button id="messageSendButton" onclick="sendMessage()"></button>
-                </div>
+                <message-input></message-input>
             </div>
         </div>
         <div id="chatInfoPanel">

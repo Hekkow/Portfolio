@@ -38,14 +38,17 @@ button {
 }
 #chatInfoPanel {
     width: 250px;
+    min-width: 250px;
     border: inset 5px blue;
 }
 #currentlyOnlineUsersPanel {
     width: 100px;
+    min-width: 100px;
     border: inset 5px purple;
 }
 #activeConversationsPanel {
     width: 250px;
+    min-width: 250px;
     border: inset 5px yellow;
     display: flex;
     flex-direction: column;
@@ -72,12 +75,6 @@ button {
     border: inset 5px pink;
     overflow: auto;
 }
-
-/*#mainPanelBottom {*/
-/*    height: 80px;*/
-/*    border: inset 5px green;*/
-/*    display: flex;*/
-/*}*/
 
 #messageInputDiv {
     min-height: 100px;
@@ -121,7 +118,7 @@ button {
     margin: 0;
     display: flex;
     align-items: flex-start;
-
+    position: relative;
 }
 .myText {
     text-align: right;
@@ -194,6 +191,11 @@ canvas {
 .blockText {
     text-align: left;
     white-space: pre-line;
+}
+.hoverButtons {
+    position: absolute;
+    top: -10px;
+    z-index: 10;
 }
 /*#leftPanel, #activeConversations {*/
 /*    transition: 0.4s ease-in;*/

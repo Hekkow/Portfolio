@@ -5,6 +5,8 @@ import ProfilePic from "./ProfilePic.js"
 import ConversationBlock from "./ConversationBlock.js";
 import Message from "./Message.js";
 import Messages from "./Messages.js";
+import HoverButtons from "./HoverButtons.js";
+import MessageInput from "./MessageInput.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -19,4 +21,6 @@ app.component('data', data)
 app.component('conversation-block', ConversationBlock)
 app.component('message', Message)
 app.component('messages', Messages)
+app.component('hover-buttons', HoverButtons)
+app.component('message-input', MessageInput)
 export default app

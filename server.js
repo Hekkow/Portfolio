@@ -21,7 +21,6 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.LOGIN:
                 login(ws, data.sessionID)
                 break
-            case Helper.Type.STARTCONVERSATION:
             case Helper.Type.REQUESTCONVERSATION:
                 sendRequestedConversation(ws, data)
                 break
@@ -123,7 +122,7 @@ function blockUser(data) {
     })
 }
 function unblockUser(data) {
-    Database.unblock(data.userID, data.blockedUserID)
+    Database.unblock(data.userID, data.blockedUserID) // do same thing here as you did for blockUser
 }
 function sendTyping(ws, conversationID) {
     if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))
@@ -131,12 +130,10 @@ function sendTyping(ws, conversationID) {
 }
 function sendRequestedConversation(ws, data) { // conversationID can be users array
     Database.findConversation(data.conversationID).then(async (conversation) => {
+        // don't mess with the order
         if (!conversation && data.conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(data.conversationID)
-        if (!conversation) {
-            conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
-            data.type = Helper.Type.CONVERSATIONCREATED
-        }
-        ws.send(JSON.stringify({type: data.type, conversation: conversation}))
+        if (!conversation) conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
+        ws.send(JSON.stringify({type: Helper.Type.REQUESTCONVERSATION, conversation: conversation}))
     })
 }
 function inviteToGroupChat(data) {
@@ -208,8 +205,9 @@ function receivedMessage(message) {
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
         for (let socket of getSockets(conversation.users)) {
-            if (conversation.texts.length === 1) socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
-            else socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
+            // if (conversation.texts.length === 1) socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
+            // else socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
+            socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
         }
     })
 }

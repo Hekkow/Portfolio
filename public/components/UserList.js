@@ -11,7 +11,7 @@ export default {
         <user-block v-if="type==='user-block'" v-for="user in data.currentlyOnlineUsers" :user="user"></user-block>
         <conversation-block 
             v-if="type==='conversation-block' && data.userID !== -1" 
-            v-for="conversation in data.loadedUsers.get(data.userID).conversations.filter(conversationID => data.loadedConversations.has(conversationID)).map(conversationID => data.loadedConversations.get(conversationID))"
+            v-for="conversation in conversations"
             :conversation="conversation"
         >
         </conversation-block>
@@ -22,5 +22,10 @@ export default {
             type: String
         },
     },
+    computed: {
+        conversations() {
+            return data.loadedUsers.get(data.userID).conversations.filter(conversationID => data.loadedConversations.has(conversationID)).map(conversationID => data.loadedConversations.get(conversationID))
+        }
+    }
 }
 
