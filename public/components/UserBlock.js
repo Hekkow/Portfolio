@@ -2,7 +2,7 @@ export default {
 
     template: `
       <button class="userBlock itemBlock" :data-userID="user.userID">
-          <profile-pic :size=50 :userid="user.userID" :shapes="user.shapes"></profile-pic>
+          <profile-pic :size=50 :userid="user.userID"></profile-pic>
           <div class="onlineUserListButtonText">{{user.username}}</div>
       </button>
     `,

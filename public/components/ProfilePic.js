@@ -1,7 +1,13 @@
+import {data} from "./data.js";
 export default {
+    data() {
+        return {
+            data: data
+        }
+    },
     setup(props) {
         Vue.onMounted(() => {
-            drawShapes(props.userid, props.shapes)
+            drawShapes(props.userid, data.loadedUsers.get(props.userid).shapes)
         })
     },
     template: `
@@ -18,9 +24,5 @@ export default {
             type: Number,
             default: -1
         },
-        shapes: {
-            type: Array,
-            default: []
-        }
     }
 }

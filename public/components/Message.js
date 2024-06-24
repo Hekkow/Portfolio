@@ -7,7 +7,7 @@ export default {
     },
     template: `
       <div class='messageDiv'>
-<!--        <profile-pic :size=50 :userid="message.userID" :shapes="user.shapes"></profile-pic>-->
+        <profile-pic :size=50 :userid="message.userID"></profile-pic>
         <div class='messageTextDiv'>
           <p class='messageText'>{{ getDisplayableMessage(message) }}</p>
         </div>

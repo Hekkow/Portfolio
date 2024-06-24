@@ -1,7 +1,8 @@
-import {openConversation} from '../main.js'
+import {openConversation} from "../main.js";
+
 export default {
     template: `
-      <button class="conversationBlock itemBlock" :data-conversationID="conversation.conversationID" @click="openTheConversation">
+      <button class="conversationBlock itemBlock" :data-conversationID="conversation.conversationID" @click="openConversation(this.conversation.conversationID)">
         <div class="blockText">{{conversation.conversationName}}</div>
       </button>
     `,
@@ -11,9 +12,6 @@ export default {
         },
     },
     methods: {
-        openTheConversation() { // i am so very upset
-            openConversation(this.conversation.conversationID)
-        }
-
+        openConversation,
     }
 }

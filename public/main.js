@@ -72,22 +72,11 @@ function loadLocalData(data) {
     // }
     // showOfflineNotifications()
 }
-export const openConversation = (conversationID) => {
-    console.log("OPENED")
+export function openConversation(conversationID) {
     if (conversationID === -1) return
-
     data.openConversationID = conversationID
-    openConversationArea()
-    $('#messages').append(`<message v-for="message in data.loadedConversations.get(conversationID).texts" :message="message"></message>`)
 }
-function openConversationArea() {
-    // $('#messages').empty()
-    // loadMessageInput()
-}
-// function loadMessageInput() {
-//     let messageInput =
-//     messageInput.focus()
-// }
+
 export function sendMessage() {
     let messageInput = $('#messageInput')
     let text = messageInput.val().trim()
@@ -112,3 +101,4 @@ $('#messageInput').keyup((event) => {
     }
 })
 window.sendMessage = sendMessage
+window.openConversation = openConversation
