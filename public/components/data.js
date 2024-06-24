@@ -3,5 +3,6 @@ export const data = Vue.reactive({
     loadedConversations: new Map(),
     currentlyOnlineUsers: [],
     userID: -1,
-    openConversationID: -1
+    openConversationID: -1,
+    editing: -1
 })

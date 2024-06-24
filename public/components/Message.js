@@ -19,7 +19,7 @@ export default {
         <hover-buttons v-if="messageHovered" :message="message"></hover-buttons>
         <profile-pic :size=50 :userid="message.userID"></profile-pic>
         <div class='messageTextDiv'>
-          <p class='messageText' :style="{ color: message.messageID ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
+          <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
         </div>
       </div>
     `,

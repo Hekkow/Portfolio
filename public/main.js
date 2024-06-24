@@ -43,6 +43,9 @@ function connection() {
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
                 break
+            case Type.EDITMESSAGE:
+                receivedEditMessage(message.message)
+                break
             case Type.REQUESTCONVERSATION:
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set(user.conversations), message.conversation.conversationID] // adds to conversations only if its not there
@@ -78,8 +81,11 @@ function receivedNewMessage(message) {
         ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct }))
         return
     }
-    if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID).messageID = message.messageID
-    else data.loadedConversations.get(message.conversationID).texts.push(message)
+    if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
+    else addMessage(message)
+}
+function receivedEditMessage(message) {
+    editMessage(message)
 }
 export function openConversation(conversationID) {
     if (conversationID === -1) return
@@ -97,6 +103,12 @@ export function startConversation(receivingUserID) {
     }
     ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct }))
 }
+function editMessage(message) {
+    data.loadedConversations.get(message.conversationID).texts.find(text => text.messageID === message.messageID).message = message.message
+}
+function addMessage(message) {
+    data.loadedConversations.get(message.conversationID).texts.push(message)
+}
 export function sendMessage() {
     let messageInput = $('#messageInput')
     let text = messageInput.val().trim()
@@ -107,11 +119,16 @@ export function sendMessage() {
         conversationID: data.openConversationID,
         userID: data.userID,
         message: text,
-        date: new Date()
+        date: new Date(),
+        messageID: data.editing
     }
-    data.loadedConversations.get(data.openConversationID).texts.push(message)
-    // showMessage(message, true)
-    ws.send(JSON.stringify({type: Type.NEWMESSAGE, message: message}))
+    if (data.editing === -1) addMessage(message)
+    else editMessage(message)
+    ws.send(JSON.stringify({type: data.editing === -1 ? Type.NEWMESSAGE : Type.EDITMESSAGE, message: message}))
+    closeReply()
+}
+function closeReply() {
+    data.editing = -1
 }
 $('#messageInput').keyup((event) => {
     if (event.key === "Enter" && !event.originalEvent.shiftKey) {
@@ -129,6 +146,14 @@ export function deleteMessage(messageID) {
         conversationID: data.openConversationID
     }))
 }
+export function startEdit(messageID) {
+    let conversation = data.loadedConversations.get(data.openConversationID)
+    let messageInput = $('#messageInput')
+    messageInput.val(conversation.texts.find(text => text.messageID === messageID).message)
+    messageInput.focus()
+    data.editing = messageID
+}
+// not sure if i need these
 window.sendMessage = sendMessage
 window.deleteMessage = deleteMessage
 // window.openConversation = openConversation

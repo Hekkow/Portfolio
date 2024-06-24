@@ -187,8 +187,9 @@ function closeConversation(data) {
 }
 function editMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
+    console.log(message)
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
-        for (let socket of getSockets(conversation.users)) {
+        for (let socket of getSockets(conversation.users.filter(userID => userID !== message.userID))) {
             socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
         }
     })

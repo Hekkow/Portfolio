@@ -13,11 +13,17 @@ export default {
             this.$nextTick(() => {
                 this.$refs.messageInput.focus()
             })
+        },
+        emptyText() {
+            this.$nextTick(() => {
+                this.$refs.messageInput.focus()
+            })
         }
     },
     watch: {
         'data.openConversationID'(id) {
             if (id !== -1) this.focusTextArea()
+
         }
     },
     template: `

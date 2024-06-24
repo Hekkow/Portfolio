@@ -117,7 +117,7 @@ class Database {
     async editMessage(conversationID, messageID, message) {
         return await this.conversations.findOneAndUpdate(
             {conversationID: conversationID, "texts.messageID": messageID},
-            {$set: { "texts.$.message": message}},
+            {$set: { "texts.$.message": message}}, // i have no idea what this line means now and i fear it may be too late for me
             {returnDocument: "after"}
         )
     }

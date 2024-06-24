@@ -1,4 +1,4 @@
-import {deleteMessage} from "../main.js";
+import {deleteMessage, startEdit} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
@@ -7,12 +7,13 @@ export default {
         }
     },
     methods: {
-        deleteMessage
+        deleteMessage,
+        startEdit
     },
     template: `
       <div class="hoverButtons">
         <button v-if="data.userID === message.userID" @click="deleteMessage(message.messageID)">Delete</button>
-        <button v-if="data.userID === message.userID">Edit</button>
+        <button v-if="data.userID === message.userID" @click="startEdit(message.messageID)">Edit</button>
         <button>Reply</button>
       </div>
     `,
