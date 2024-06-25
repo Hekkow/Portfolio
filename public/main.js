@@ -132,7 +132,7 @@ function closeReply() {
     data.editing = -1
     data.replyingTo = -1
 }
-$('#messageInput').keyup((event) => {
+$('#messageInput').keydown((event) => {
     if (event.key === "Enter" && !event.originalEvent.shiftKey) {
         event.preventDefault()
         sendMessage()
