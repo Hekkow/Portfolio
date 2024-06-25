@@ -120,7 +120,8 @@ export function sendMessage() {
         userID: data.userID,
         message: text,
         date: new Date(),
-        messageID: data.editing
+        messageID: data.editing,
+        replyingTo: data.replyingTo
     }
     if (data.editing === -1) addMessage(message)
     else editMessage(message)
@@ -129,6 +130,7 @@ export function sendMessage() {
 }
 function closeReply() {
     data.editing = -1
+    data.replyingTo = -1
 }
 $('#messageInput').keyup((event) => {
     if (event.key === "Enter" && !event.originalEvent.shiftKey) {

@@ -25,11 +25,16 @@ export default {
     `,
 // turn getDisplayableMessage into computed later
     methods: {
-        getDisplayableMessage(message) {
+        getDisplayableMessage(message, reply) {
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
+            let text = ""
             let name = message.userID
             if (name) name = data.loadedUsers.get(name).username
-            return name + ": " + this.addLinks(message.message)
+            if (!reply && message.replyingTo !== -1) {
+                text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
+            }
+            text += name + ": " + this.addLinks(message.message)
+            return text
         },
         addLinks(text) {
             // regex for finding url

@@ -14,7 +14,7 @@ export default {
       <div class="hoverButtons">
         <button v-if="data.userID === message.userID" @click="deleteMessage(message.messageID)">Delete</button>
         <button v-if="data.userID === message.userID" @click="startEdit(message.messageID)">Edit</button>
-        <button>Reply</button>
+        <button @click="data.replyingTo = message.messageID">Reply</button>
       </div>
     `,
     props: {

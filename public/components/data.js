@@ -4,5 +4,6 @@ export const data = Vue.reactive({
     currentlyOnlineUsers: [],
     userID: -1,
     openConversationID: -1,
-    editing: -1
+    editing: -1,
+    replyingTo: -1,
 })
