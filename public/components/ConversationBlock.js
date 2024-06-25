@@ -1,14 +1,22 @@
-import {openConversation} from "../main.js";
+import {openConversation, closeConversation} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
         return {
-            data: data
+            data: data,
+            messageHovered: false
         }
     },
     template: `
-      <button class="conversationBlock itemBlock" :data-conversationID="conversation.conversationID" @click="openConversation(this.conversation.conversationID)">
+      <button
+          class="conversationBlock itemBlock"
+          :data-conversationID="conversation.conversationID" 
+          @click="openConversation(this.conversation.conversationID)"
+          @mouseenter="messageHovered = true"
+          @mouseleave="messageHovered = false"
+      >
         <div class="blockText">{{conversationBlockText}}</div>
+        <button class="closeConversationButton" v-if="messageHovered" @click.stop="closeConversation(conversation.conversationID)">x</button>
       </button>
     `,
     props: {
@@ -18,6 +26,7 @@ export default {
     },
     methods: {
         openConversation,
+        closeConversation,
     },
     computed: {
         conversationBlockText() {

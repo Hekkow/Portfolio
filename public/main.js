@@ -49,31 +49,28 @@ function connection() {
             case Type.REQUESTCONVERSATION:
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set(user.conversations), message.conversation.conversationID] // adds to conversations only if its not there
-                updateLocalConversations(message.conversation)
+                updateLocalConversations([message.conversation])
                 break
 
         }
     }
 }
 function setUp(user) {
-    updateLocalUsers(user)
+    updateLocalUsers([user])
     data.userID = user.userID
 }
 function updateLocalUsers(users) {
-    if (Array.isArray(users)) {
-        for (let user of users) {
-            data.loadedUsers.set(user.userID, user)
-        }
-    } else data.loadedUsers.set(users.userID, users)
+    for (let user of users) {
+        data.loadedUsers.set(user.userID, user)
+    }
 }
 function updateLocalConversations(conversations) {
-    if (Array.isArray(conversations)) {
-        for (let conversation of conversations) {
-            data.loadedConversations.set(conversation.conversationID, conversation)
-        }
-    } else data.loadedConversations.set(conversations.conversationID, conversations)
+    for (let conversation of conversations) {
+        data.loadedConversations.set(conversation.conversationID, conversation)
+    }
 }
 function loadLocalData(data) {
+    updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
 }
 function receivedNewMessage(message) {
@@ -90,6 +87,20 @@ function receivedEditMessage(message) {
 export function openConversation(conversationID) {
     if (conversationID === -1) return
     data.openConversationID = conversationID
+}
+export function closeConversation(conversationID) {
+    if (conversationID === -1) return
+    ws.send(JSON.stringify({
+        type: Type.CLOSECONVERSATION,
+        userID: data.userID,
+        conversationID: conversationID,
+        conversationType: data.loadedConversations.get(conversationID).conversationType
+    }))
+    data.loadedConversations.delete(conversationID)
+    let user = data.loadedUsers.get(data.userID)
+    user.conversations = user.conversations.filter(c => c !== conversationID)
+
+    if (conversationID === data.openConversationID) data.openConversationID = -1
 }
 export function startConversation(receivingUserID) {
     let users = [receivingUserID, data.userID]
@@ -155,6 +166,11 @@ export function startEdit(messageID) {
     messageInput.focus()
     data.editing = messageID
 }
+function startProfilePicCreator() {
+    data.profilePictureOpen = true
+}
+window.startProfilePicCreator = startProfilePicCreator
+
 // not sure if i need these
 window.sendMessage = sendMessage
 window.deleteMessage = deleteMessage
