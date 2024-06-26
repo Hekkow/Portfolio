@@ -7,10 +7,15 @@ import Message from "./Message.js";
 import Messages from "./Messages.js";
 import HoverButtons from "./HoverButtons.js";
 import MessageInput from "./MessageInput.js";
+import ParticipantBlock from "./ParticipantBlock.js";
+import GroupChatButtons from "./GroupChatButtons.js";
+import Modal from "./Modal.js";
+import UserCheckbox from "./UserCheckbox.js";
 const app = Vue.createApp({
     data() {
         return {
-            data: data
+            data: data,
+
         }
     }
 });
@@ -23,4 +28,8 @@ app.component('message', Message)
 app.component('messages', Messages)
 app.component('hover-buttons', HoverButtons)
 app.component('message-input', MessageInput)
+app.component('participant-block', ParticipantBlock)
+app.component('group-chat-buttons', GroupChatButtons)
+app.component('modal', Modal)
+app.component('user-checkbox', UserCheckbox)
 export default app

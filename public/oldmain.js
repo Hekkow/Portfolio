@@ -821,7 +821,7 @@ function createNewGroupChat() {
     let checkedUsers = getCheckedUsers()
     checkedUsers.push(userID)
     ws.send(JSON.stringify({
-        type: Type.STARTCONVERSATION,
+        type: Type.REQUESTCONVERSATION,
         conversationID: checkedUsers,
         conversationType: group,
         leader: userID

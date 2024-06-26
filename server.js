@@ -138,6 +138,7 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
 }
 function inviteToGroupChat(data) {
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
+        console.log(conversation)
         for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
         }
@@ -145,7 +146,6 @@ function inviteToGroupChat(data) {
             for (let user of users) sendServerMessage(data.conversationID, user.username + " just joined")
         })
     })
-
 }
 function sendServerMessage(conversationID, text) {
     Database.addServerMessage(text, conversationID).then(conversation => {
@@ -173,7 +173,7 @@ function closeConversation(data) {
     Database.findConversation(data.conversationID).then((originalConversation) => {
         Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
             if (!conversation || conversation === Helper.direct) return
-            for (let socket of getSockets(originalConversation.users)) {
+            for (let socket of getSockets(conversation.users)) {
                 socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
             }
             if (data.conversationType === Helper.group) {
@@ -187,7 +187,6 @@ function closeConversation(data) {
 }
 function editMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
-    console.log(message)
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
         for (let socket of getSockets(conversation.users.filter(userID => userID !== message.userID))) {
             socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
@@ -204,10 +203,9 @@ function deleteMessage(data) {
 function receivedMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.addMessage(message).then((conversation) => {
+        console.log("messaged", conversation)
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
         for (let socket of getSockets(conversation.users)) {
-            // if (conversation.texts.length === 1) socket.send(JSON.stringify({type: Helper.Type.FIRSTMESSAGE, message: message, conversation: conversation}))
-            // else socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
             socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
         }
     })
@@ -227,7 +225,7 @@ function readMessage(data) {
 
 }
 
-function loadLocalData(ws, user) {
+function loadLocalData(ws, user) { // very inefficient, sends multiple times
     if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
         if (!conversations) return

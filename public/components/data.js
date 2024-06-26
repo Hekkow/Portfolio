@@ -7,4 +7,13 @@ export const data = Vue.reactive({
     editing: -1,
     replyingTo: -1,
     profilePictureOpen: false,
+    modals: {
+        None: 'None',
+        InviteToGroupChat: 'InviteToGroupChat',
+        RenameGroupChat: 'RenameGroupChat',
+        TransferGroupChat: 'TransferGroupChat',
+        CreateGroupChat: 'CreateGroupChat'
+    },
+    openModal: 'None',
+    createGroupChatUsers: [],
 })

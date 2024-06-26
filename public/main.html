@@ -21,12 +21,11 @@
                 <div id="activeConversationsMain">
                     <div class="panelTitle">Active Conversations</div>
                     <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
-<!--                    <div id="activeConversations" class="panelList"></div>-->
                     <div id="activeConversationsExtraButtons" class="panelList">
-                        <button id="showCreateGroupChatPopupButton" class="itemBlock" onclick="showCreateGroupChatPopup()">
-                            <div class="userPic"></div>
+                        <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
                             <div class="blockText">Create group chat</div>
                         </button>
+                        <modal></modal>
                     </div>
                 </div>
                 <div id="userInfo">
@@ -46,8 +45,8 @@
         </div>
         <div id="chatInfoPanel">
             <div class="panelTitle">Chat Info</div>
-            <div id="groupChatButtonsDiv"></div>
-            <div id="chatParticipants" class="panelList"></div>
+            <group-chat-buttons></group-chat-buttons>
+            <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
         </div>
     </div>
     <div id="popupBackground">

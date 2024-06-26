@@ -42,6 +42,7 @@ function connection() {
                 break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
+                console.log("RECEIVED", message.message)
                 break
             case Type.EDITMESSAGE:
                 receivedEditMessage(message.message)
@@ -50,6 +51,14 @@ function connection() {
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set(user.conversations), message.conversation.conversationID] // adds to conversations only if its not there
                 updateLocalConversations([message.conversation])
+                break
+            case Type.CLOSECONVERSATION:
+                updateLocalConversations([message.conversation])
+                break
+            case Type.INVITETOGROUPCHAT:
+                updateLocalConversations([message.conversation])
+                let conversations = data.loadedUsers.get(data.userID).conversations
+                if (!conversations.includes(message.conversation.conversationID)) conversations.push(message.conversation.conversationID)
                 break
 
         }
@@ -70,14 +79,17 @@ function updateLocalConversations(conversations) {
     }
 }
 function loadLocalData(data) {
+    console.log("LOADING", data)
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
+        console.log('here1')
         ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct }))
         return
     }
+    console.log('here2', message.userID === data.userID)
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
     else addMessage(message)
 }
@@ -166,6 +178,25 @@ export function startEdit(messageID) {
     messageInput.focus()
     data.editing = messageID
 }
+
+export function createNewGroupChat() {
+    ws.send(JSON.stringify({
+        type: Type.REQUESTCONVERSATION,
+        conversationID: [...data.createGroupChatUsers, data.userID],
+        conversationType: group,
+        leader: data.userID
+    })) // conversationID here is users array
+    data.openModal = data.modals.None
+}
+export function inviteToGroupChat() {
+    ws.send(JSON.stringify({
+        type: Type.INVITETOGROUPCHAT,
+        conversationID: data.openConversationID,
+        users: data.createGroupChatUsers
+    }))
+    data.openModal = data.modals.None
+}
+
 function startProfilePicCreator() {
     data.profilePictureOpen = true
 }

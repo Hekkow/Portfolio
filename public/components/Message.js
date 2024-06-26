@@ -10,9 +10,6 @@ export default {
 
       <div class='messageDiv'
            :class="{'myText': data.userID === message.userID}"
-           :data-messageID="message.messageID"
-           :data-userID="message.userID"
-           :data-replyingTo="message.replyingTo"
            @mouseenter="messageHovered = true"
            @mouseleave="messageHovered = false"
       >
@@ -29,8 +26,9 @@ export default {
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
             let text = ""
             let name = message.userID
-            if (name) name = data.loadedUsers.get(name).username
-            if (!reply && message.replyingTo !== -1) {
+            if (name) name = message.userID !== -1 ? data.loadedUsers.get(name).username : "Server"
+            console.log("message", message)
+            if (!reply && message.replyingTo && message.replyingTo !== -1) {
                 text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
             }
             text += name + ": " + this.addLinks(message.message)
