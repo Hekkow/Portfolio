@@ -53,7 +53,6 @@ function connection() {
                 break
             case Type.CLOSECONVERSATION:
                 updateLocalConversations([message.conversation])
-                console.log("here", message)
                 if (message.userID === data.userID) closeConversation(message.conversation.conversationID)
                 break
             case Type.INVITETOGROUPCHAT:
@@ -61,7 +60,9 @@ function connection() {
                 let conversations = data.loadedUsers.get(data.userID).conversations
                 if (!conversations.includes(message.conversation.conversationID)) conversations.push(message.conversation.conversationID)
                 break
-
+            case Type.RENAMEGROUPCHAT:
+                updateLocalConversations([message.conversation])
+                break
         }
     }
 }
@@ -97,6 +98,7 @@ function receivedEditMessage(message) {
 export function openConversation(conversationID) {
     if (conversationID === -1) return
     data.openConversationID = conversationID
+    data.openModal = data.modals.None
 }
 export function leaveConversation(conversationID, userID) {
     if (conversationID === -1) return
@@ -113,7 +115,10 @@ function closeConversation(conversationID) {
     data.loadedConversations.delete(conversationID)
     let user = data.loadedUsers.get(data.userID)
     user.conversations = user.conversations.filter(c => c !== conversationID)
-    if (conversationID === data.openConversationID) data.openConversationID = -1
+    if (conversationID === data.openConversationID) {
+        data.openConversationID = -1
+        data.openModal = data.modals.None
+    }
 }
 export function startConversation(receivingUserID) {
     let users = [receivingUserID, data.userID]
@@ -188,7 +193,6 @@ export function createNewGroupChat() {
         conversationType: group,
         leader: data.userID
     })) // conversationID here is users array
-    data.openModal = data.modals.None
 }
 export function inviteToGroupChat() {
     ws.send(JSON.stringify({
@@ -196,8 +200,17 @@ export function inviteToGroupChat() {
         conversationID: data.openConversationID,
         users: data.createGroupChatUsers
     }))
-    data.openModal = data.modals.None
 }
+
+export function renameGroupChat(newName) {
+    ws.send(JSON.stringify({
+        type: Type.RENAMEGROUPCHAT,
+        conversationID: data.openConversationID,
+        newName: newName
+    }))
+}
+
+
 export function scrollToBottom() {
     let messages = $('#messages')
     // if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return

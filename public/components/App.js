@@ -11,6 +11,7 @@ import ParticipantBlock from "./ParticipantBlock.js";
 import GroupChatButtons from "./GroupChatButtons.js";
 import Modal from "./Modal.js";
 import UserCheckbox from "./UserCheckbox.js";
+import ModalButton from "./ModalButton.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -32,4 +33,5 @@ app.component('participant-block', ParticipantBlock)
 app.component('group-chat-buttons', GroupChatButtons)
 app.component('modal', Modal)
 app.component('user-checkbox', UserCheckbox)
+app.component('modal-button', ModalButton)
 export default app
