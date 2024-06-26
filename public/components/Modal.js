@@ -35,8 +35,6 @@ export default {
     },
     computed: {
         inviteUsers() {
-            console.log(data.loadedConversations.get(data.openConversationID))
-            console.log("online", data.currentlyOnlineUsers)
             return data.currentlyOnlineUsers.filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID))
         }
     }

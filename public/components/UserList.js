@@ -26,12 +26,10 @@ export default {
     computed: {
         conversations() {
             let userConversations = data.loadedUsers.get(data.userID).conversations
-            console.log('conversations', userConversations)
             let conversationIDs = userConversations.filter(conversationID => data.loadedConversations.has(conversationID)) // only loaded conversations
             let conversations = conversationIDs.map(conversationID => data.loadedConversations.get(conversationID))
             // sorts by date of last message
             // if date doesn't exist, use 0 instead and set it to the end
-            console.log('conversations', conversations)
             return conversations.toSorted((a, b) => new Date(b.texts[b.texts.length - 1]?.date || 0) - new Date(a.texts[a.texts.length - 1]?.date || 0))
         },
         participants() {

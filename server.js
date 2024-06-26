@@ -173,7 +173,7 @@ function closeConversation(data) {
     Database.findConversation(data.conversationID).then((originalConversation) => {
         Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
             if (!conversation || conversation === Helper.direct) return
-            for (let socket of getSockets(conversation.users)) {
+            for (let socket of getSockets(originalConversation.users)) {
                 socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
             }
             if (data.conversationType === Helper.group) {

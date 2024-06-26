@@ -1,4 +1,4 @@
-import {openConversation, closeConversation} from "../main.js";
+import {openConversation, leaveConversation} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
@@ -16,7 +16,7 @@ export default {
           @mouseleave="messageHovered = false"
       >
         <div class="blockText">{{conversationBlockText}}</div>
-        <button class="closeConversationButton" v-if="messageHovered" @click.stop="closeConversation(conversation.conversationID)">x</button>
+        <button class="closeConversationButton" v-if="messageHovered" @click.stop="leaveConversation(conversation.conversationID, data.userID)">x</button>
       </button>
     `,
     props: {
@@ -26,7 +26,7 @@ export default {
     },
     methods: {
         openConversation,
-        closeConversation,
+        leaveConversation,
     },
     computed: {
         conversationBlockText() {

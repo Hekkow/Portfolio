@@ -7,6 +7,7 @@ export default {
     },
     setup(props) {
         Vue.onMounted(() => {
+            if (props.userid === -1) return
             drawShapes(props.userid, data.loadedUsers.get(props.userid).shapes)
         })
     },

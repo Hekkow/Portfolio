@@ -27,7 +27,6 @@ export default {
             let text = ""
             let name = message.userID
             if (name) name = message.userID !== -1 ? data.loadedUsers.get(name).username : "Server"
-            console.log("message", message)
             if (!reply && message.replyingTo && message.replyingTo !== -1) {
                 text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
             }

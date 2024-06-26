@@ -42,7 +42,6 @@ function connection() {
                 break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
-                console.log("RECEIVED", message.message)
                 break
             case Type.EDITMESSAGE:
                 receivedEditMessage(message.message)
@@ -54,6 +53,8 @@ function connection() {
                 break
             case Type.CLOSECONVERSATION:
                 updateLocalConversations([message.conversation])
+                console.log("here", message)
+                if (message.userID === data.userID) closeConversation(message.conversation.conversationID)
                 break
             case Type.INVITETOGROUPCHAT:
                 updateLocalConversations([message.conversation])
@@ -79,17 +80,14 @@ function updateLocalConversations(conversations) {
     }
 }
 function loadLocalData(data) {
-    console.log("LOADING", data)
     updateLocalUsers(data.users)
     updateLocalConversations(data.conversations)
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
-        console.log('here1')
         ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct }))
         return
     }
-    console.log('here2', message.userID === data.userID)
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
     else addMessage(message)
 }
@@ -100,18 +98,21 @@ export function openConversation(conversationID) {
     if (conversationID === -1) return
     data.openConversationID = conversationID
 }
-export function closeConversation(conversationID) {
+export function leaveConversation(conversationID, userID) {
     if (conversationID === -1) return
+    console.log(conversationID)
     ws.send(JSON.stringify({
         type: Type.CLOSECONVERSATION,
-        userID: data.userID,
+        userID: userID,
         conversationID: conversationID,
         conversationType: data.loadedConversations.get(conversationID).conversationType
     }))
+    if (userID === data.userID) closeConversation(conversationID)
+}
+function closeConversation(conversationID) {
     data.loadedConversations.delete(conversationID)
     let user = data.loadedUsers.get(data.userID)
     user.conversations = user.conversations.filter(c => c !== conversationID)
-
     if (conversationID === data.openConversationID) data.openConversationID = -1
 }
 export function startConversation(receivingUserID) {
@@ -129,8 +130,9 @@ export function startConversation(receivingUserID) {
 function editMessage(message) {
     data.loadedConversations.get(message.conversationID).texts.find(text => text.messageID === message.messageID).message = message.message
 }
-function addMessage(message) {
-    data.loadedConversations.get(message.conversationID).texts.push(message)
+function addMessage(message) { // can't just push because for some reason vue isn't
+    let conversation = data.loadedConversations.get(message.conversationID)
+    conversation.texts = [...conversation.texts, message]
 }
 export function sendMessage() {
     let messageInput = $('#messageInput')
@@ -195,6 +197,11 @@ export function inviteToGroupChat() {
         users: data.createGroupChatUsers
     }))
     data.openModal = data.modals.None
+}
+export function scrollToBottom() {
+    let messages = $('#messages')
+    // if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return
+    messages.scrollTop(messages.prop("scrollHeight"))
 }
 
 function startProfilePicCreator() {
