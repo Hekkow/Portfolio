@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {createNewGroupChat, inviteToGroupChat, renameGroupChat} from "../main.js";
+import {createNewGroupChat, inviteToGroupChat, renameGroupChat, transferLeader} from "../main.js";
 export default {
     data() {
         return {
@@ -8,6 +8,7 @@ export default {
         }
     },
     methods: {
+        transferLeader,
         renameGroupChat,
         createNewGroupChat,
         inviteToGroupChat
@@ -28,9 +29,11 @@ export default {
           <modal-button @click='renameGroupChat(inputText)'>Rename</modal-button>
         </div>
         <div v-if="data.openModal === data.modals.TransferGroupChat">
-          <modal-button>TEst1</modal-button>
+          <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
+          <modal-button @click="transferLeader()">Transfer</modal-button>
         </div>
     `,
+    // make actual user-radio later
     watch: {
         'data.openModal': function() {
             this.data.createGroupChatUsers = [];
@@ -39,6 +42,9 @@ export default {
     computed: {
         inviteUsers() {
             return data.currentlyOnlineUsers.filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID))
+        },
+        groupChatUsers() {
+            return data.loadedConversations.get(data.openConversationID).users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID))
         }
     }
 }

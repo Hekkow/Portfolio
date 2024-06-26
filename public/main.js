@@ -63,6 +63,9 @@ function connection() {
             case Type.RENAMEGROUPCHAT:
                 updateLocalConversations([message.conversation])
                 break
+            case Type.TRANSFERLEADER:
+                updateLocalConversations([message.conversation])
+                break
         }
     }
 }
@@ -102,13 +105,7 @@ export function openConversation(conversationID) {
 }
 export function leaveConversation(conversationID, userID) {
     if (conversationID === -1) return
-    console.log(conversationID)
-    ws.send(JSON.stringify({
-        type: Type.CLOSECONVERSATION,
-        userID: userID,
-        conversationID: conversationID,
-        conversationType: data.loadedConversations.get(conversationID).conversationType
-    }))
+    ws.send(JSON.stringify({type: Type.CLOSECONVERSATION, userID: userID, conversationID: conversationID, conversationType: data.loadedConversations.get(conversationID).conversationType}))
     if (userID === data.userID) closeConversation(conversationID)
 }
 function closeConversation(conversationID) {
@@ -171,12 +168,7 @@ $('#messageInput').keydown((event) => {
 export function deleteMessage(messageID) {
     let conversation = data.loadedConversations.get(data.openConversationID)
     conversation.texts = conversation.texts.filter(text => text.messageID !== messageID)
-    ws.send(JSON.stringify({
-        type: Type.DELETEMESSAGE,
-        messageID: messageID,
-        user: data.userID,
-        conversationID: data.openConversationID
-    }))
+    ws.send(JSON.stringify({type: Type.DELETEMESSAGE, messageID: messageID, user: data.userID, conversationID: data.openConversationID}))
 }
 export function startEdit(messageID) {
     let conversation = data.loadedConversations.get(data.openConversationID)
@@ -187,27 +179,20 @@ export function startEdit(messageID) {
 }
 
 export function createNewGroupChat() {
-    ws.send(JSON.stringify({
-        type: Type.REQUESTCONVERSATION,
-        conversationID: [...data.createGroupChatUsers, data.userID],
-        conversationType: group,
-        leader: data.userID
-    })) // conversationID here is users array
+    ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: [...data.createGroupChatUsers, data.userID], conversationType: group, leader: data.userID}))
+    // conversationID here is users array
+    // can replace [...data.createGroupChatUsers, data.userID] with just data.createGroupChatUsers and use leader on server side
 }
 export function inviteToGroupChat() {
-    ws.send(JSON.stringify({
-        type: Type.INVITETOGROUPCHAT,
-        conversationID: data.openConversationID,
-        users: data.createGroupChatUsers
-    }))
+    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: data.openConversationID, users: data.createGroupChatUsers}))
 }
 
 export function renameGroupChat(newName) {
-    ws.send(JSON.stringify({
-        type: Type.RENAMEGROUPCHAT,
-        conversationID: data.openConversationID,
-        newName: newName
-    }))
+    ws.send(JSON.stringify({type: Type.RENAMEGROUPCHAT, conversationID: data.openConversationID, newName: newName}))
+}
+export function transferLeader() {
+    if (data.createGroupChatUsers.length !== 1) return
+    ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.createGroupChatUsers[0], originalLeader: data.userID }))
 }
 
 

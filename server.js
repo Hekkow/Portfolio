@@ -138,7 +138,6 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
 }
 function inviteToGroupChat(data) {
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
-        console.log(conversation)
         for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
         }
@@ -203,7 +202,6 @@ function deleteMessage(data) {
 function receivedMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.addMessage(message).then((conversation) => {
-        console.log("messaged", conversation)
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
         for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
