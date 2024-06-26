@@ -4,7 +4,7 @@ let canvasHeight = 300
 // let ctx = canvas.getContext("2d")
 // $('#profilePicCreatorBackground').css('display', 'flex') // remove
 function drawShapes(name, shapes) {
-    let canvases = $(`canvas[data-canvasid="${name}"]`)
+    let canvases = $(`canvas[canvasid="${name}"]`)
     canvases.each(function() {
         let ctx = this.getContext('2d')
         let scale = canvasWidth/parseFloat($(this).attr('width'))
@@ -75,7 +75,9 @@ const Modes = {
 let dragging = false
 let lastMousePosition = {x: 0, y: 0}
 let currentShapeID = 2
+
 $(`canvas[canvasID=editCanvas]`).mousedown(function(event) {
+    console.log("HER1")
     dragging = true
 })
 $(document).mouseup(function(event) {

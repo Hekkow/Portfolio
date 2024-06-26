@@ -97,7 +97,7 @@ function saveProfilePicture(data) {
             if (!conversations) return
             conversations = conversations.filter(conversation => conversation)
             let userIDs = Array.from(new Set(conversations.flatMap(conversation => conversation.users)))
-            for (let socket of getSockets(userIDs)) {
+            for (let socket of getSockets(userIDs.filter(userID => data.userID !== userID))) {
                 socket.send(JSON.stringify({type: Helper.Type.PROFILEPICUPDATE, userID: data.userID, profilePic: data.profilePic}))
             }
         })

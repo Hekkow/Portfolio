@@ -32,6 +32,7 @@
                     <button onclick="logout()">Logout</button>
                     <button onclick="showBlockedUsersPopup()">Blocked Users</button>
                     <button onclick="startProfilePicCreator()">Create Profile Picture</button>
+                    <profile-pic v-if="data.userID !== -1" :size="50" :userid="data.userID"></profile-pic>
                 </div>
             </div>
             <div id="currentConversation">
@@ -52,7 +53,7 @@
     <div id="popupBackground">
         <div id="popup"></div>
     </div>
-    <div id="profilePicCreatorBackground" v-if="data.profilePictureOpen">
+    <div id="profilePicCreatorBackground" v-show="data.profilePictureOpen">
         <div id="profilePicCreatorMainPanel">
             <div id="canvasArea">
                 <div id="canvasCircle">

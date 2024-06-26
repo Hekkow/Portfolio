@@ -66,6 +66,9 @@ function connection() {
             case Type.TRANSFERLEADER:
                 updateLocalConversations([message.conversation])
                 break
+            case Type.PROFILEPICUPDATE:
+                updateProfilePicture(message.userID, message.profilePic)
+                break
         }
     }
 }
@@ -198,14 +201,37 @@ export function transferLeader() {
 
 export function scrollToBottom() {
     let messages = $('#messages')
+    // this doesnt work when loading chats because it starts at top and instantly returns
     // if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return
     messages.scrollTop(messages.prop("scrollHeight"))
 }
 
 function startProfilePicCreator() {
     data.profilePictureOpen = true
+    $(`canvas[canvasID=editCanvas]`).mousedown(function(event) {
+        console.log("HER1")
+        dragging = true
+    })
 }
+
+function saveProfilePicture() {
+    ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...shapes])}))
+    data.profilePictureOpen = false
+    updateProfilePicture(data.userID, shapes)
+
+}
+function updateProfilePicture(userID, profilePic) {
+    data.loadedUsers.get(userID).profilePic = profilePic
+    data.loadedUsers = new Map(data.loadedUsers) // needed for reactivity
+}
+
+function logout() {
+    Cookies.remove(loginCookie)
+    window.location.href = '/'
+}
+window.saveProfilePicture = saveProfilePicture
 window.startProfilePicCreator = startProfilePicCreator
+window.logout = logout
 
 // not sure if i need these
 window.sendMessage = sendMessage
