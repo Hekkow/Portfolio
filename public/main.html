@@ -53,22 +53,7 @@
     <div id="popupBackground">
         <div id="popup"></div>
     </div>
-    <div id="profilePicCreatorBackground" v-show="data.profilePictureOpen">
-        <div id="profilePicCreatorMainPanel">
-            <div id="canvasArea">
-                <div id="canvasCircle">
-                    <canvas width="300" height="300" id="editCanvas"></canvas>
-                </div>
-
-            </div>
-            <div id="controlPanel">
-                <button id="createShapeButton" onclick="createShape()">Create new shape</button>
-                <button id="saveButton" onclick="saveProfilePicture()">Save profile picture</button>
-                <div id="shapesList"></div>
-            </div>
-
-        </div>
-    </div>
+    <profile-picture-creator v-show="data.profilePictureOpen"></profile-picture-creator>
     <div id="contextMenu"></div>
 </div>
 <script src="https://unpkg.com/vue@3"></script>
@@ -76,7 +61,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>
 <script src="Helper.js"></script>
-<script src="ProfilePictureCreation.js" type="text/javascript"></script>
+<script src="ProfilePictureCreation.js" type="module"></script>
 <script src="main.js" type="module"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 import {data} from "./data.js";
+import {canvasHeight, canvasWidth, drawShape} from "../ProfilePictureCreation.js";
 export default {
     data() {
         return {

@@ -1,5 +1,6 @@
 import App from '/components/App.js'
 import {data} from '/components/data.js'
+import {setupProfilePicCreator} from "./ProfilePictureCreation.js";
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
@@ -86,9 +87,11 @@ function updateLocalConversations(conversations) {
         data.loadedConversations.set(conversation.conversationID, conversation)
     }
 }
-function loadLocalData(data) {
-    updateLocalUsers(data.users)
-    updateLocalConversations(data.conversations)
+function loadLocalData(newData) { // very inefficient i do believe
+    updateLocalUsers(newData.users)
+    updateLocalConversations(newData.conversations)
+    data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value]))
+
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
@@ -203,14 +206,15 @@ export function scrollToBottom() {
 
 function startProfilePicCreator() {
     data.profilePictureOpen = true
-    setupProfilePicCreator(data.loadedUsers.get(data.userID).profilePic)
+    setupProfilePicCreator()
 
 }
 
-function saveProfilePicture() {
-    ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...shapes])}))
+export function saveProfilePicture() {
+    console.log("SAVING", data.shapes)
+    ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...data.shapes])}))
     data.profilePictureOpen = false
-    updateProfilePicture(data.userID, shapes)
+    updateProfilePicture(data.userID, data.shapes)
 
 }
 function updateProfilePicture(userID, profilePic) {
@@ -222,7 +226,6 @@ function logout() {
     Cookies.remove(loginCookie)
     window.location.href = '/'
 }
-window.saveProfilePicture = saveProfilePicture
 window.startProfilePicCreator = startProfilePicCreator
 window.logout = logout
 

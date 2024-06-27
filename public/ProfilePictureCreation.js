@@ -1,25 +1,26 @@
-let canvasWidth = 300
-let canvasHeight = 300
+import {data} from '/components/data.js'
+export let canvasWidth = 300
+export let canvasHeight = 300
 let canvas
-let ctx
-function drawShapes() {
+export let ctx
+export function drawShapes() {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
-    if (!shapes) return
     // draws each shape starting from the last in the list
     // so that the ones on top of the list show above the ones at the bottom
-    $($('#shapesList').children().get().reverse()).each(function(index) {
-        let shape = shapes.get(parseInt($(this).attr('shapeID')))
-        shape.z = index
+    // $($('#shapesList').children().get().reverse()).each(function(index) {
+    for (let shape of Array.from(data.shapes.values())) {
+        // let shape = shapes.get(parseInt($(this).attr('shapeID')))
+        // shape.z = index
         drawShape(ctx, shape, 1)
-    })
+    }
 }
-function setupProfilePicCreator(loadedShapes) {
+let currentShapeID = 2
+export function setupProfilePicCreator() {
     canvas = $('#editCanvas')[0]
     ctx = canvas.getContext("2d")
     $(`#editCanvas`).mousedown(function() {
         dragging = true
-        console.log("here1")
     })
     $(document).mouseup(function() {
         dragging = false
@@ -28,29 +29,35 @@ function setupProfilePicCreator(loadedShapes) {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        console.log('here2', shapes.get(currentShapeID))
-        if (mode === Modes.Move) shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
-        else if (mode === Modes.Width) shapes.get(currentShapeID).addW(deltaMouse.x)
-        else if (mode === Modes.Height) shapes.get(currentShapeID).addH(-deltaMouse.y)
+        console.log("is shape", data.shapes.get(currentShapeID) instanceof Rectangle)
+        if (!(data.shapes.get(currentShapeID) instanceof Shape)) data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
+        if (mode === Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        else if (mode === Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
+        else if (mode === Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         else if (mode === Modes.Size) {
-            shapes.get(currentShapeID).addW(deltaMouse.x)
-            shapes.get(currentShapeID).addH(-deltaMouse.y)
+            data.shapes.get(currentShapeID).addW(deltaMouse.x)
+            data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         }
-        else if (mode === Modes.Rotation) shapes.get(currentShapeID).addRotation(deltaMouse.x)
-        else if (mode === Modes.Radius) shapes.get(currentShapeID).addR(deltaMouse.x)
-        drawShapes()
+        else if (mode === Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
+        else if (mode === Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
     })
-    console.log(loadedShapes)
-
-    shapes = new Map(Object.entries(loadedShapes).map(([key, value]) => [parseInt(key), value]))
-    for (let shape of [...shapes.values()].sort((a, b) => b.z - a.z)) {
-        shapes.set(shape.shapeID, shapeFactory(shape, shape.shape, shape.shapeID))
-        showSliders(shape.shapeID, shape)
-    }
-    console.log(shapes)
-    drawShapes()
+    currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
+    latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
+    // if (!(data.shapes instanceof Map)) {
+    //     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value]))
+    //     for (let shape of [...data.shapes.values()].sort((a, b) => b.z - a.z)) {
+    //         data.shapes.set(shape.shapeID, shapeFactory(shape, shape.shape, shape.shapeID))
+    //     }
+    // }
 }
-function drawShape(ctx, shape, scale) {
+export function deleteShape(shapeID) {
+    data.shapes.delete(shapeID)
+    if (shapeID === currentShapeID) currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
+}
+export function currentlyMovingShape(shapeID) {
+    currentShapeID = shapeID
+}
+export function drawShape(ctx, shape, scale) {
     ctx.save()
     ctx.scale(1/scale, 1/scale)
     ctx.fillStyle = shape.color
@@ -79,10 +86,10 @@ function drawShape(ctx, shape, scale) {
     }
     ctx.restore()
 }
-const Shapes = {
-    Rectangle: 0,
-    Circle: 1,
-    Triangle: 2,
+export const Shapes = {
+    Rectangle: 'Rectangle',
+    Circle: 'Circle',
+    Triangle: 'Triangle',
 }
 const Modes = {
     Move: 0,
@@ -94,25 +101,12 @@ const Modes = {
 }
 let dragging = false
 let lastMousePosition = {x: 0, y: 0}
-let currentShapeID = 2
-
-
-
-let shapes = new Map()
 let latestShapeID = 2
-function shapesDropdown(shapeID) {
-    let select = `<select class="shapeSelect pfpInput" id="selectShape${shapeID}">`
-    for (let shape in Shapes) {
-        select += `<option value="${Shapes[shape]}">${shape}</option>`
-    }
-    return select + '</select>'
-}
-function createShape() {
+
+export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
-    shapes.set(shapeID, shape)
-    showSliders(shapeID, shape)
-    drawShapes()
+    data.shapes.set(shapeID, shape)
 }
 let mode = Modes.Move
 function setModeMove() {
@@ -133,68 +127,26 @@ function setModeRotation() {
 function setModeRadius() {
     mode = Modes.Radius
 }
-function showSliders(shapeID, shape) {
-    let shapesList = $('#shapesList')
-    shapesList.find(`.shapeDiv[shapeID=${shapeID}]`).remove()
-    let div = `
-    <div class="shapeDiv" shapeID=${shapeID}>
-        <button onclick="up(${shapeID})">^</button>
-        <button onclick="down(${shapeID})">v</button>
-        ${shapesDropdown(shapeID)}
-        ${createLabel(shapeID, "Color")}
-        <input type="color" name="color${shapeID}" class="colorSlider pfpInput" value="${shape.color}"></div>
-        <button onclick="setModeMove()">Move</button>
-    `
-    if ([Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)) {
-        div += `
-        <button onclick="setModeWidth()">Width</button>
-        <button onclick="setModeHeight()">Height</button>
-        <button onclick="setModeSize()">Size</button>`
-    }
-    if ([Shapes.Circle].includes(shape.shape)) {
-        div += `<button onclick="setModeRadius()">Radius</button>`
-    }
-    if (![Shapes.Circle].includes(shape.shape)) {
-
-        div += `<button onclick="setModeRotation()">Rotation</button>`
-    }
-    div += '</div>'
-    shapesList.append(div)
-    shapesList.find(`#selectShape${shapeID}`).val(shape.shape)
-    $('.colorSlider').on('input', function (event) {
-        shapes.get(getShapeID(event)).setColor(event.target.value)
-        drawShapes()
-    })
-    $('.shapeSelect').on('change', function (event) {
-        let shapeID = getShapeID(event)
-        shapes.set(shapeID, shapeFactory(shape, event.target.value, shapeID))
-        drawShapes()
-        showSliders(shapeID, shapes.get(shapeID))
-        setModeMove()
-
-    })
-}
-
 function up(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertBefore(shape.prev())
-    drawShapes()
 }
 function down(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertAfter(shape.next())
-    drawShapes()
 }
 
-function createLabel(shapeID, name) {
-    return `<div class="sliderRow"><label for="${name}${shapeID}">${name}</label>`
-}
-function getShapeID(event) {
-    return parseInt($(event.target).closest(".shapeDiv").attr('shapeID'))
-}
+
+
+
+
 function rad(deg) {
     return deg * Math.PI/180
 }
+
+
+
+
 class Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         if (shapeID === -1) {
@@ -303,8 +255,8 @@ class Triangle extends Shape {
         this.updateVertices()
     }
 }
-function shapeFactory(shape, newShape, shapeID) {
-    switch (parseInt(newShape)) {
+export function shapeFactory(shape, newShape, shapeID) {
+    switch (newShape) {
         case Shapes.Rectangle:
             return new Rectangle(shapeID, shape.x, shape.y, shape.color)
         case Shapes.Circle:
