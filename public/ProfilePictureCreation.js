@@ -1,34 +1,54 @@
 let canvasWidth = 300
 let canvasHeight = 300
-// let canvas = $('#editCanvas')[0]
-// let ctx = canvas.getContext("2d")
-// $('#profilePicCreatorBackground').css('display', 'flex') // remove
-function drawShapes(name, shapes) {
-    let canvases = $(`canvas[canvasid="${name}"]`)
-    canvases.each(function() {
-        let ctx = this.getContext('2d')
-        let scale = canvasWidth/parseFloat($(this).attr('width'))
-        ctx.fillStyle = "black"
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight)
-        if (!shapes) return
-        // draws each shape starting from the last in the list
-        // so that the ones on top of the list show above the ones at the bottom
-        if (name === 'editCanvas') {
-            $($('#shapesList').children().get().reverse()).each(function(index) {
-                let shape = shapes.get(parseInt($(this).attr('shapeID')))
-                shape.z = index
-                drawShape(ctx, shape, scale)
-            })
-        }
-        else {
-            if (!(shapes instanceof Map)) {
-                shapes = new Map(Object.entries(shapes))
-            }
-            for (let shape of Array.from(shapes.values()).sort((a, b) => a.z - b.z)) {
-                drawShape(ctx, shape, scale)
-            }
-        }
+let canvas
+let ctx
+function drawShapes() {
+    ctx.fillStyle = "black"
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+    if (!shapes) return
+    // draws each shape starting from the last in the list
+    // so that the ones on top of the list show above the ones at the bottom
+    $($('#shapesList').children().get().reverse()).each(function(index) {
+        let shape = shapes.get(parseInt($(this).attr('shapeID')))
+        shape.z = index
+        drawShape(ctx, shape, 1)
     })
+}
+function setupProfilePicCreator(loadedShapes) {
+    canvas = $('#editCanvas')[0]
+    ctx = canvas.getContext("2d")
+    $(`#editCanvas`).mousedown(function() {
+        dragging = true
+        console.log("here1")
+    })
+    $(document).mouseup(function() {
+        dragging = false
+    })
+    $(document).mousemove(function(event) {
+        let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
+        lastMousePosition = {x: event.clientX, y: event.clientY}
+        if (!dragging) return
+        console.log('here2', shapes.get(currentShapeID))
+        if (mode === Modes.Move) shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        else if (mode === Modes.Width) shapes.get(currentShapeID).addW(deltaMouse.x)
+        else if (mode === Modes.Height) shapes.get(currentShapeID).addH(-deltaMouse.y)
+        else if (mode === Modes.Size) {
+            shapes.get(currentShapeID).addW(deltaMouse.x)
+            shapes.get(currentShapeID).addH(-deltaMouse.y)
+        }
+        else if (mode === Modes.Rotation) shapes.get(currentShapeID).addRotation(deltaMouse.x)
+        else if (mode === Modes.Radius) shapes.get(currentShapeID).addR(deltaMouse.x)
+        drawShapes()
+    })
+    console.log(loadedShapes)
+
+    shapes = new Map(Object.entries(loadedShapes).map(([key, value]) => [parseInt(key), value]))
+    for (let shape of [...shapes.values()].sort((a, b) => b.z - a.z)) {
+        shapes.set(shape.shapeID, shapeFactory(shape, shape.shape, shape.shapeID))
+        showSliders(shape.shapeID, shape)
+    }
+    console.log(shapes)
+    drawShapes()
 }
 function drawShape(ctx, shape, scale) {
     ctx.save()
@@ -76,28 +96,7 @@ let dragging = false
 let lastMousePosition = {x: 0, y: 0}
 let currentShapeID = 2
 
-$(`canvas[canvasID=editCanvas]`).mousedown(function(event) {
-    console.log("HER1")
-    dragging = true
-})
-$(document).mouseup(function(event) {
-    dragging = false
-})
-$(document).mousemove(function(event) {
-    let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
-    lastMousePosition = {x: event.clientX, y: event.clientY}
-    if (!dragging) return
-    if (mode === Modes.Move) shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
-    else if (mode === Modes.Width) shapes.get(currentShapeID).addW(deltaMouse.x)
-    else if (mode === Modes.Height) shapes.get(currentShapeID).addH(-deltaMouse.y)
-    else if (mode === Modes.Size) {
-        shapes.get(currentShapeID).addW(deltaMouse.x)
-        shapes.get(currentShapeID).addH(-deltaMouse.y)
-    }
-    else if (mode === Modes.Rotation) shapes.get(currentShapeID).addRotation(deltaMouse.x)
-    else if (mode === Modes.Radius) shapes.get(currentShapeID).addR(deltaMouse.x)
-    drawShapes('editCanvas', shapes)
-})
+
 
 let shapes = new Map()
 let latestShapeID = 2
@@ -113,7 +112,7 @@ function createShape() {
     let shapeID = shape.shapeID
     shapes.set(shapeID, shape)
     showSliders(shapeID, shape)
-    drawShapes('editCanvas', shapes)
+    drawShapes()
 }
 let mode = Modes.Move
 function setModeMove() {
@@ -159,20 +158,17 @@ function showSliders(shapeID, shape) {
 
         div += `<button onclick="setModeRotation()">Rotation</button>`
     }
-    if ([Shapes.Triangle].includes(shape.shape)) {
-
-    }
     div += '</div>'
     shapesList.append(div)
     shapesList.find(`#selectShape${shapeID}`).val(shape.shape)
     $('.colorSlider').on('input', function (event) {
         shapes.get(getShapeID(event)).setColor(event.target.value)
-        drawShapes('editCanvas', shapes)
+        drawShapes()
     })
     $('.shapeSelect').on('change', function (event) {
         let shapeID = getShapeID(event)
         shapes.set(shapeID, shapeFactory(shape, event.target.value, shapeID))
-        drawShapes('editCanvas', shapes)
+        drawShapes()
         showSliders(shapeID, shapes.get(shapeID))
         setModeMove()
 
@@ -182,12 +178,12 @@ function showSliders(shapeID, shape) {
 function up(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertBefore(shape.prev())
-    drawShapes('editCanvas', shapes)
+    drawShapes()
 }
 function down(shapeID) {
     let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
     shape.insertAfter(shape.next())
-    drawShapes('editCanvas', shapes)
+    drawShapes()
 }
 
 function createLabel(shapeID, name) {

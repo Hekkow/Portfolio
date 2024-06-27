@@ -44,7 +44,7 @@ function connection() {
                 receivedNewMessage(message.message)
                 break
             case Type.EDITMESSAGE:
-                receivedEditMessage(message.message)
+                editMessage(message.message)
                 break
             case Type.REQUESTCONVERSATION:
                 let user = data.loadedUsers.get(data.userID)
@@ -98,9 +98,6 @@ function receivedNewMessage(message) {
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
     else addMessage(message)
 }
-function receivedEditMessage(message) {
-    editMessage(message)
-}
 export function openConversation(conversationID) {
     if (conversationID === -1) return
     data.openConversationID = conversationID
@@ -135,7 +132,7 @@ export function startConversation(receivingUserID) {
 function editMessage(message) {
     data.loadedConversations.get(message.conversationID).texts.find(text => text.messageID === message.messageID).message = message.message
 }
-function addMessage(message) { // can't just push because for some reason vue isn't
+function addMessage(message) { // can't just push because for some reason vue isn't reacting
     let conversation = data.loadedConversations.get(message.conversationID)
     conversation.texts = [...conversation.texts, message]
 }
@@ -197,8 +194,6 @@ export function transferLeader() {
     if (data.createGroupChatUsers.length !== 1) return
     ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.createGroupChatUsers[0], originalLeader: data.userID }))
 }
-
-
 export function scrollToBottom() {
     let messages = $('#messages')
     // this doesnt work when loading chats because it starts at top and instantly returns
@@ -208,10 +203,8 @@ export function scrollToBottom() {
 
 function startProfilePicCreator() {
     data.profilePictureOpen = true
-    $(`canvas[canvasID=editCanvas]`).mousedown(function(event) {
-        console.log("HER1")
-        dragging = true
-    })
+    setupProfilePicCreator(data.loadedUsers.get(data.userID).profilePic)
+
 }
 
 function saveProfilePicture() {

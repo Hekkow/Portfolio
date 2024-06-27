@@ -10,7 +10,6 @@ export default {
     template: `
       <button
           class="conversationBlock itemBlock"
-          :data-conversationID="conversation.conversationID" 
           @click="openConversation(this.conversation.conversationID)"
           @mouseenter="messageHovered = true"
           @mouseleave="messageHovered = false"
