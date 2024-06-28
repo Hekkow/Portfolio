@@ -8,12 +8,12 @@ export function drawShapes() {
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
     // draws each shape starting from the last in the list
     // so that the ones on top of the list show above the ones at the bottom
-    // $($('#shapesList').children().get().reverse()).each(function(index) {
-    for (let shape of Array.from(data.shapes.values())) {
-        // let shape = shapes.get(parseInt($(this).attr('shapeID')))
-        // shape.z = index
+    for (let shape of sortedShapes().reverse()) {
         drawShape(ctx, shape, 1)
     }
+}
+export function sortedShapes() {
+    return Array.from(data.shapes.values()).sort((a, b) => a.z - b.z)
 }
 let currentShapeID = 2
 export function setupProfilePicCreator() {
@@ -29,8 +29,10 @@ export function setupProfilePicCreator() {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        console.log("is shape", data.shapes.get(currentShapeID) instanceof Rectangle)
-        if (!(data.shapes.get(currentShapeID) instanceof Shape)) data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
+        if (!(data.shapes.get(currentShapeID) instanceof Shape)) {
+            console.log("here?")
+            data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
+        }
         if (mode === Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
         else if (mode === Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
         else if (mode === Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
@@ -43,12 +45,6 @@ export function setupProfilePicCreator() {
     })
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
-    // if (!(data.shapes instanceof Map)) {
-    //     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value]))
-    //     for (let shape of [...data.shapes.values()].sort((a, b) => b.z - a.z)) {
-    //         data.shapes.set(shape.shapeID, shapeFactory(shape, shape.shape, shape.shapeID))
-    //     }
-    // }
 }
 export function deleteShape(shapeID) {
     data.shapes.delete(shapeID)
@@ -91,7 +87,7 @@ export const Shapes = {
     Circle: 'Circle',
     Triangle: 'Triangle',
 }
-const Modes = {
+export const Modes = {
     Move: 0,
     Width: 1,
     Height: 2,
@@ -108,38 +104,30 @@ export function createShape() {
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
 }
-let mode = Modes.Move
-function setModeMove() {
-    mode = Modes.Move
+export let mode = Modes.Move
+export function setMode(newMode) {
+    mode = newMode
 }
-function setModeWidth() {
-    mode = Modes.Width
+export function up(shapeID) {
+    let sorted = sortedShapes()
+    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
+    if (index > 0) {
+        swapZ(sorted, index, -1)
+    }
 }
-function setModeHeight() {
-    mode = Modes.Height
+export function down(shapeID) {
+    let sorted = sortedShapes()
+    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
+    if (index < sorted.length - 1) {
+        swapZ(sorted, index, 1)
+    }
 }
-function setModeSize() {
-    mode = Modes.Size
+function swapZ(sorted, index, next) {
+    let z1 = sorted[index + next].z
+    let z2 = sorted[index].z
+    data.shapes.get(sorted[index].shapeID).z = z1
+    data.shapes.get(sorted[index + next].shapeID).z = z2
 }
-function setModeRotation() {
-    mode = Modes.Rotation
-}
-function setModeRadius() {
-    mode = Modes.Radius
-}
-function up(shapeID) {
-    let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
-    shape.insertBefore(shape.prev())
-}
-function down(shapeID) {
-    let shape = $(`.shapeDiv[shapeID=${shapeID}]`)
-    shape.insertAfter(shape.next())
-}
-
-
-
-
-
 function rad(deg) {
     return deg * Math.PI/180
 }
@@ -158,7 +146,9 @@ class Shape {
         this.y = y
         this.color = color
         this.rotation = 0
-        this.z = 0
+        this.z = this.shapeID
+        console.log("setting z", this.z)
+        console.log(this)
     }
     addRotation(rotation) {
         this.rotation += rad(rotation)

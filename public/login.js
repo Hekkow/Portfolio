@@ -22,7 +22,6 @@ $('#loginForm').submit(function(e) {
     startLoadingAnimation()
     $.post('attemptLogin', $(this).serialize(), (response) => {
         if (response.sessionID) {
-            console.log(response.sessionID)
             if (response.sessionID === -1) {
                 alert("Invalid username or password")
                 Cookies.remove(loginCookie)

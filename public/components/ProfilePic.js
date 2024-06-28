@@ -16,9 +16,8 @@ export default {
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvasWidth, canvasHeight)
             let shapes = data.loadedUsers.get(props.userid).profilePic
-            // if (!shapes) shapes = new Map()
             if (!(shapes instanceof Map)) shapes = new Map(Object.entries(shapes))
-            for (let shape of Array.from(shapes.values()).sort((a, b) => a.z - b.z)) {
+            for (let shape of Array.from(shapes.values()).sort((a, b) => b.z - a.z)) {
                 drawShape(ctx, shape, scale)
             }
         }

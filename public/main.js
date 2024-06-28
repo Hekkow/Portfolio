@@ -211,7 +211,6 @@ function startProfilePicCreator() {
 }
 
 export function saveProfilePicture() {
-    console.log("SAVING", data.shapes)
     ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...data.shapes])}))
     data.profilePictureOpen = false
     updateProfilePicture(data.userID, data.shapes)

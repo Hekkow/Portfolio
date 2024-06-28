@@ -1,4 +1,5 @@
 import {data} from "../data.js";
+import {sortedShapes} from "../../ProfilePictureCreation.js";
 
 export default {
     data() {
@@ -7,12 +8,9 @@ export default {
         }
     },
     template: `
-      <shape-item v-if="data.profilePictureOpen" v-for="shape in shapes()" :shape="shape"></shape-item>
+      <shape-item v-if="data.profilePictureOpen" v-for="shape in sortedShapes()" :shape="shape"></shape-item>
     `,
     methods: {
-        shapes() {
-            // console.log("THE SHAPES LIST IS", Array.from(data.shapes.values()))
-            return Array.from(data.shapes.values())
-        }
+        sortedShapes,
     }
 }
