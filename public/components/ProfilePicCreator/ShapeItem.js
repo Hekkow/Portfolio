@@ -34,15 +34,15 @@ export default {
                 @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }"
             >
         </div>
-        <button @click="setMode(Modes.Move)">Move</button>
-        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Width)">Width</button>
-        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Height)">Height</button>
-        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Size)">Size</button>
-        <button v-if="[Shapes.Circle].includes(shape.shape)" @click="setMode(Modes.Radius)">Radius</button>
-        <button v-if="![Shapes.Circle].includes(shape.shape)" @click="setMode(Modes.Rotation)">Rotation</button>
+        <button @click="setMode(Modes.Move, shape.shapeID)">Move</button>
+        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Width, shape.shapeID)">Width</button>
+        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Height, shape.shapeID)">Height</button>
+        <button v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)" @click="setMode(Modes.Size, shape.shapeID)">Size</button>
+        <button v-if="[Shapes.Circle].includes(shape.shape)" @click="setMode(Modes.Radius, shape.shapeID)">Radius</button>
+        <button v-if="![Shapes.Circle].includes(shape.shape)" @click="setMode(Modes.Rotation, shape.shapeID)">Rotation</button>
         <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
             data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
-            setMode(Modes.Move)
+            setMode(Modes.Move, shape.shapeID)
         }">
             <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{shapeName}}</option>
         </select>

@@ -31,6 +31,7 @@ export function setupProfilePicCreator() {
         if (!dragging) return
         if (!(data.shapes.get(currentShapeID) instanceof Shape)) {
             console.log("here?")
+            console.log(currentShapeID, data.shapes)
             data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
         }
         if (mode === Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
@@ -103,10 +104,12 @@ export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
+    if (data.shapes.size === 1) currentShapeID = shapeID
 }
 export let mode = Modes.Move
-export function setMode(newMode) {
+export function setMode(newMode, shapeID) {
     mode = newMode
+    currentShapeID = shapeID
 }
 export function up(shapeID) {
     let sorted = sortedShapes()
@@ -131,9 +134,6 @@ function swapZ(sorted, index, next) {
 function rad(deg) {
     return deg * Math.PI/180
 }
-
-
-
 
 class Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
@@ -245,13 +245,23 @@ class Triangle extends Shape {
         this.updateVertices()
     }
 }
-export function shapeFactory(shape, newShape, shapeID) {
-    switch (newShape) {
+export function shapeFactory(shape, newShapeType, shapeID) {
+    let newShape
+    switch (newShapeType) {
         case Shapes.Rectangle:
-            return new Rectangle(shapeID, shape.x, shape.y, shape.color)
+            newShape = new Rectangle(shapeID, shape.x, shape.y, shape.color)
+            break
         case Shapes.Circle:
-            return new Circle(shapeID, shape.x, shape.y, shape.color)
+            newShape = new Circle(shapeID, shape.x, shape.y, shape.color)
+            break
         case Shapes.Triangle:
-            return new Triangle(shapeID, shape.x, shape.y, shape.color)
+            newShape = new Triangle(shapeID, shape.x, shape.y, shape.color)
+            break
     }
+    for (let key in shape) {
+        if (shape.hasOwnProperty(key) && newShape.hasOwnProperty(key) && !['shape'].includes(key)) {
+            newShape[key] = shape[key]
+        }
+    }
+    return newShape
 }
