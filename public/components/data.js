@@ -16,5 +16,7 @@ export const data = Vue.reactive({
     },
     openModal: 'None',
     createGroupChatUsers: [],
-    shapes: new Map()
+    shapes: new Map(),
+    userPopupID: -1,
+
 })

@@ -201,6 +201,21 @@ canvas {
     overflow-wrap: break-word;
     white-space: pre-line;
 }
+.userPopup {
+    position: absolute;
+    display: flex;
+    /*background-color: black;*/
+    width: 200px;
+    flex-direction: column;
+    border: 5px solid blue;
+    background-color: white;
+}
+.userPopupButton {
+    background-color: white;
+}
+.userPopupButton:hover {
+    background-color: #dababa;
+}
 /*#leftPanel, #activeConversations {*/
 /*    transition: 0.4s ease-in;*/
 /*}*/

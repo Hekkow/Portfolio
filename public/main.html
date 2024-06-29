@@ -14,12 +14,12 @@
     <div id="mainContainer">
         <div id="mainPanel">
             <div id="currentlyOnlineUsersPanel">
-                <div class="panelTitle">Users</div>
+                <panel-title>Users</panel-title>
                 <user-list type="user-block"></user-list>
             </div>
             <div id="activeConversationsPanel">
                 <div id="activeConversationsMain">
-                    <div class="panelTitle">Active Conversations</div>
+                    <panel-title>Active Conversations</panel-title>
                     <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
                     <div id="activeConversationsExtraButtons" class="panelList">
                         <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div id="currentConversation">
-                <div class="panelTitle">Conversation Name</div>
+                <panel-title :type="'openConversation'"></panel-title>
                 <div id="messages">
                     <messages></messages>
                 </div>
@@ -45,7 +45,7 @@
             </div>
         </div>
         <div id="chatInfoPanel">
-            <div class="panelTitle">Chat Info</div>
+            <panel-title type="'chatInfo'">Chat Info</panel-title>
             <group-chat-buttons></group-chat-buttons>
             <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
         </div>
@@ -54,6 +54,7 @@
         <div id="popup"></div>
     </div>
     <profile-picture-creator v-show="data.profilePictureOpen"></profile-picture-creator>
+    <user-profile-popup></user-profile-popup>
     <div id="contextMenu"></div>
 </div>
 <script src="https://unpkg.com/vue@3"></script>

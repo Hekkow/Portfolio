@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {leaveConversation} from "../main.js";
+import {leaveConversation, showUserPopup} from "../main.js";
 
 export default {
     data() {
@@ -12,7 +12,9 @@ export default {
       <button
           class="itemBlock" 
           @mouseenter="messageHovered = true"
-          @mouseleave="messageHovered = false">
+          @mouseleave="messageHovered = false"
+          @click="function(event) {showUserPopup(user.userID, event)}"
+      >
           <profile-pic :size=50 :userid="user.userID"></profile-pic>
           <div class="onlineUserListButtonText">{{user.username}}</div>
           <button class="closeConversationButton" v-if="messageHovered && leader && data.userID !== user.userID" @click.stop="leaveConversation(data.openConversationID, user.userID)">x</button>
@@ -29,6 +31,7 @@ export default {
         }
     },
     methods: {
+        showUserPopup,
         leaveConversation
     }
 }

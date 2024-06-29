@@ -1,21 +1,24 @@
-import {openConversation, leaveConversation} from "../main.js";
+import {openConversation, leaveConversation, getConversationName} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
         return {
             data: data,
-            messageHovered: false
+            messageHovered: false,
+            direct: 0
         }
     },
     template: `
-      <button
-          class="conversationBlock itemBlock"
-          @click="openConversation(this.conversation.conversationID)"
-          @mouseenter="messageHovered = true"
-          @mouseleave="messageHovered = false"
+      <button v-if="!(conversation.conversationType === direct && data.loadedUsers.get(data.userID).blocked.some(userID => conversation.users.includes(userID)))"
+              class="conversationBlock itemBlock"
+              @click="openConversation(conversation.conversationID)"
+              @mouseenter="messageHovered = true"
+              @mouseleave="messageHovered = false"
       >
-        <div class="blockText">{{conversationBlockText}}</div>
-        <button class="closeConversationButton" v-if="messageHovered" @click.stop="leaveConversation(conversation.conversationID, data.userID)">x</button>
+        <div class="blockText">{{ conversationBlockText }}</div>
+        <button class="closeConversationButton" v-if="messageHovered"
+                @click.stop="leaveConversation(conversation.conversationID, data.userID)">x
+        </button>
       </button>
     `,
     props: {
@@ -26,11 +29,11 @@ export default {
     methods: {
         openConversation,
         leaveConversation,
+        getConversationName
     },
     computed: {
         conversationBlockText() {
-            let conversationName = this.conversation.conversationName
-            if (!conversationName) conversationName = this.conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
+            let conversationName = getConversationName(this.conversation.conversationID)
             let lastMessage = this.conversation.texts[this.conversation.texts.length - 1]
             if (!lastMessage) return conversationName
             let lastMessageText = lastMessage.message

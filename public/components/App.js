@@ -15,6 +15,8 @@ import ModalButton from "./ModalButton.js";
 import ShapesList from "./ProfilePicCreator/ShapesList.js";
 import ShapeItem from "./ProfilePicCreator/ShapeItem.js";
 import ProfilePictureCreator from "./ProfilePicCreator/ProfilePictureCreator.js";
+import UserProfilePopup from "./UserProfilePopup.js";
+import PanelTitle from "./PanelTitle.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -40,4 +42,6 @@ app.component('modal-button', ModalButton)
 app.component('shapes-list', ShapesList)
 app.component('shape-item', ShapeItem)
 app.component('profile-picture-creator', ProfilePictureCreator)
+app.component('user-profile-popup', UserProfilePopup)
+app.component('panel-title', PanelTitle)
 export default app

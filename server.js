@@ -89,7 +89,6 @@ function login(ws, sessionID) {
         loadLocalData(ws, user)
         updateUserLists()
     })
-
 }
 function saveProfilePicture(data) {
     Database.saveProfilePicture(data.userID, data.profilePic).then(user => {

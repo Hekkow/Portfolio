@@ -30,7 +30,7 @@ function connection() {
         switch (type) {
             case Type.ONLINEUSERSUPDATE:
                 updateLocalUsers(message.users)
-                data.currentlyOnlineUsers = message.users.filter(user => user && user.userID !== data.userID && !data.loadedUsers.get(data.userID).blocked.includes(user.userID))
+                data.currentlyOnlineUsers = message.users.filter(user => user && user.userID !== data.userID)
                 break
             case Type.RECEIVEUSERNAME:
                 setUp(message.user)
@@ -69,6 +69,9 @@ function connection() {
                 break
             case Type.PROFILEPICUPDATE:
                 updateProfilePicture(message.userID, message.profilePic)
+                break
+            case Type.BLOCKUSER:
+                data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
         }
     }
@@ -153,9 +156,17 @@ export function sendMessage() {
         messageID: data.editing,
         replyingTo: data.replyingTo
     }
-    if (data.editing === -1) addMessage(message)
-    else editMessage(message)
-    ws.send(JSON.stringify({type: data.editing === -1 ? Type.NEWMESSAGE : Type.EDITMESSAGE, message: message}))
+    let conversation = data.loadedConversations.get(data.openConversationID)
+    // if blocked
+    if (conversation.conversationType === direct && data.loadedUsers.get(conversation.users.find(userID => userID !== data.userID)).blocked.includes(data.userID)) {
+        console.log("You're blocked")
+    }
+    else {
+        if (data.editing === -1) addMessage(message)
+        else editMessage(message)
+        ws.send(JSON.stringify({type: data.editing === -1 ? Type.NEWMESSAGE : Type.EDITMESSAGE, message: message}))
+    }
+
     closeReply()
 }
 function closeReply() {
@@ -203,12 +214,24 @@ export function scrollToBottom() {
     // if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return
     messages.scrollTop(messages.prop("scrollHeight"))
 }
+function isConversationWithBlocked(conversationID) {
+    let conversation = data.loadedConversations.get(conversationID)
+    return conversation.conversationType === direct &&
+        conversation.users.some(userID => conversation.users.some(otherUserID => data.loadedUsers.get(userID).blocked.includes(otherUserID)))
+
+}
+export function getConversationName(conversationID) {
+    let conversation = data.loadedConversations.get(conversationID)
+    let conversationName = conversation.conversationName
+    if (!conversationName) conversationName = conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
+    return conversationName
+}
 
 function startProfilePicCreator() {
     data.profilePictureOpen = true
     setupProfilePicCreator()
-
 }
+
 
 export function saveProfilePicture() {
     ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...data.shapes])}))
@@ -221,10 +244,28 @@ function updateProfilePicture(userID, profilePic) {
     data.loadedUsers = new Map(data.loadedUsers) // needed for reactivity
 }
 
+export function showUserPopup(userID, event) {
+    event.stopPropagation()
+    data.userPopupLocation = {x: event.pageX, y: event.pageY}
+    data.userPopupID = userID
+}
+export function blockUser(userID) {
+    let user = data.loadedUsers.get(data.userID)
+    user.blocked.push(userID)
+    if (isConversationWithBlocked(data.openConversationID)) {
+        console.log('ere')
+        data.openConversationID = -1
+    }
+    ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: data.userID, blockedUserID: userID}))
+}
 function logout() {
     Cookies.remove(loginCookie)
     window.location.href = '/'
 }
+$(document).click(event => {
+    data.userPopupID = -1
+})
+window.getConversationName = getConversationName
 window.startProfilePicCreator = startProfilePicCreator
 window.logout = logout
 
