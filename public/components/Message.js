@@ -17,9 +17,16 @@ export default {
         <profile-pic :size=50 :userid="message.userID"></profile-pic>
         <div class='messageTextDiv'>
           <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
+          <p v-if="readUsers.length > 0">Read by {{readUsers.join(', ')}}</p>
         </div>
       </div>
     `,
+    computed: {
+        readUsers() {
+            if (!data.read.has(data.openConversationID)) return []
+            return data.read.get(data.openConversationID).filter(read => read.messageID === this.message.messageID).map(read => data.loadedUsers.get(read.userID).username)
+        }
+    },
 // turn getDisplayableMessage into computed later
     methods: {
         getDisplayableMessage(message, reply) {

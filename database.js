@@ -61,20 +61,18 @@ class Database {
             {userID: { $in: users }},
             {$addToSet: {conversations: conversationID}}
         )
-        await this.updateReadMessages(users, conversationID, -1)
         return conversation
     }
-    async updateReadMessages(users, conversationID, messageID) {
-        if (!users.length || users.length === 0) return
-        return await this.readMessages.updateMany(
-            {userID: {$in: users}, conversationID: conversationID},
-            {$set: {messageID: messageID}},
-            {upsert: true}
+    async updateReadMessages(userID, conversationID, messageID) {
+        return await this.conversations.findOneAndUpdate(
+            {conversationID: conversationID},
+            {$set: {[`read.${userID}`]: messageID}},
+            {upsert: true, returnDocument: 'after'}
         )
     }
-    async getReadMessages(conversationIDs) {
-        let readMessages = await this.readMessages.find({conversationID: {$in: conversationIDs}}).toArray()
-        return readMessages
+    async getReadMessages(conversationID) {
+        let conversation = await this.conversations.findOne({conversationID: conversationID})
+        return conversation.read
     }
     async renameGroupChat(conversationID, newName) {
         return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {conversationName: newName}}, {returnDocument: "after"})
@@ -148,13 +146,12 @@ class Database {
             if (previousConversation) return previousConversation
         }
         let id = await this.getLatestConversationID()
-        let conversation = {conversationID: id, texts: [], users: data.users, conversationType: data.conversationType}
+        let conversation = {conversationID: id, texts: [], users: data.users, conversationType: data.conversationType, read: {}}
         if (data.leader) conversation.leader = data.leader
         if (data.conversationName) conversation.conversationName = data.conversationName
         for (let user of data.users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
-        await this.updateReadMessages(data.users, id, -1)
         await this.conversations.insertOne(conversation)
         return conversation
     }

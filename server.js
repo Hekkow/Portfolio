@@ -51,9 +51,6 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.TYPING:
                 updateTyping(data)
                 break
-            case Helper.Type.REQUESTTYPING:
-                sendTyping(ws, data.conversationID)
-                break
             case Helper.Type.BLOCKUSER:
                 blockUser(data)
                 break
@@ -201,6 +198,7 @@ function receivedMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.addMessage(message).then((conversation) => {
         message.messageID = conversation.texts[conversation.texts.length - 1].messageID
+        readMessage({conversationID: message.conversationID, userID: message.userID, messageID: message.messageID})
         for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.NEWMESSAGE, message: message}))
         }
@@ -210,17 +208,18 @@ function getSockets(users) {
     return users.flatMap(userID => clients.filter(client => client.userID === userID)).map(client => client.socket)
 }
 function readMessage(data) {
-    Database.updateReadMessages([data.userID], data.conversationID, data.messageID).then(() => {
-        Database.findConversation(data.conversationID).then((conversation) => {
-            if (!conversation) return
-            for (let socket of getSockets(conversation.users)) {
-                socket.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: data.conversationID, userID: data.userID, messageID: data.messageID}))
-            }
-        })
+    Database.updateReadMessages(data.userID, data.conversationID, data.messageID).then(conversation => {
+        for (let socket of getSockets(conversation.users)) {
+            socket.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: data.conversationID, read: conversation.read}))
+        }
     })
-
 }
-
+function sendReadMessages(ws, conversationID) {
+    Database.getReadMessages(conversationID).then(read => {
+        if (!read) return
+        ws.send(JSON.stringify({type: Helper.Type.READMESSAGE, conversationID: conversationID, read: read}))
+    })
+}
 function loadLocalData(ws, user) { // very inefficient, sends multiple times
     if (!user) return
     Database.findConversations(user.conversations).then((conversations) => {
@@ -228,14 +227,11 @@ function loadLocalData(ws, user) { // very inefficient, sends multiple times
         conversations = conversations.filter(conversation => conversation)
         let userIDs = new Set(conversations.flatMap(conversation => conversation.users))
         Database.findUsersWithID(Array.from(userIDs)).then((users) => {
-            Database.getReadMessages(conversations.map(conversation => conversation.conversationID)).then((readMessages) => {
-                ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users, readMessages: readMessages}))
-            })
+            ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users}))
         })
         for (let conversation of user.conversations) sendTyping(ws, conversation)
-
+        for (let conversation of user.conversations) sendReadMessages(ws, conversation)
     })
-
 }
 
 function updateUserLists() {

@@ -21,9 +21,7 @@ let typing = false
 import App from '/components/App.js'
 import {data} from '/components/data.js'
 App.mount('#app')
-console.log("AHHHH")
 function openConversation(conversationID) {
-    console.log("EAHNGOAEG")
     if (conversationID === -1) return
     ws.send(JSON.stringify({type: Type.REQUESTTYPING, conversationID: conversationID}))
     closeConversationArea()

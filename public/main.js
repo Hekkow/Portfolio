@@ -80,7 +80,9 @@ function connection() {
                 break
             case Type.TYPING:
                 data.typingConversations.set(message.conversationID, message.conversationTyping)
-                console.log(data.typingConversations)
+                break
+            case Type.READMESSAGE:
+                data.read.set(message.conversationID, Object.entries(message.read).map(([userID, messageID]) => ({userID: parseInt(userID), messageID: messageID})))
                 break
         }
     }
@@ -102,8 +104,7 @@ function updateLocalConversations(conversations) {
 function loadLocalData(newData) { // very inefficient i do believe, gets called every time user joins
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
-    data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value]))
-
+    data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
@@ -111,11 +112,28 @@ function receivedNewMessage(message) {
         return
     }
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
-    else addMessage(message)
+    else {
+        addMessage(message)
+        if (data.openConversationID === message.conversationID && !document.hidden) read(message.conversationID)
+    }
+}
+$(window).focus(() => {
+    read(data.openConversationID)
+})
+function read(conversationID) {
+    if (conversationID === -1) return
+    let conversation = data.loadedConversations.get(conversationID)
+    let lastText = conversation.texts[conversation.texts.length - 1]
+    if (!lastText) return
+    if (lastText.userID === data.userID) return
+    let messageID = lastText.messageID
+    if (data.read.get(conversationID)?.find(read => read.userID === data.userID)?.messageID === messageID) return
+    ws.send(JSON.stringify({type: Type.READMESSAGE, conversationID: conversationID, messageID: messageID, userID: data.userID}))
 }
 export function openConversation(conversationID) {
     if (conversationID === -1) return
     setTyping(false)
+    read(conversationID)
     data.openConversationID = conversationID
     data.openModal = data.modals.None
 }
@@ -176,7 +194,6 @@ export function sendMessage() {
         else editMessage(message)
         ws.send(JSON.stringify({type: data.editing === -1 ? Type.NEWMESSAGE : Type.EDITMESSAGE, message: message}))
     }
-
     closeReply()
 }
 function closeReply() {
@@ -192,7 +209,7 @@ $('#messageInput').keydown((event) => {
 })
 let typing = false
 $('#messageInput').on('input', (event) => {
-    setTyping($('#messageInput').val().trim())
+    setTyping($('#messageInput').val().trim().length !== 0)
 })
 function setTyping(newTyping, local) {
     if (typing !== newTyping) {
