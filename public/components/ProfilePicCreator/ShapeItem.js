@@ -58,7 +58,6 @@ export default {
             immediate: true,
             deep: true,
             handler() {
-                console.log(data.shapes.get(this.shape.shapeID))
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
             }

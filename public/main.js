@@ -78,6 +78,10 @@ function connection() {
                 let u = data.loadedUsers.get(message.userID)
                 u.blocked.splice(u.blocked.indexOf(data.userID), 1)
                 break
+            case Type.TYPING:
+                data.typingConversations.set(message.conversationID, message.conversationTyping)
+                console.log(data.typingConversations)
+                break
         }
     }
 }
@@ -95,7 +99,7 @@ function updateLocalConversations(conversations) {
         data.loadedConversations.set(conversation.conversationID, conversation)
     }
 }
-function loadLocalData(newData) { // very inefficient i do believe
+function loadLocalData(newData) { // very inefficient i do believe, gets called every time user joins
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value]))
@@ -111,6 +115,7 @@ function receivedNewMessage(message) {
 }
 export function openConversation(conversationID) {
     if (conversationID === -1) return
+    setTyping(false)
     data.openConversationID = conversationID
     data.openModal = data.modals.None
 }
@@ -182,8 +187,19 @@ $('#messageInput').keydown((event) => {
     if (event.key === "Enter" && !event.originalEvent.shiftKey) {
         event.preventDefault()
         sendMessage()
+        setTyping(false, true)
     }
 })
+let typing = false
+$('#messageInput').on('input', (event) => {
+    setTyping(true)
+})
+function setTyping(newTyping, local) {
+    if (typing !== newTyping) {
+        typing = newTyping
+        if (!local) ws.send(JSON.stringify({type: Type.TYPING, conversationID: data.openConversationID, userID: data.userID, typing: typing}))
+    }
+}
 export function deleteMessage(messageID) {
     let conversation = data.loadedConversations.get(data.openConversationID)
     conversation.texts = conversation.texts.filter(text => text.messageID !== messageID)
@@ -223,9 +239,6 @@ function isConversationWithBlocked(conversationID) {
     return conversation.conversationType === direct &&
         conversation.users.some(userID => conversation.users.some(otherUserID => data.loadedUsers.get(userID).blocked.includes(otherUserID)))
 
-}
-export function hasMeBlocked(userID) {
-    return data.loadedUsers.get(userID).blocked.includes(data.userID)
 }
 export function getConversationName(conversationID) {
     let conversation = data.loadedConversations.get(conversationID)

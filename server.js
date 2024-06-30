@@ -68,13 +68,24 @@ app.ws('/main', (ws, req) => {
     ws.on('close', () => disconnect(ws))
 })
 function disconnect(ws) {
-    for (let i = 0; i < clients.length; i++) {
-        if (clients[i].socket === ws) {
-            clients.splice(i, 1)
-            updateUserLists()
-            return
+    let clientIndex = clients.findIndex(client => client.socket === ws)
+    if (!clientIndex || !clients[clientIndex]) return
+    Database.findUserWithID(clients[clientIndex].userID).then(user => {
+        for (let conversationID of user.conversations) {
+            updateTyping({conversationID: conversationID, typing: false, userID: user.userID})
         }
-    }
+    })
+
+    clients.splice(clientIndex, 1)
+    updateUserLists()
+
+    // for (let i = 0; i < clients.length; i++) {
+    //     if (clients[i].socket === ws) {
+    //         clients.splice(i, 1)
+    //         updateUserLists()
+    //         return
+    //     }
+    // }
 }
 function login(ws, sessionID) {
     let userID = loginServer.getUser(sessionID)
@@ -103,10 +114,11 @@ function saveProfilePicture(data) {
     })
 }
 function updateTyping(data) {
+    if (data.conversationID === -1) return
     if (!typing.has(data.conversationID)) typing.set(data.conversationID, [])
     let conversationTyping = typing.get(data.conversationID)
     if (!data.typing) conversationTyping.splice(conversationTyping.indexOf(data.userID), 1)
-    else conversationTyping.push(data.userID)
+    else if (!conversationTyping.includes(data.userID)) conversationTyping.push(data.userID)
     Database.findConversation(data.conversationID).then((conversation) => {
         for (let socket of getSockets(conversation.users)) {
             sendTyping(socket, data.conversationID)
@@ -227,8 +239,9 @@ function loadLocalData(ws, user) { // very inefficient, sends multiple times
             Database.getReadMessages(conversations.map(conversation => conversation.conversationID)).then((readMessages) => {
                 ws.send(JSON.stringify({type: Helper.Type.LOADLOCALDATA, conversations: conversations, users: users, readMessages: readMessages}))
             })
-
         })
+        for (let conversation of user.conversations) sendTyping(ws, conversation)
+
     })
 
 }

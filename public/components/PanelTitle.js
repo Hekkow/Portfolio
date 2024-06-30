@@ -28,7 +28,6 @@ export default {
     },
     computed: {
         showPanel() {
-            console.log(this.type, !(['openConversation', 'chatInfo'].includes(this.type) && data.openConversationID === -1))
             return !(['openConversation', 'chatInfo'].includes(this.type) && data.openConversationID === -1)
         },
     }

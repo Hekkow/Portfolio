@@ -30,8 +30,6 @@ export function setupProfilePicCreator() {
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
         if (!(data.shapes.get(currentShapeID) instanceof Shape)) {
-            console.log("here?")
-            console.log(currentShapeID, data.shapes)
             data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
         }
         if (mode === Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
@@ -147,8 +145,6 @@ class Shape {
         this.color = color
         this.rotation = 0
         this.z = this.shapeID
-        console.log("setting z", this.z)
-        console.log(this)
     }
     addRotation(rotation) {
         this.rotation += rad(rotation)
