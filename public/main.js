@@ -192,7 +192,7 @@ $('#messageInput').keydown((event) => {
 })
 let typing = false
 $('#messageInput').on('input', (event) => {
-    setTyping(true)
+    setTyping($('#messageInput').val().trim())
 })
 function setTyping(newTyping, local) {
     if (typing !== newTyping) {
