@@ -30,7 +30,7 @@ function connection() {
         switch (type) {
             case Type.ONLINEUSERSUPDATE:
                 updateLocalUsers(message.users)
-                data.currentlyOnlineUsers = message.users.filter(user => user && user.userID !== data.userID)
+                data.currentlyOnlineUsers = message.users.filter(user => user && user.userID !== data.userID).map(user => user.userID)
                 break
             case Type.RECEIVEUSERNAME:
                 setUp(message.user)
@@ -67,14 +67,13 @@ function connection() {
             case Type.TRANSFERLEADER:
                 updateLocalConversations([message.conversation])
                 break
-            case Type.PROFILEPICUPDATE:
+            case Type.SAVEPROFILEPIC:
                 updateProfilePicture(message.userID, message.profilePic)
                 break
             case Type.BLOCKUSER:
                 data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
             case Type.UNBLOCKUSER:
-                console.log("HERE")
                 // u is user, which i can't use because it's already declared in another case???????
                 let u = data.loadedUsers.get(message.userID)
                 u.blocked.splice(u.blocked.indexOf(data.userID), 1)

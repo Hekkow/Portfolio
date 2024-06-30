@@ -97,7 +97,7 @@ function saveProfilePicture(data) {
             conversations = conversations.filter(conversation => conversation)
             let userIDs = Array.from(new Set(conversations.flatMap(conversation => conversation.users)))
             for (let socket of getSockets(userIDs.filter(userID => data.userID !== userID))) {
-                socket.send(JSON.stringify({type: Helper.Type.PROFILEPICUPDATE, userID: data.userID, profilePic: data.profilePic}))
+                socket.send(JSON.stringify({type: Helper.Type.SAVEPROFILEPIC, userID: data.userID, profilePic: data.profilePic}))
             }
         })
     })
@@ -144,17 +144,6 @@ function inviteToGroupChat(data) {
         for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
         }
-        Database.findUsersWithID(data.users).then(users => {
-            for (let user of users) sendServerMessage(data.conversationID, user.username + " just joined")
-        })
-    })
-}
-function sendServerMessage(conversationID, text) {
-    Database.addServerMessage(text, conversationID).then(conversation => {
-        let messageID = conversation.texts[conversation.texts.length - 1].messageID
-        for (let socket of getSockets(conversation.users)) {
-            socket.send(JSON.stringify({type: Helper.Type.NEWSERVERMESSAGE, text: text, conversationID: conversationID, messageID: messageID}))
-        }
     })
 }
 function renameGroupChat(data) {
@@ -174,12 +163,14 @@ function transferLeader(data) {
 function closeConversation(data) {
     Database.findConversation(data.conversationID).then((originalConversation) => {
         Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
+            if (originalConversation.leader === data.userID) {
+                if (conversation.users.length > 0) {
+                    transferLeader({conversationID: data.conversationID, originalLeader: data.userID, newLeader: conversation.users[Math.floor(Math.random()*conversation.users.length)]})
+                }
+            }
             if (!conversation || conversation === Helper.direct) return
             for (let socket of getSockets(originalConversation.users)) {
                 socket.send(JSON.stringify({type: Helper.Type.CLOSECONVERSATION, conversation: conversation, userID: data.userID}))
-            }
-            if (data.conversationType === Helper.group) {
-                Database.findUserWithID(data.userID).then(user => sendServerMessage(data.conversationID,user.username + " just left"))
             }
         })
 

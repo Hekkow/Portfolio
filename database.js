@@ -95,18 +95,6 @@ class Database {
         )
         return conversation
     }
-    async addServerMessage(text, conversationID) {
-        let messageID = await this.getLatestMessageID()
-        let conversation = await this.conversations.findOneAndUpdate(
-            {conversationID: conversationID},
-            {$push: {texts: {userID: -1, message: text, messageID: messageID, date: new Date()}}},
-            {returnDocument: "after"})
-        await this.users.updateMany(
-            {userID: {$in: conversation.users} },
-            {$addToSet: {conversations: conversation.conversationID}}
-        )
-        return conversation
-    }
     async deleteMessage(conversationID, messageID) {
         return await this.conversations.findOneAndUpdate(
             {conversationID: conversationID},

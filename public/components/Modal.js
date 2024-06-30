@@ -47,10 +47,10 @@ export default {
     },
     computed: {
         createGroupChatUsers() {
-            return data.currentlyOnlineUsers.map(user => data.loadedUsers.get(user.userID)).filter(user => !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
+            return data.currentlyOnlineUsers.map(userID => data.loadedUsers.get(userID)).filter(user => !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
         },
         inviteUsers() {
-            return data.currentlyOnlineUsers.map(user => data.loadedUsers.get(user.userID)).filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID) && !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
+            return data.currentlyOnlineUsers.map(userID => data.loadedUsers.get(userID)).filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID) && !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
         },
         groupChatUsers() {
             return data.loadedConversations.get(data.openConversationID).users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID))

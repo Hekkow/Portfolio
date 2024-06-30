@@ -8,7 +8,7 @@ export default {
     },
     template: `
       <div class="panelList">
-        <user-block v-if="type==='user-block'" v-for="user in data.currentlyOnlineUsers" :user="user"></user-block>
+        <user-block v-if="type==='user-block'" v-for="user in data.currentlyOnlineUsers.map(userID => data.loadedUsers.get(userID))" :user="user"></user-block>
         <conversation-block 
             v-if="type==='conversation-block' && data.userID !== -1" 
             v-for="conversation in conversations"
