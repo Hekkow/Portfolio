@@ -45,7 +45,7 @@
             </div>
         </div>
         <div id="chatInfoPanel">
-            <panel-title type="'chatInfo'">Chat Info</panel-title>
+            <panel-title :type="'chatInfo'">Chat Info</panel-title>
             <group-chat-buttons></group-chat-buttons>
             <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
         </div>

@@ -12,7 +12,8 @@ export const data = Vue.reactive({
         InviteToGroupChat: 'InviteToGroupChat',
         RenameGroupChat: 'RenameGroupChat',
         TransferGroupChat: 'TransferGroupChat',
-        CreateGroupChat: 'CreateGroupChat'
+        CreateGroupChat: 'CreateGroupChat',
+        BlockedUsers: 'BlockedUsers'
     },
     openModal: 'None',
     createGroupChatUsers: [],

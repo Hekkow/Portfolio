@@ -73,6 +73,12 @@ function connection() {
             case Type.BLOCKUSER:
                 data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
+            case Type.UNBLOCKUSER:
+                console.log("HERE")
+                // u is user, which i can't use because it's already declared in another case???????
+                let u = data.loadedUsers.get(message.userID)
+                u.blocked.splice(u.blocked.indexOf(data.userID), 1)
+                break
         }
     }
 }
@@ -205,7 +211,6 @@ export function renameGroupChat(newName) {
     ws.send(JSON.stringify({type: Type.RENAMEGROUPCHAT, conversationID: data.openConversationID, newName: newName}))
 }
 export function transferLeader() {
-    if (data.createGroupChatUsers.length !== 1) return
     ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.createGroupChatUsers[0], originalLeader: data.userID }))
 }
 export function scrollToBottom() {
@@ -219,6 +224,9 @@ function isConversationWithBlocked(conversationID) {
     return conversation.conversationType === direct &&
         conversation.users.some(userID => conversation.users.some(otherUserID => data.loadedUsers.get(userID).blocked.includes(otherUserID)))
 
+}
+export function hasMeBlocked(userID) {
+    return data.loadedUsers.get(userID).blocked.includes(data.userID)
 }
 export function getConversationName(conversationID) {
     let conversation = data.loadedConversations.get(conversationID)
@@ -250,13 +258,17 @@ export function showUserPopup(userID, event) {
     data.userPopupID = userID
 }
 export function blockUser(userID) {
-    let user = data.loadedUsers.get(data.userID)
-    user.blocked.push(userID)
-    if (isConversationWithBlocked(data.openConversationID)) {
-        console.log('ere')
-        data.openConversationID = -1
-    }
+    data.loadedUsers.get(data.userID).blocked.push(userID)
+    if (isConversationWithBlocked(data.openConversationID)) data.openConversationID = -1
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: data.userID, blockedUserID: userID}))
+}
+export function unblockUser(userID) {
+    let user = data.loadedUsers.get(data.userID)
+    user.blocked.splice(user.blocked.indexOf(userID), 1)
+    ws.send(JSON.stringify({type: Type.UNBLOCKUSER, userID: data.userID, blockedUserID: userID}))
+}
+function showBlockedUsersPopup() {
+    data.openModal = data.modals.BlockedUsers
 }
 function logout() {
     Cookies.remove(loginCookie)
@@ -265,6 +277,7 @@ function logout() {
 $(document).click(event => {
     data.userPopupID = -1
 })
+window.showBlockedUsersPopup = showBlockedUsersPopup
 window.getConversationName = getConversationName
 window.startProfilePicCreator = startProfilePicCreator
 window.logout = logout

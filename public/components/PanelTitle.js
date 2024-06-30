@@ -9,7 +9,6 @@ export default {
     data() {
         return {
             data: data,
-            showWhenConversationOpen: ['openConversation', 'chatInfo']
         }
     },
     methods: {
@@ -29,7 +28,8 @@ export default {
     },
     computed: {
         showPanel() {
-            return !(this.showWhenConversationOpen.includes(this.type) && data.openConversationID === -1)
+            console.log(this.type, !(['openConversation', 'chatInfo'].includes(this.type) && data.openConversationID === -1))
+            return !(['openConversation', 'chatInfo'].includes(this.type) && data.openConversationID === -1)
         },
     }
 }

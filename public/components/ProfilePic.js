@@ -50,6 +50,7 @@ export default {
     },
     computed: {
         profilePic() {
+            if (!data.loadedUsers.has(this.userid)) return []
             return Array.from(data.loadedUsers.get(this.userid).profilePic)
         }
     }

@@ -114,14 +114,18 @@ function updateTyping(data) {
     })
 }
 function blockUser(data) {
-    Database.block(data.userID, data.blockedUserID).then(user => {
+    Database.block(data.userID, data.blockedUserID).then(() => {
         let client = clients.find(client => client.userID === data.blockedUserID)
         if (!client) return
         client.socket.send(JSON.stringify({type: Helper.Type.BLOCKUSER, userID: data.userID}))
     })
 }
 function unblockUser(data) {
-    Database.unblock(data.userID, data.blockedUserID) // do same thing here as you did for blockUser
+    Database.unblock(data.userID, data.blockedUserID).then(() => {
+        let client = clients.find(client => client.userID === data.blockedUserID)
+        if (!client) return
+        client.socket.send(JSON.stringify({type: Helper.Type.UNBLOCKUSER, userID: data.userID}))
+    })
 }
 function sendTyping(ws, conversationID) {
     if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))

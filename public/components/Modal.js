@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {createNewGroupChat, inviteToGroupChat, renameGroupChat, transferLeader} from "../main.js";
+import {createNewGroupChat, inviteToGroupChat, renameGroupChat, transferLeader, unblockUser} from "../main.js";
 export default {
     data() {
         return {
@@ -8,16 +8,17 @@ export default {
         }
     },
     methods: {
+        unblockUser,
         transferLeader,
         renameGroupChat,
         createNewGroupChat,
-        inviteToGroupChat
+        inviteToGroupChat,
     },
     template: `
         <div v-if="data.openModal === data.modals.CreateGroupChat">
           <p>Create</p>
-          <user-checkbox v-for="user in data.currentlyOnlineUsers" :user="user"></user-checkbox>
-          <modal-button @click="createNewGroupChat()">Create</modal-button>
+          <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>
+          <modal-button v-if="data.createGroupChatUsers.length > 0" @click="createNewGroupChat()">Create</modal-button>
         </div>
         <div v-if="data.openModal === data.modals.InviteToGroupChat">
           <p>Invite</p>
@@ -30,7 +31,12 @@ export default {
         </div>
         <div v-if="data.openModal === data.modals.TransferGroupChat">
           <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
-          <modal-button @click="transferLeader()">Transfer</modal-button>
+          <modal-button v-if="data.createGroupChatUsers.length === 1" @click="transferLeader()">Transfer</modal-button>
+        </div>
+        <div v-if="data.openModal === data.modals.BlockedUsers">
+          <p>Blocked users</p>
+          <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
+          <modal-button v-if="data.createGroupChatUsers.length === 1" @click="unblockUser(data.createGroupChatUsers[0])">Unblock</modal-button>
         </div>
     `,
     // make actual user-radio later
@@ -40,11 +46,17 @@ export default {
         }
     },
     computed: {
+        createGroupChatUsers() {
+            return data.currentlyOnlineUsers.map(user => data.loadedUsers.get(user.userID)).filter(user => !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
+        },
         inviteUsers() {
-            return data.currentlyOnlineUsers.filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID))
+            return data.currentlyOnlineUsers.map(user => data.loadedUsers.get(user.userID)).filter(user => !data.loadedConversations.get(data.openConversationID).users.includes(user.userID) && !(user.blocked.includes(data.userID) || data.loadedUsers.get(data.userID).blocked.includes(user.userID)))
         },
         groupChatUsers() {
             return data.loadedConversations.get(data.openConversationID).users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID))
+        },
+        blockedUsers() {
+            return data.loadedUsers.get(data.userID).blocked.map(userID => data.loadedUsers.get(userID))
         }
     }
 }
