@@ -14,6 +14,7 @@ export default {
               @click="openConversation(conversation.conversationID)"
               @mouseenter="messageHovered = true"
               @mouseleave="messageHovered = false"
+              :style="{ fontWeight: notification ? 'bold' : 'normal'}"
       >
         <div class="blockText">{{ conversationBlockText }}</div>
         <button class="closeConversationButton" v-if="messageHovered"
@@ -32,12 +33,21 @@ export default {
         getConversationName
     },
     computed: {
+        notification() {
+            if (this.conversation.texts.length === 0) return false
+            if (this.lastMessage.userID === data.userID) return false
+            let readReceipt = data.read.get(this.conversation.conversationID)?.find(read => read.userID === data.userID)
+            if (!readReceipt) return true
+            return readReceipt.messageID !== this.lastMessage.messageID;
+        },
+        lastMessage() {
+            return this.conversation.texts[this.conversation.texts.length - 1]
+        },
         conversationBlockText() {
             let conversationName = getConversationName(this.conversation.conversationID)
-            let lastMessage = this.conversation.texts[this.conversation.texts.length - 1]
-            if (!lastMessage) return conversationName
-            let lastMessageText = lastMessage.message
-            let lastTextUsername = lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(lastMessage.userID).username
+            if (!this.lastMessage) return conversationName
+            let lastMessageText = this.lastMessage.message
+            let lastTextUsername = this.lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(this.lastMessage.userID).username
             if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
             return conversationName + "\n" + lastTextUsername + ": " + lastMessageText
         }

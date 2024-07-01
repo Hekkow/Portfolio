@@ -134,7 +134,6 @@ function sendTyping(ws, conversationID) {
 }
 function sendRequestedConversation(ws, data) { // conversationID can be users array
     Database.findConversation(data.conversationID).then(async (conversation) => {
-        console.log(conversation)
         // don't mess with the order
         if (!conversation && data.conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(data.conversationID)
         if (!conversation) conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
