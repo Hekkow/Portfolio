@@ -117,6 +117,12 @@ function receivedNewMessage(message) {
         if (data.openConversationID === message.conversationID && !document.hidden) read(message.conversationID)
     }
 }
+export function updateTitleNotifications() {
+    document.title = countNotifications() + ""
+}
+function countNotifications() {
+    return $('[style*="font-weight: bold"]').length
+}
 $(window).focus(() => {
     read(data.openConversationID)
 })

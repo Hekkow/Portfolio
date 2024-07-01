@@ -7,7 +7,6 @@ export default {
         }
     },
     template: `
-
       <div class='messageDiv'
            :class="{'myText': data.userID === message.userID}"
            @mouseenter="messageHovered = true"

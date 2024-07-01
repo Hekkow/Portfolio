@@ -1,4 +1,4 @@
-import {openConversation, leaveConversation, getConversationName} from "../main.js";
+import {openConversation, leaveConversation, getConversationName, updateTitleNotifications} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
@@ -31,6 +31,17 @@ export default {
         openConversation,
         leaveConversation,
         getConversationName
+    },
+    watch: {
+        notification: {
+            handler() {
+                this.$nextTick(() => {
+                    updateTitleNotifications()
+                })
+
+
+            }
+        }
     },
     computed: {
         notification() {
