@@ -30,6 +30,7 @@
                 </div>
                 <div id="userInfo">
                     <button onclick="logout()">Logout</button>
+                    <button onclick="rejoinGeneral()">Rejoin Howdy</button>
                     <button onclick="showBlockedUsersPopup()">Blocked Users</button>
                     <button onclick="startProfilePicCreator()">Create Profile Picture</button>
                     <profile-pic v-if="data.userID !== -1" :size="50" :userid="data.userID"></profile-pic>

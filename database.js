@@ -72,6 +72,7 @@ class Database {
     }
     async getReadMessages(conversationID) {
         let conversation = await this.conversations.findOne({conversationID: conversationID})
+        if (!conversation) return []
         return conversation.read
     }
     async renameGroupChat(conversationID, newName) {
@@ -158,19 +159,19 @@ class Database {
     async getLatestUserID() {
         let latestIDs = await this.latestIDs.findOne()
         let latestUserID = ++latestIDs.latestUserID
-        this.latestIDs.updateOne({}, { $set: { latestUserID: latestUserID } })
+        await this.latestIDs.updateOne({}, { $set: { latestUserID: latestUserID } })
         return latestUserID
     }
     async getLatestConversationID() {
         let latestIDs = await this.latestIDs.findOne()
         let latestConversationID = ++latestIDs.latestConversationID
-        this.latestIDs.updateOne({}, { $set: { latestConversationID: latestConversationID } })
+        await this.latestIDs.updateOne({}, { $set: { latestConversationID: latestConversationID } })
         return latestConversationID
     }
     async getLatestMessageID() {
         let latestIDs = await this.latestIDs.findOne()
         let latestMessageID = ++latestIDs.latestMessageID
-        this.latestIDs.updateOne({}, { $set: { latestMessageID: latestMessageID } })
+        await this.latestIDs.updateOne({}, { $set: { latestMessageID: latestMessageID } })
         return latestMessageID
     }
     async loginOrRegister(username, password) {

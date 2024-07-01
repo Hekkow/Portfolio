@@ -49,7 +49,7 @@ function connection() {
                 break
             case Type.REQUESTCONVERSATION:
                 let user = data.loadedUsers.get(data.userID)
-                user.conversations = [...new Set(user.conversations), message.conversation.conversationID] // adds to conversations only if its not there
+                user.conversations = [...new Set([...user.conversations, message.conversation.conversationID])] // adds to conversations only if its not there
                 updateLocalConversations([message.conversation])
                 break
             case Type.CLOSECONVERSATION:
@@ -163,6 +163,7 @@ export function startConversation(receivingUserID) {
     }
     ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct }))
 }
+
 function editMessage(message) {
     data.loadedConversations.get(message.conversationID).texts.find(text => text.messageID === message.messageID).message = message.message
 }
@@ -306,6 +307,14 @@ function logout() {
 $(document).click(event => {
     data.userPopupID = -1
 })
+
+function rejoinGeneral() {
+    let howdyID = 3
+    if (data.loadedConversations.has(howdyID)) return
+    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
+}
+
+window.rejoinGeneral = rejoinGeneral
 window.showBlockedUsersPopup = showBlockedUsersPopup
 window.getConversationName = getConversationName
 window.startProfilePicCreator = startProfilePicCreator
