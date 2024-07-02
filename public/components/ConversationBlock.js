@@ -38,9 +38,14 @@ export default {
                 this.$nextTick(() => {
                     updateTitleNotifications()
                 })
-
-
             }
+        }
+    },
+    created() {
+        if (this.notification) {
+            this.$nextTick(() => {
+                updateTitleNotifications()
+            })
         }
     },
     computed: {

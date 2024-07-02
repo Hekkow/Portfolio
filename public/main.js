@@ -51,6 +51,7 @@ function connection() {
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set([...user.conversations, message.conversation.conversationID])] // adds to conversations only if its not there
                 updateLocalConversations([message.conversation])
+                // updateTitleNotifications()
                 break
             case Type.CLOSECONVERSATION:
                 updateLocalConversations([message.conversation])

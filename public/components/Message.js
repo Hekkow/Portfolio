@@ -34,6 +34,7 @@ export default {
             let name = message.userID
             if (name) name = message.userID !== -1 ? data.loadedUsers.get(name).username : "Server"
             if (!reply && message.replyingTo && message.replyingTo !== -1) {
+                text += "Replying to "
                 text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
             }
             text += name + ": " + this.addLinks(message.message)

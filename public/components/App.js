@@ -18,6 +18,7 @@ import ProfilePictureCreator from "./ProfilePicCreator/ProfilePictureCreator.js"
 import UserProfilePopup from "./UserProfilePopup.js";
 import PanelTitle from "./PanelTitle.js";
 import TypingBar from "./TypingBar.js";
+import ReplyBar from "./ReplyBar.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -46,4 +47,5 @@ app.component('profile-picture-creator', ProfilePictureCreator)
 app.component('user-profile-popup', UserProfilePopup)
 app.component('panel-title', PanelTitle)
 app.component('typing-bar', TypingBar)
+app.component('reply-bar', ReplyBar)
 export default app
