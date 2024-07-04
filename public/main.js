@@ -91,6 +91,7 @@ function connection() {
 function setUp(user) {
     updateLocalUsers([user])
     data.userID = user.userID
+    startProfilePicCreator() // remove later
 }
 function updateLocalUsers(users) {
     for (let user of users) {

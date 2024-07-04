@@ -32,19 +32,61 @@ export function setupProfilePicCreator() {
         if (!(data.shapes.get(currentShapeID) instanceof Shape)) {
             data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
         }
-        if (mode === Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
-        else if (mode === Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
-        else if (mode === Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
-        else if (mode === Modes.Size) {
+        if (data.mode === data.Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        else if (data.mode === data.Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
+        else if (data.mode === data.Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
+        else if (data.mode === data.Modes.Size) {
             data.shapes.get(currentShapeID).addW(deltaMouse.x)
             data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         }
-        else if (mode === Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
-        else if (mode === Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
+        else if (data.mode === data.Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
+        else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
     })
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
 }
+let draggingShapeItemDiv
+let draggingShapeItemPosition
+let overDragSpace = false
+export function startDragShapeItem(shapeItem, e) {
+    data.draggingShapeItem = true
+    draggingShapeItemDiv = shapeItem
+    draggingShapeItemPosition = {x: e.pageX - $(shapeItem).offset().left, y: e.pageY - $(shapeItem).offset().top}
+    let originalWidth = $(draggingShapeItemDiv).css('width')
+    $(draggingShapeItemDiv).css('position', 'absolute')
+    $(draggingShapeItemDiv).css('width', originalWidth)
+    $(draggingShapeItemDiv).css({'left': e.clientX - draggingShapeItemPosition.x, 'top': e.clientY - draggingShapeItemPosition.y})
+    let dragDiv = $(shapeItem).find('.dragDiv')[0]
+    let dragSpaces = document.querySelectorAll('.dragSpacing')
+    $(document).mousemove(function(event) {
+        if (data.draggingShapeItem) {
+            $(draggingShapeItemDiv).css({'left': event.clientX - draggingShapeItemPosition.x, 'top': event.clientY - draggingShapeItemPosition.y})
+            overDragSpace = false
+            dragDiv.style.border = 'none'
+            dragSpaces.forEach(space => {
+                let rect1 = dragDiv.getBoundingClientRect();
+                let rect2 = space.getBoundingClientRect();
+                let overlap = !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
+                if (overlap) {
+                    overDragSpace = true
+                    dragDiv.style.border = '5px solid red'
+                }
+            })
+        }
+    })
+    $(dragDiv).click(event => {
+        if (data.draggingShapeItem && overDragSpace) {
+            data.draggingShapeItem = false
+            overDragSpace = false
+            $(draggingShapeItemDiv).css('position', 'relative')
+            $(draggingShapeItemDiv).css({'left': 0, 'top': 0})
+            dragDiv.style.border = 'none'
+            // console.log(event.target)
+        }
+
+    })
+}
+
 export function deleteShape(shapeID) {
     data.shapes.delete(shapeID)
     if (shapeID === currentShapeID) currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
@@ -86,14 +128,7 @@ export const Shapes = {
     Circle: 'Circle',
     Triangle: 'Triangle',
 }
-export const Modes = {
-    Move: 0,
-    Width: 1,
-    Height: 2,
-    Size: 3,
-    Rotation: 4,
-    Radius: 5,
-}
+
 let dragging = false
 let lastMousePosition = {x: 0, y: 0}
 let latestShapeID = 2
@@ -104,9 +139,8 @@ export function createShape() {
     data.shapes.set(shapeID, shape)
     if (data.shapes.size === 1) currentShapeID = shapeID
 }
-export let mode = Modes.Move
 export function setMode(newMode, shapeID) {
-    mode = newMode
+    data.mode = newMode
     currentShapeID = shapeID
 }
 export function up(shapeID) {

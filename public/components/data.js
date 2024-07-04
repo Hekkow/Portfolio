@@ -1,3 +1,11 @@
+export const Modes = {
+    Move: 0,
+    Width: 1,
+    Height: 2,
+    Size: 3,
+    Rotation: 4,
+    Radius: 5,
+}
 export const data = Vue.reactive({
     loadedUsers: new Map(),
     loadedConversations: new Map(),
@@ -21,5 +29,8 @@ export const data = Vue.reactive({
     userPopupID: -1,
     typingConversations: new Map(),
     read: new Map(),
+    Modes: Modes,
+    mode: Modes.Move,
+    draggingShapeItem: false,
 
 })
