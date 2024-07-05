@@ -49,16 +49,6 @@ let draggingShapeItemDiv
 let draggingShapeItemPosition
 let overDragSpace = null
 let dragDiv
-export function belowDragging(shapeID) {
-    let sorted = sortedShapes()
-    let index1 = sorted.findIndex(shape => shape.shapeID === shapeID)
-    let index2 = sorted.findIndex(shape => shape.shapeID === getDragging())
-    return index1 - 1 === index2
-}
-export function highestZ(shapeID) {
-    let sorted = sortedShapes()
-    return sorted[sorted.length - 1].shapeID === shapeID
-}
 export function getDraggingZ() {
     return data.shapes.get(parseInt($(dragDiv).attr('data-shapeid'))).z
 }
@@ -93,17 +83,35 @@ export function startDragShapeItem(shapeItem, e) {
 
             let index1 = sorted.findIndex(shape => shape.shapeID === parseInt($(dragDiv).attr('data-shapeID')))
             let index2 = sorted.findIndex(shape => shape.shapeID === parseInt($(overDragSpace).attr('data-shapeID')))
-            let z1 = sorted[index1].z
             let z2 = sorted[index2].z
-            data.shapes.get(sorted[index2].shapeID).z = z1
+            let z1 = sorted[index1].z
+            if (index1 < index2) {
+                for (let i = index2; i > index1; i--) {
+                    data.shapes.get(sorted[i].shapeID).z = data.shapes.get(sorted[i - 1].shapeID).z
+                }
+            } else if (index1 > index2) {
+                for (let i = index2; i < index1; i++) {
+                    data.shapes.get(sorted[i].shapeID).z = data.shapes.get(sorted[i + 1].shapeID).z
+                }
+            }
+
             data.shapes.get(sorted[index1].shapeID).z = z2
+            // data.shapes.get(sorted[index2].shapeID).z = z1
+
+                // data.shapes.get(sorted[index1].shapeID).z = z2
+
+            console.log(data.shapes)
+            // data.shapes.get(sorted[index2].shapeID).z = z1
+
+
+            // data.shapes.get(sorted[index2].shapeID).z = z1
+            // data.shapes.get(sorted[index1].shapeID).z = z2
             data.draggingShapeItem = false
             overDragSpace = null
             $(draggingShapeItemDiv).css('position', 'relative')
             $(draggingShapeItemDiv).css({'left': 0, 'top': 0})
             dragDiv.style.border = 'none'
             dragDiv = null
-            // console.log(event.target)
         }
     })
 }

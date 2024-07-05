@@ -6,12 +6,12 @@ import {
     currentlyMovingShape,
     deleteShape,
     setMode,
-    up, down, startDragShapeItem, drawShape, canvasWidth, highestZ, belowDragging, getDraggingZ
+    up, down, startDragShapeItem, drawShape, canvasWidth, getDraggingZ
 } from "../../ProfilePictureCreation.js";
 
 export default {
     methods: {
-        highestZ, startDragShapeItem, down, up, deleteShape, drawShapes, shapeFactory, currentlyMovingShape, setMode,
+        startDragShapeItem, down, up, deleteShape, drawShapes, shapeFactory, currentlyMovingShape, setMode,
         drawPreview() {
             if (this.$refs.shapePreview) {
                 drawShape(this.$refs.shapePreview.getContext('2d'), this.shape, canvasWidth/parseFloat($(this.$refs.shapePreview).attr('width')), true)
@@ -33,8 +33,9 @@ export default {
           <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
         </div>
         <button @click="currentlyOpen = !currentlyOpen">+</button>
-        <button @click="up(shape.shapeID)">^</button>
-        <button @click="down(shape.shapeID)">v</button>
+        <button>{{shape.z}}</button>
+<!--        <button @click="up(shape.shapeID)">^</button>-->
+<!--        <button @click="down(shape.shapeID)">v</button>-->
         <button @click="function(event) { 
             if (!data.draggingShapeItem) {
                 startDragShapeItem($refs.shapeDiv, event)
