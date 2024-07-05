@@ -47,7 +47,7 @@ export function setupProfilePicCreator() {
 }
 let draggingShapeItemDiv
 let draggingShapeItemPosition
-let overDragSpace = false
+let overDragSpace = null
 export function startDragShapeItem(shapeItem, e) {
     data.draggingShapeItem = true
     draggingShapeItemDiv = shapeItem
@@ -61,14 +61,14 @@ export function startDragShapeItem(shapeItem, e) {
     $(document).mousemove(function(event) {
         if (data.draggingShapeItem) {
             $(draggingShapeItemDiv).css({'left': event.clientX - draggingShapeItemPosition.x, 'top': event.clientY - draggingShapeItemPosition.y})
-            overDragSpace = false
+            overDragSpace = null
             dragDiv.style.border = 'none'
             dragSpaces.forEach(space => {
                 let rect1 = dragDiv.getBoundingClientRect();
                 let rect2 = space.getBoundingClientRect();
                 let overlap = !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
                 if (overlap) {
-                    overDragSpace = true
+                    overDragSpace = space
                     dragDiv.style.border = '5px solid red'
                 }
             })
@@ -76,14 +76,25 @@ export function startDragShapeItem(shapeItem, e) {
     })
     $(dragDiv).click(event => {
         if (data.draggingShapeItem && overDragSpace) {
+            console.log(event.target, overDragSpace)
+            let sorted = sortedShapes()
+
+            let index1 = sorted.findIndex(shape => shape.shapeID === parseInt($(event.target).attr('data-shapeID')))
+            let index2 = sorted.findIndex(shape => shape.shapeID === parseInt($(overDragSpace).attr('data-shapeID')))
+            console.log(data.shapes.get(sorted[index1].shapeID))
+            let z1 = sorted[index1].z
+            let z2 = sorted[index2].z
+            data.shapes.get(sorted[index2].shapeID).z = z1
+            data.shapes.get(sorted[index1].shapeID).z = z2
+            console.log(data.shapes.get(sorted[index1].shapeID))
             data.draggingShapeItem = false
-            overDragSpace = false
+            overDragSpace = null
             $(draggingShapeItemDiv).css('position', 'relative')
             $(draggingShapeItemDiv).css({'left': 0, 'top': 0})
             dragDiv.style.border = 'none'
+
             // console.log(event.target)
         }
-
     })
 }
 

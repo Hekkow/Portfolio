@@ -23,7 +23,7 @@ export default {
         <button @click="currentlyOpen = !currentlyOpen">+</button>
         <button @click="up(shape.shapeID)">^</button>
         <button @click="down(shape.shapeID)">v</button>
-        <button @mousedown="function(event) { if (!data.draggingShapeItem) startDragShapeItem($refs.shapeDiv, event)}" class="dragDiv">DRAG</button>
+        <button @mousedown="function(event) { if (!data.draggingShapeItem) startDragShapeItem($refs.shapeDiv, event)}" class="dragDiv" :data-shapeid="shape.shapeID">DRAG</button>
         <div v-if="currentlyOpen" class="controls">
             <button @click="currentlyMovingShape(shape.shapeID)">Edit</button>
             <button @click="deleteShape(shape.shapeID)">Delete</button>
@@ -51,7 +51,7 @@ export default {
             </select>
         </div>
       </div>
-      <div class="dragSpacing" style="height: 30px; border: 5px solid blue"></div>
+      <div class="dragSpacing" style="height: 30px; border: 5px solid blue" :data-shapeid="shape.shapeID"></div>
     `,
     props: {
         shape: {
