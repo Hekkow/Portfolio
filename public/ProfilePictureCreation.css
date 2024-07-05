@@ -14,10 +14,14 @@
     background-color: white;
     display: flex;
 }
-#shapesList {
-    width: 300px;
+/*#shapesList {*/
+/*    width: 300px;*/
+/*    overflow: auto;*/
+/*    max-height: 95%;*/
+/*}*/
+#controlPanel {
+    width: 500px;
     overflow: auto;
-    max-height: 95%;
 }
 .shapeDiv {
     display: flex;

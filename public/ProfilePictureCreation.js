@@ -48,6 +48,20 @@ export function setupProfilePicCreator() {
 let draggingShapeItemDiv
 let draggingShapeItemPosition
 let overDragSpace = null
+let dragDiv
+export function belowDragging(shapeID) {
+    let sorted = sortedShapes()
+    let index1 = sorted.findIndex(shape => shape.shapeID === shapeID)
+    let index2 = sorted.findIndex(shape => shape.shapeID === getDragging())
+    return index1 - 1 === index2
+}
+export function highestZ(shapeID) {
+    let sorted = sortedShapes()
+    return sorted[sorted.length - 1].shapeID === shapeID
+}
+export function getDraggingZ() {
+    return data.shapes.get(parseInt($(dragDiv).attr('data-shapeid'))).z
+}
 export function startDragShapeItem(shapeItem, e) {
     data.draggingShapeItem = true
     draggingShapeItemDiv = shapeItem
@@ -56,14 +70,13 @@ export function startDragShapeItem(shapeItem, e) {
     $(draggingShapeItemDiv).css('position', 'absolute')
     $(draggingShapeItemDiv).css('width', originalWidth)
     $(draggingShapeItemDiv).css({'left': e.clientX - draggingShapeItemPosition.x, 'top': e.clientY - draggingShapeItemPosition.y})
-    let dragDiv = $(shapeItem).find('.dragDiv')[0]
-    let dragSpaces = document.querySelectorAll('.dragSpacing')
+    dragDiv = $(shapeItem).find('.dragDiv')[0]
     $(document).mousemove(function(event) {
         if (data.draggingShapeItem) {
             $(draggingShapeItemDiv).css({'left': event.clientX - draggingShapeItemPosition.x, 'top': event.clientY - draggingShapeItemPosition.y})
             overDragSpace = null
             dragDiv.style.border = 'none'
-            dragSpaces.forEach(space => {
+            document.querySelectorAll('.dragSpacing').forEach(space => {
                 let rect1 = dragDiv.getBoundingClientRect();
                 let rect2 = space.getBoundingClientRect();
                 let overlap = !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
@@ -76,23 +89,20 @@ export function startDragShapeItem(shapeItem, e) {
     })
     $(dragDiv).click(event => {
         if (data.draggingShapeItem && overDragSpace) {
-            console.log(event.target, overDragSpace)
             let sorted = sortedShapes()
 
-            let index1 = sorted.findIndex(shape => shape.shapeID === parseInt($(event.target).attr('data-shapeID')))
+            let index1 = sorted.findIndex(shape => shape.shapeID === parseInt($(dragDiv).attr('data-shapeID')))
             let index2 = sorted.findIndex(shape => shape.shapeID === parseInt($(overDragSpace).attr('data-shapeID')))
-            console.log(data.shapes.get(sorted[index1].shapeID))
             let z1 = sorted[index1].z
             let z2 = sorted[index2].z
             data.shapes.get(sorted[index2].shapeID).z = z1
             data.shapes.get(sorted[index1].shapeID).z = z2
-            console.log(data.shapes.get(sorted[index1].shapeID))
             data.draggingShapeItem = false
             overDragSpace = null
             $(draggingShapeItemDiv).css('position', 'relative')
             $(draggingShapeItemDiv).css({'left': 0, 'top': 0})
             dragDiv.style.border = 'none'
-
+            dragDiv = null
             // console.log(event.target)
         }
     })
@@ -104,8 +114,13 @@ export function deleteShape(shapeID) {
 }
 export function currentlyMovingShape(shapeID) {
     currentShapeID = shapeID
+    setMode(data.Modes.Move, shapeID)
 }
-export function drawShape(ctx, shape, scale) {
+export function drawShape(ctx, shape, scale, reset) {
+    if (reset) {
+        ctx.fillStyle = "black"
+        ctx.fillRect(0, 0, canvasWidth/scale, canvasHeight/scale)
+    }
     ctx.save()
     ctx.scale(1/scale, 1/scale)
     ctx.fillStyle = shape.color
