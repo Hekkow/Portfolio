@@ -19,14 +19,8 @@
 /*    overflow: auto;*/
 /*    max-height: 95%;*/
 /*}*/
-#controlPanel {
-    width: 500px;
-    overflow: auto;
-}
-.shapeDiv {
-    display: flex;
-    flex-direction: column;
-}
+
+
 .controls {
     display: flex;
     flex-direction: column;
@@ -52,4 +46,32 @@
 #canvasCircle {
     background-color: red;
     clip-path: circle(150px at center);
+}
+#controlPanel {
+    width: 500px;
+    overflow: auto;
+}
+.shapeDiv {
+    display: flex;
+    background-color: black;
+    position: relative;
+    /*width: 500px;*/
+    /*width: 100%;*/
+}
+.shapeDivLeftPanel {
+    width: 50px;
+    background-color: red;
+    display: flex;
+    flex-direction: column;
+}
+.shapeDivLeftPanelButton {
+    height: 50px;
+}
+.shapeDivLeftPanel.active {
+    width: 100%;
+    flex-direction: row;
+}
+.shapeDivMainPanel {
+    background-color: green;
+    flex-grow: 1;
 }

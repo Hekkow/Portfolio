@@ -42,78 +42,10 @@ export function setupProfilePicCreator() {
         else if (data.mode === data.Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
         else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
     })
+
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
-}
-let draggingShapeItemDiv
-let draggingShapeItemPosition
-let overDragSpace = null
-let dragDiv
-export function getDraggingZ() {
-    return data.shapes.get(parseInt($(dragDiv).attr('data-shapeid'))).z
-}
-export function startDragShapeItem(shapeItem, e) {
-    data.draggingShapeItem = true
-    draggingShapeItemDiv = shapeItem
-    draggingShapeItemPosition = {x: e.pageX - $(shapeItem).offset().left, y: e.pageY - $(shapeItem).offset().top}
-    let originalWidth = $(draggingShapeItemDiv).css('width')
-    $(draggingShapeItemDiv).css('position', 'absolute')
-    $(draggingShapeItemDiv).css('width', originalWidth)
-    $(draggingShapeItemDiv).css({'left': e.clientX - draggingShapeItemPosition.x, 'top': e.clientY - draggingShapeItemPosition.y})
-    dragDiv = $(shapeItem).find('.dragDiv')[0]
-    $(document).mousemove(function(event) {
-        if (data.draggingShapeItem) {
-            $(draggingShapeItemDiv).css({'left': event.clientX - draggingShapeItemPosition.x, 'top': event.clientY - draggingShapeItemPosition.y})
-            overDragSpace = null
-            dragDiv.style.border = 'none'
-            document.querySelectorAll('.dragSpacing').forEach(space => {
-                let rect1 = dragDiv.getBoundingClientRect();
-                let rect2 = space.getBoundingClientRect();
-                let overlap = !(rect1.right < rect2.left || rect1.left > rect2.right || rect1.bottom < rect2.top || rect1.top > rect2.bottom)
-                if (overlap) {
-                    overDragSpace = space
-                    dragDiv.style.border = '5px solid red'
-                }
-            })
-        }
-    })
-    $(dragDiv).click(event => {
-        if (data.draggingShapeItem && overDragSpace) {
-            let sorted = sortedShapes()
-
-            let index1 = sorted.findIndex(shape => shape.shapeID === parseInt($(dragDiv).attr('data-shapeID')))
-            let index2 = sorted.findIndex(shape => shape.shapeID === parseInt($(overDragSpace).attr('data-shapeID')))
-            let z2 = sorted[index2].z
-            let z1 = sorted[index1].z
-            if (index1 < index2) {
-                for (let i = index2; i > index1; i--) {
-                    data.shapes.get(sorted[i].shapeID).z = data.shapes.get(sorted[i - 1].shapeID).z
-                }
-            } else if (index1 > index2) {
-                for (let i = index2; i < index1; i++) {
-                    data.shapes.get(sorted[i].shapeID).z = data.shapes.get(sorted[i + 1].shapeID).z
-                }
-            }
-
-            data.shapes.get(sorted[index1].shapeID).z = z2
-            // data.shapes.get(sorted[index2].shapeID).z = z1
-
-                // data.shapes.get(sorted[index1].shapeID).z = z2
-
-            console.log(data.shapes)
-            // data.shapes.get(sorted[index2].shapeID).z = z1
-
-
-            // data.shapes.get(sorted[index2].shapeID).z = z1
-            // data.shapes.get(sorted[index1].shapeID).z = z2
-            data.draggingShapeItem = false
-            overDragSpace = null
-            $(draggingShapeItemDiv).css('position', 'relative')
-            $(draggingShapeItemDiv).css({'left': 0, 'top': 0})
-            dragDiv.style.border = 'none'
-            dragDiv = null
-        }
-    })
+    console.log(data.shapes.size, currentShapeID, latestShapeID)
 }
 
 export function deleteShape(shapeID) {
@@ -167,35 +99,29 @@ let dragging = false
 let lastMousePosition = {x: 0, y: 0}
 let latestShapeID = 2
 
+let previousPosition = null
+
 export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
     if (data.shapes.size === 1) currentShapeID = shapeID
+    // $("#shapesList").sortable({
+    //     // placeholder: "sortable-placeholder",
+    //     start: function(event, ui) {
+    //         // data.sortingShapes = true
+    //     },
+    //     stop: function(event, ui) {
+    //         $($('#shapesList .shapeDiv').get().reverse()).each(function (index) {
+    //             let shapeID = $(this).attr('data-shapeID')
+    //             data.shapes.get(parseInt(shapeID)).z = index
+    //         });
+    //     }
+    // })
 }
 export function setMode(newMode, shapeID) {
     data.mode = newMode
     currentShapeID = shapeID
-}
-export function up(shapeID) {
-    let sorted = sortedShapes()
-    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
-    if (index > 0) {
-        swapZ(sorted, index, -1)
-    }
-}
-export function down(shapeID) {
-    let sorted = sortedShapes()
-    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
-    if (index < sorted.length - 1) {
-        swapZ(sorted, index, 1)
-    }
-}
-function swapZ(sorted, index, next) {
-    let z1 = sorted[index + next].z
-    let z2 = sorted[index].z
-    data.shapes.get(sorted[index].shapeID).z = z1
-    data.shapes.get(sorted[index + next].shapeID).z = z2
 }
 function rad(deg) {
     return deg * Math.PI/180
