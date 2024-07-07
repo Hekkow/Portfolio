@@ -8,7 +8,9 @@ export default {
         }
     },
     template: `
-      <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message"></message>
+      <div id="messages">
+        <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message"></message>
+      </div>
     `,
     computed: {
         texts() {

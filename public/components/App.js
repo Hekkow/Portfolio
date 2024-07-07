@@ -19,6 +19,8 @@ import UserProfilePopup from "./UserProfilePopup.js";
 import PanelTitle from "./PanelTitle.js";
 import TypingBar from "./TypingBar.js";
 import ReplyBar from "./ReplyBar.js";
+import UserInfoPanel from "./UserInfoPanel.js";
+import Settings from "./Settings.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -48,4 +50,6 @@ app.component('user-profile-popup', UserProfilePopup)
 app.component('panel-title', PanelTitle)
 app.component('typing-bar', TypingBar)
 app.component('reply-bar', ReplyBar)
+app.component('user-info-panel', UserInfoPanel)
+app.component('settings', Settings)
 export default app

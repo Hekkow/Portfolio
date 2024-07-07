@@ -31,7 +31,5 @@ export const data = Vue.reactive({
     read: new Map(),
     Modes: Modes,
     mode: Modes.Move,
-    draggingShapeItem: false,
-    shapeItemsOrderUpdated: 0,
-    sortingShapes: false
+    settingsOpen: false,
 })

@@ -107,7 +107,6 @@ function loadLocalData(newData) { // very inefficient i do believe, gets called 
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
-    startProfilePicCreator() // remove later
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {

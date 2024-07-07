@@ -30,12 +30,27 @@ button {
     width: 80%;
     height: 80%;
     display: flex;
-}
-#mainPanel {
     border: inset 5px red;
+}
+#currentConversation {
+    border: inset 5px black;
     display: flex;
+    flex-direction: column;
+    position: relative;
     flex-grow: 1;
-
+    max-width: calc(100% - 100px - 250px - 250px - 10*4px);
+}
+#messages {
+    flex-grow: 1;
+    border: inset 5px pink;
+    overflow: auto;
+    position: relative;
+}
+.typingBar {
+    border: inset 5px blue;
+    margin-top: auto;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 #chatInfoPanel {
     width: 250px;
@@ -60,23 +75,12 @@ button {
     overflow-y: auto;
     border: inset 5px red;
 }
-#userInfo {
+#userInfoPanel {
     height: 100px;
     flex-shrink: 0;
     border: inset 5px purple;
-}
-#currentConversation {
-    flex-grow: 1;
-    border: inset 5px black;
     display: flex;
-    flex-direction: column;
-    position: relative;
-}
-#messages {
-    flex-grow: 1;
-    border: inset 5px pink;
-    overflow: auto;
-    position: relative;
+    align-items: center;
 }
 
 #messageInputDiv {
@@ -122,11 +126,25 @@ button {
     display: flex;
     align-items: flex-start;
     position: relative;
+    padding-top: 10px;
+    flex-direction: row;
 }
 .myText {
-    text-align: right;
-    justify-content: flex-end;
+    flex-direction: row-reverse;
 }
+.messageBubble {
+    background-color: red;
+    border-radius: 10px;
+    max-width: 500px;
+    padding: 10px;
+}
+.messageText {
+    overflow-wrap: break-word;
+    white-space: pre-line;
+    padding: 0;
+    margin: 0;
+}
+
 
 #messageInput {
     box-sizing: border-box;
@@ -142,30 +160,6 @@ button {
     margin-top: 20px;
     margin-bottom: 20px;
     resize: none;
-}
-
-#contextMenu {
-    display: none;
-    position: absolute;
-    width: 200px;
-    /*height: 300px;*/
-    background-color: gray;
-    flex-direction: column;
-    flex-grow: 1;
-}
-#popupBackground {
-    display: none;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(173, 216, 230, 0.37);
-    align-items: center;
-    justify-content: center;
-}
-#popup {
-    width: 400px;
-    height: 300px;
-    background-color: gray;
 }
 .userPic {
     margin: 0;
@@ -198,12 +192,8 @@ canvas {
 .hoverButtons {
     position: absolute;
     top: -10px;
-    z-index: 10;
 }
-.messageText {
-    overflow-wrap: break-word;
-    white-space: pre-line;
-}
+
 .userPopup {
     position: absolute;
     display: flex;
@@ -218,11 +208,20 @@ canvas {
 .userPopupButton:hover {
     background-color: #dababa;
 }
-.typingBar {
-    /*margin-bottom: auto;*/
-    /*margin-top: auto;*/
-    border: inset 5px blue;
-    /*top: 0;*/
-    /*position: absolute;*/
-    margin-top: auto;
+
+.fullScreenOverlay {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: black;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#mainSettingsPanel {
+    width: 600px;
+    height: 400px;
+    background-color: white;
+
 }

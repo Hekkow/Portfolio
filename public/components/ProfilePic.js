@@ -1,6 +1,8 @@
 import {data} from "./data.js";
 import {canvasHeight, canvasWidth, drawShape} from "../ProfilePictureCreation.js";
+import {showUserPopup} from "../main.js";
 export default {
+    methods: {showUserPopup},
     data() {
         return {
             data: data
@@ -29,8 +31,8 @@ export default {
     },
     template: `
       
-      <div class='userPic' :style="'clip-path: circle(' + size / 2 + 'px at center); width: ' + size + 'px;'">
-        <canvas :width="size" :height="size" ref="canvasRef"></canvas>
+      <div class='userPic' :style="'clip-path: circle(' + size / 2 + 'px at center); width: ' + size + 'px; height: ' + size + 'px;'">
+        <canvas :width="size" :height="size" ref="canvasRef" @click="function(event) {showUserPopup($props.userid, event)}"></canvas>
       </div>
     `,
     props: {

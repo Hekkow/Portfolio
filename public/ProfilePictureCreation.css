@@ -42,6 +42,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    min-width: 50px;
+    min-height: 50px;
+}
+.canvasAreaColumn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 50px;
+    min-height: 50px;
 }
 #canvasCircle {
     background-color: red;
@@ -53,25 +62,29 @@
 }
 .shapeDiv {
     display: flex;
-    background-color: black;
     position: relative;
-    /*width: 500px;*/
-    /*width: 100%;*/
+    border-radius: 10px;
+    border: 5px solid #20a2e8;
 }
 .shapeDivLeftPanel {
     width: 50px;
-    background-color: red;
+    /*background-color: red;*/
     display: flex;
     flex-direction: column;
 }
 .shapeDivLeftPanelButton {
     height: 50px;
+    width: 50px;
 }
 .shapeDivLeftPanel.active {
     width: 100%;
     flex-direction: row;
 }
 .shapeDivMainPanel {
-    background-color: green;
+    /*background-color: green;*/
     flex-grow: 1;
+}
+.shapeDivMainPanelSection {
+    display: flex;
+    flex-direction: column;
 }

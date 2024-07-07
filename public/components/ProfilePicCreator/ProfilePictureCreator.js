@@ -18,15 +18,21 @@ export default {
         <div id="profilePicCreatorMainPanel">
           <div id="canvasArea">
             
-            <div id="canvasAreaTop" class="canvasAreaRow"><button v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">^</button></div>
+            <div id="canvasAreaTop" class="canvasAreaRow"><button v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">+</button></div>
             
             <div id="canvasAreaMiddle" class="canvasAreaRow">
-              <button v-if="showArrows && [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius].includes(data.mode)"><</button>
+              <div class="canvasAreaColumn">
+                <button v-if="showArrows && [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius].includes(data.mode)">-</button>
+                
+              </div>
               <div id="canvasCircle"><canvas width="300" height="300" id="editCanvas"></canvas></div>
-              <button v-if="showArrows && [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius].includes(data.mode)">></button>
+              <div class="canvasAreaColumn">
+              
+                <button v-if="showArrows && [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius].includes(data.mode)">+</button>
+              </div>
             </div>
             
-            <div id="canvasAreaBottom" class="canvasAreaRow"><button  v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">^</button></div>
+            <div id="canvasAreaBottom" class="canvasAreaRow"><button  v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">-</button></div>
             
           </div>
           <div id="controlPanel">

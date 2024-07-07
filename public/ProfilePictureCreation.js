@@ -45,17 +45,24 @@ export function setupProfilePicCreator() {
 
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
-    console.log(data.shapes.size, currentShapeID, latestShapeID)
 }
 
 export function deleteShape(shapeID) {
     data.shapes.delete(shapeID)
     if (shapeID === currentShapeID) currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
 }
-export function currentlyMovingShape(shapeID) {
-    currentShapeID = shapeID
-    setMode(data.Modes.Move, shapeID)
+export function duplicateShape(shapeID) {
+    let newShapeID = Math.max(...data.shapes.keys()) + 1
+    let newShape = structuredClone(Vue.toRaw(data.shapes.get(shapeID)))
+    newShape.shapeID = newShapeID
+    newShape.z = newShapeID
+    data.shapes.set(newShapeID, newShape)
+    currentShapeID = newShapeID
 }
+// export function currentlyMovingShape(shapeID) {
+//     currentShapeID = shapeID
+//     setMode(data.Modes.Move, shapeID)
+// }
 export function drawShape(ctx, shape, scale, reset) {
     if (reset) {
         ctx.fillStyle = "black"
@@ -99,25 +106,11 @@ let dragging = false
 let lastMousePosition = {x: 0, y: 0}
 let latestShapeID = 2
 
-let previousPosition = null
-
 export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
     if (data.shapes.size === 1) currentShapeID = shapeID
-    // $("#shapesList").sortable({
-    //     // placeholder: "sortable-placeholder",
-    //     start: function(event, ui) {
-    //         // data.sortingShapes = true
-    //     },
-    //     stop: function(event, ui) {
-    //         $($('#shapesList .shapeDiv').get().reverse()).each(function (index) {
-    //             let shapeID = $(this).attr('data-shapeID')
-    //             data.shapes.get(parseInt(shapeID)).z = index
-    //         });
-    //     }
-    // })
 }
 export function setMode(newMode, shapeID) {
     data.mode = newMode

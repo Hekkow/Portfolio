@@ -8,36 +8,46 @@ export default {
     },
     template: `
       <div class='messageDiv'
-           :class="{'myText': data.userID === message.userID}"
-           @mouseenter="messageHovered = true"
+           :class="{'myText': myText}"
+           @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
       >
-        <hover-buttons v-if="messageHovered" :message="message"></hover-buttons>
-        <profile-pic :size=50 :userid="message.userID"></profile-pic>
-        <div class='messageTextDiv'>
-          <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
-          <p v-if="readUsers.length > 0">Read by {{readUsers.join(', ')}}</p>
+        <hover-buttons v-show="messageHovered" :message="message"></hover-buttons>
+        <profile-pic :size=50 :userid="message.userID" style="margin: 0px 10px 10px 10px;"></profile-pic>
+        <div class='messageBubble' ref='messageBubble'>
+          <div class='messageTextDiv'>
+            <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
+<!--            <p v-if="readUsers.length > 0">Read by {{readUsers.join(', ')}}</p>-->
+          </div>
+          
         </div>
+        <button v-show="messageHovered" :style="'position: relative;'" ref="hoverButton">HOVER</button>
       </div>
     `,
     computed: {
         readUsers() {
             if (!data.read.has(data.openConversationID)) return []
             return data.read.get(data.openConversationID).filter(read => read.messageID === this.message.messageID).map(read => data.loadedUsers.get(read.userID).username)
+        },
+        myText() {
+            return data.userID === this.message.userID
         }
     },
 // turn getDisplayableMessage into computed later
     methods: {
+        onMouseEnter() {
+            if (this.messageHovered) return
+            this.messageHovered = true
+            this.$nextTick(() => this.$refs.hoverButton.style.top = (this.$refs.messageBubble.offsetHeight/2 - this.$refs.hoverButton.offsetHeight/2) + 'px')
+        },
         getDisplayableMessage(message, reply) {
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
             let text = ""
-            let name = message.userID
-            if (name) name = message.userID !== -1 ? data.loadedUsers.get(name).username : "Server"
             if (!reply && message.replyingTo && message.replyingTo !== -1) {
                 text += "Replying to "
                 text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
             }
-            text += name + ": " + this.addLinks(message.message)
+            text += this.addLinks(message.message)
             return text
         },
         addLinks(text) {
