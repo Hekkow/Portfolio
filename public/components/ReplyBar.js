@@ -7,8 +7,13 @@ export default {
         }
     },
     template: `
-        <div v-if="data.replyingTo !== -1 || data.editing !== -1"  class="typingBar">
-          {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
+        <div v-if="data.replyingTo !== -1 || data.editing !== -1"  class="replyBar">
+          <div class="replyBarText">
+            {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
+          </div>
+          <div class="replyBarCloseDiv">
+            <button @click="data.replyingTo = -1" class="replyBarCloseButton">x</button>
+          </div>
         </div>
     `,
     computed: {

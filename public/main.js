@@ -107,6 +107,7 @@ function loadLocalData(newData) { // very inefficient i do believe, gets called 
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
+    data.openConversationID = 3 // replace with cookie later
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
@@ -136,6 +137,7 @@ function read(conversationID) {
     if (lastText.userID === data.userID) return
     let messageID = lastText.messageID
     if (data.read.get(conversationID)?.find(read => read.userID === data.userID)?.messageID === messageID) return
+
     ws.send(JSON.stringify({type: Type.READMESSAGE, conversationID: conversationID, messageID: messageID, userID: data.userID}))
 }
 export function openConversation(conversationID) {
@@ -194,7 +196,6 @@ export function sendMessage() {
         replyingTo: data.replyingTo
     }
     let conversation = data.loadedConversations.get(data.openConversationID)
-    // if blocked
     if (conversation.conversationType === direct && data.loadedUsers.get(conversation.users.find(userID => userID !== data.userID)).blocked.includes(data.userID)) {
         console.log("You're blocked")
     }
@@ -264,7 +265,6 @@ function isConversationWithBlocked(conversationID) {
     let conversation = data.loadedConversations.get(conversationID)
     return conversation.conversationType === direct &&
         conversation.users.some(userID => conversation.users.some(otherUserID => data.loadedUsers.get(userID).blocked.includes(otherUserID)))
-
 }
 export function getConversationName(conversationID) {
     let conversation = data.loadedConversations.get(conversationID)
@@ -314,6 +314,7 @@ function logout() {
 }
 $(document).click(event => {
     data.userPopupID = -1
+    data.messageMenu = -1
 })
 
 function rejoinGeneral() {

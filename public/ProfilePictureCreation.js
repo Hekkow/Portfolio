@@ -59,10 +59,6 @@ export function duplicateShape(shapeID) {
     data.shapes.set(newShapeID, newShape)
     currentShapeID = newShapeID
 }
-// export function currentlyMovingShape(shapeID) {
-//     currentShapeID = shapeID
-//     setMode(data.Modes.Move, shapeID)
-// }
 export function drawShape(ctx, shape, scale, reset) {
     if (reset) {
         ctx.fillStyle = "black"
@@ -110,7 +106,7 @@ export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
-    if (data.shapes.size === 1) currentShapeID = shapeID
+    currentShapeID = shapeID
 }
 export function setMode(newMode, shapeID) {
     data.mode = newMode

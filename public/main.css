@@ -52,6 +52,36 @@ button {
     text-overflow: ellipsis;
     overflow: hidden;
 }
+.replyBar {
+    border: inset 5px blue;
+    margin-top: auto;
+
+    /*min-height: 30px;*/
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+}
+.replyBarText, .messageText {
+    overflow-wrap: break-word;
+    white-space: pre-line;
+    padding: 0;
+    margin: 0;
+}
+.replyBarText {
+    text-overflow: ellipsis;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 200px;
+    margin-right: 10px;
+
+}
+.replyBarCloseDiv {
+    margin: 10px 10px 10px auto;
+}
+.replyBarCloseButton {
+    width: 25px;
+    height: 25px;
+}
 #chatInfoPanel {
     width: 250px;
     min-width: 250px;
@@ -106,10 +136,7 @@ button {
     display: flex;
     flex-direction: column;
 }
-.hoverButton {
-    width: 30px;
-    height: 30px;
-}
+
 .itemBlock {
     display: flex;
     align-items: center;
@@ -138,13 +165,12 @@ button {
     max-width: 500px;
     padding: 10px;
 }
-.messageText {
-    overflow-wrap: break-word;
-    white-space: pre-line;
-    padding: 0;
-    margin: 0;
+.readIndicators {
+    position: relative;
+    bottom: -20px;
+    display: flex;
+    border: 1px solid black;
 }
-
 
 #messageInput {
     box-sizing: border-box;
@@ -190,8 +216,19 @@ canvas {
     white-space: pre-line;
 }
 .hoverButtons {
-    position: absolute;
-    top: -10px;
+    height: 25px;
+    position: relative;
+}
+.hoverButton {
+    width: 25px;
+    height: 25px;
+    position: relative;
+    margin-left: 10px;
+    margin-right: 0;
+}
+.hoverButton.myText {
+    margin-left: 0;
+    margin-right: 10px;
 }
 
 .userPopup {

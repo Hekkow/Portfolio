@@ -21,6 +21,6 @@ export default {
         message: {
             type: Object
         }
-    }
+    },
 
 }

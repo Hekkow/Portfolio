@@ -1,4 +1,5 @@
 import {data} from "./data.js";
+import {deleteMessage, startEdit} from "../main.js";
 export default {
     data() {
         return {
@@ -12,22 +13,29 @@ export default {
            @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
       >
-        <hover-buttons v-show="messageHovered" :message="message"></hover-buttons>
         <profile-pic :size=50 :userid="message.userID" style="margin: 0px 10px 10px 10px;"></profile-pic>
         <div class='messageBubble' ref='messageBubble'>
+          <div class="replyBubble"></div>
           <div class='messageTextDiv'>
             <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
-<!--            <p v-if="readUsers.length > 0">Read by {{readUsers.join(', ')}}</p>-->
           </div>
-          
+          <div class="readIndicators" v-if="readUsers.length > 0">
+            <profile-pic v-for="userID of readUsers" :size="21" :userid="userID" style="margin: 3px"></profile-pic>
+          </div>
         </div>
-        <button v-show="messageHovered" :style="'position: relative;'" ref="hoverButton">HOVER</button>
+        <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}"  @click="deleteMessage(message.messageID)">-</button>
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}" @click="startEdit(message.messageID)">🖌</button>
+          <button :class="{hoverButton: true, myText: myText}"  @click="data.replyingTo = message.messageID">>></button>
+        </div>
       </div>
     `,
     computed: {
         readUsers() {
             if (!data.read.has(data.openConversationID)) return []
-            return data.read.get(data.openConversationID).filter(read => read.messageID === this.message.messageID).map(read => data.loadedUsers.get(read.userID).username)
+            return data.read.get(data.openConversationID).filter(
+                read => read.messageID === this.message.messageID && read.userID !== this.message.userID && read.userID !== data.userID
+            ).map(read => read.userID)
         },
         myText() {
             return data.userID === this.message.userID
@@ -35,20 +43,25 @@ export default {
     },
 // turn getDisplayableMessage into computed later
     methods: {
+        startEdit,
+        deleteMessage,
         onMouseEnter() {
             if (this.messageHovered) return
             this.messageHovered = true
-            this.$nextTick(() => this.$refs.hoverButton.style.top = (this.$refs.messageBubble.offsetHeight/2 - this.$refs.hoverButton.offsetHeight/2) + 'px')
+            this.$nextTick(() => {
+                this.$refs.hoverButtons.style.top = (this.$refs.messageBubble.offsetHeight/2 - this.$refs.hoverButtons.offsetHeight/2) + 'px'
+            })
         },
         getDisplayableMessage(message, reply) {
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
             let text = ""
+            let replyText = ""
             if (!reply && message.replyingTo && message.replyingTo !== -1) {
-                text += "Replying to "
-                text += this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
+                replyText = "Replying to " + this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
+                if (replyText.length > 100) replyText = replyText.substring(0, 100 - 3) + "...\n"
             }
             text += this.addLinks(message.message)
-            return text
+            return replyText + text
         },
         addLinks(text) {
             // regex for finding url
