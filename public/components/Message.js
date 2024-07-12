@@ -9,13 +9,16 @@ export default {
     },
     template: `
       <div class='messageDiv'
-           :class="{'myText': myText}"
+           :class="{myText: myText}"
            @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
       >
         <profile-pic :size=50 :userid="message.userID" style="margin: 0px 10px 10px 10px;"></profile-pic>
+        
         <div class='messageBubble' ref='messageBubble'>
-          <div class="replyBubble"></div>
+          <div :class="{myText: myText, replyBubble: true}" v-if="message.replyingTo !== -1" >
+            {{replyText}}
+          </div>
           <div class='messageTextDiv'>
             <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
           </div>
@@ -39,6 +42,9 @@ export default {
         },
         myText() {
             return data.userID === this.message.userID
+        },
+        replyText() {
+            return data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === this.message.replyingTo).message
         }
     },
 // turn getDisplayableMessage into computed later
@@ -54,14 +60,7 @@ export default {
         },
         getDisplayableMessage(message, reply) {
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
-            let text = ""
-            let replyText = ""
-            if (!reply && message.replyingTo && message.replyingTo !== -1) {
-                replyText = "Replying to " + this.getDisplayableMessage(data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === message.replyingTo), true) + '\n'
-                if (replyText.length > 100) replyText = replyText.substring(0, 100 - 3) + "...\n"
-            }
-            text += this.addLinks(message.message)
-            return replyText + text
+            return this.addLinks(message.message)
         },
         addLinks(text) {
             // regex for finding url

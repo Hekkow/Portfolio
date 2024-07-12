@@ -55,8 +55,6 @@ button {
 .replyBar {
     border: inset 5px blue;
     margin-top: auto;
-
-    /*min-height: 30px;*/
     padding-bottom: 5px;
     display: flex;
     align-items: center;
@@ -70,7 +68,7 @@ button {
 .replyBarText {
     text-overflow: ellipsis;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 200px;
     margin-right: 10px;
 
@@ -103,7 +101,24 @@ button {
 #activeConversationsMain {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     border: inset 5px red;
+}
+.itemBlock {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 50px;
+}
+.blockText {
+    text-align: left;
+    /*white-space: pre-line;*/
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 #userInfoPanel {
     height: 100px;
@@ -137,13 +152,7 @@ button {
     flex-direction: column;
 }
 
-.itemBlock {
-    display: flex;
-    align-items: center;
-    text-align: left;
-    margin: 0;
-    padding: 0;
-}
+
 
 .messageDiv {
     width: 100%;
@@ -155,8 +164,9 @@ button {
     position: relative;
     padding-top: 10px;
     flex-direction: row;
+    padding-bottom: 5px;
 }
-.myText {
+.messageDiv.myText {
     flex-direction: row-reverse;
 }
 .messageBubble {
@@ -164,6 +174,22 @@ button {
     border-radius: 10px;
     max-width: 500px;
     padding: 10px;
+    margin: 0;
+}
+.replyBubble {
+    position: relative;
+    margin: -20px -20px 10px 0;
+    background-color: blue;
+    overflow-wrap: break-word;
+    border-radius: 10px;
+    padding: 15px;
+    max-height: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.replyBubble.myText {
+    margin-right: 0;
+    margin-left: -20px;
 }
 .readIndicators {
     position: relative;
@@ -211,10 +237,7 @@ canvas {
     border: 3px solid #4ab1ef;
     background-color: #4ab1ef;
 }
-.blockText {
-    text-align: left;
-    white-space: pre-line;
-}
+
 .hoverButtons {
     height: 25px;
     position: relative;

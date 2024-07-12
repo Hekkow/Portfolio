@@ -64,7 +64,6 @@ export default {
             if (!this.lastMessage) return conversationName
             let lastMessageText = this.lastMessage.message
             let lastTextUsername = this.lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(this.lastMessage.userID).username
-            if (lastMessageText.length > 18) lastMessageText = lastMessageText.substring(0, 15) + "..."
             return conversationName + "\n" + lastTextUsername + ": " + lastMessageText
         }
     }

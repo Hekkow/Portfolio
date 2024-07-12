@@ -20,7 +20,6 @@ export default {
         replyingToMessage() {
             let message = data.loadedConversations.get(data.openConversationID).texts.find(message => message.messageID === data.replyingTo)
             let messageText = message.message
-            // if (messageText.length > 18) messageText = messageText.substring(0, 50) + "..."
             return 'Replying to ' + data.loadedUsers.get(message.userID).username + ': ' + messageText
         }
     },
