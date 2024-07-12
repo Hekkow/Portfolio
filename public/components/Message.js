@@ -4,19 +4,28 @@ export default {
     data() {
         return {
             data: data,
-            messageHovered: false
+            messageHovered: false,
+            highlighted: false,
         }
     },
     template: `
       <div class='messageDiv'
-           :class="{myText: myText}"
+           :class="{myText: myText, highlighted: highlighted}"
            @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
+           ref="messageDiv"
+           @transitionend="this.highlighted = false"
       >
-        <profile-pic :size=50 :userid="message.userID" style="margin: 0px 10px 10px 10px;"></profile-pic>
+        <profile-pic :size=50 :userid="message.userID" style="margin: 0 10px 10px 10px;"></profile-pic>
         
         <div class='messageBubble' ref='messageBubble'>
-          <div :class="{myText: myText, replyBubble: true}" v-if="message.replyingTo !== -1" >
+          <div 
+              :class="{myText: myText, replyBubble: true}" 
+              v-if="message.replyingTo !== -1"
+              @click="() => {
+                  this.$emit('reply-clicked', message.replyingTo)
+              }"
+          >
             {{replyText}}
           </div>
           <div class='messageTextDiv'>
@@ -89,6 +98,14 @@ export default {
                 }
             }
             return text;
+        },
+        replyHighlight() {
+            let message = this.$refs.messageDiv
+            message.scrollIntoView({ behavior: 'smooth' })
+            this.highlighted = true
+            setTimeout(() => { // doesn't work with nextTick
+                this.highlighted = false
+            }, 1)
         }
     },
     props: {

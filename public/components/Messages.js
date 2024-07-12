@@ -9,9 +9,14 @@ export default {
     },
     template: `
       <div id="messages">
-        <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message"></message>
+        <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message" @reply-clicked="replyClicked" :ref="'message'"></message>
       </div>
     `,
+    methods: {
+        replyClicked(messageID) {
+            this.$refs.message.find(message => message.message.messageID === messageID).replyHighlight()
+        }
+    },
     computed: {
         texts() {
             if (data.openConversationID === -1) return
