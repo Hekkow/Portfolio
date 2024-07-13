@@ -14,12 +14,12 @@
     <settings></settings>
     <div id="mainContainer">
         <div id="currentlyOnlineUsersPanel">
-            <panel-title>Users</panel-title>
+            <div class="panelTitle">Users</div>
             <user-list type="user-block"></user-list>
         </div>
         <div id="activeConversationsPanel">
             <div id="activeConversationsMain">
-                <panel-title>Active Conversations</panel-title>
+                <div class="panelTitle">Active Conversations</div>
                 <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
                 <div id="activeConversationsExtraButtons" class="panelList">
                     <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
@@ -31,14 +31,13 @@
             <user-info-panel></user-info-panel>
         </div>
         <div id="currentConversation">
-            <panel-title :type="'openConversation'"></panel-title>
             <messages></messages>
             <typing-bar></typing-bar>
             <reply-bar></reply-bar>
             <message-input></message-input>
         </div>
         <div id="chatInfoPanel">
-            <panel-title :type="'chatInfo'">Chat Info</panel-title>
+            <div class="panelTitle">Chat Info</div>
             <group-chat-buttons></group-chat-buttons>
             <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
         </div>
@@ -47,8 +46,6 @@
     <user-profile-popup></user-profile-popup>
 </div>
 <script src="https://unpkg.com/vue@3"></script>
-
-
 <script src="js.cookie.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.3/jquery-ui.min.js"></script>

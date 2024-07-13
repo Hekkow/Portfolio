@@ -1,8 +1,8 @@
 import {data} from "./data.js";
-import {blockUser} from "../main.js";
+import {blockUser, startConversation} from "../main.js";
 
 export default {
-    methods: {blockUser},
+    methods: {startConversation, blockUser},
     data() {
         return {
             data: data,
@@ -12,7 +12,7 @@ export default {
       <div v-if="data.userPopupID !== -1" class="userPopup" :style="'left: ' + data.userPopupLocation.x + 'px; top: ' + data.userPopupLocation.y + 'px'">
         <profile-pic :size="50" :userid="user.userID"></profile-pic>
         {{user.username}}
-        <button class="userPopupButton" v-if="user.userID !== data.userID">Start conversation</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID" @click="startConversation(user.userID)">Start conversation</button>
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="blockUser(user.userID)">Block</button>
       </div>
     `,

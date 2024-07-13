@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {deleteMessage, startEdit} from "../main.js";
+import {deleteMessage, shortenText, startEdit} from "../main.js";
 export default {
     data() {
         return {
@@ -10,7 +10,7 @@ export default {
     },
     template: `
       <div class='messageDiv'
-           :class="{myText: myText, highlighted: highlighted}"
+           :class="{myText: myText, highlighted: highlighted, hasReply: message.replyingTo !== -1}"
            @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
            ref="messageDiv"
@@ -21,11 +21,10 @@ export default {
           <div 
               :class="{myText: myText, replyBubble: true}" 
               v-if="message.replyingTo !== -1"
-              @click="() => {
-                  this.$emit('reply-clicked', message.replyingTo)
-              }"
+              @click="() => this.$emit('reply-clicked', message.replyingTo)"
           >
-            {{replyText}}
+            <profile-pic :userid="reply.userID" :size="21" style="position: absolute; right: -27px; top: -7px"></profile-pic>
+            {{shortenText(reply.message, 600)}}
           </div>
           <div class='messageTextDiv'>
             <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
@@ -37,7 +36,7 @@ export default {
         <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
           <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}"  @click="deleteMessage(message.messageID)">-</button>
           <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}" @click="startEdit(message.messageID)">🖌</button>
-          <button :class="{hoverButton: true, myText: myText}"  @click="data.replyingTo = message.messageID">>></button>
+          <button :class="{hoverButton: true, myText: myText}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}">>></button>
         </div>
       </div>
     `,
@@ -51,12 +50,13 @@ export default {
         myText() {
             return data.userID === this.message.userID
         },
-        replyText() {
-            return data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === this.message.replyingTo).message
-        }
+        reply() {
+            return data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === this.message.replyingTo)
+        },
     },
 // turn getDisplayableMessage into computed later
     methods: {
+        shortenText,
         startEdit,
         deleteMessage,
         onMouseEnter() {

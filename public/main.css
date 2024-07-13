@@ -71,25 +71,15 @@ button {
     overflow-y: auto;
     max-height: 200px;
     margin-right: 10px;
-
-}
-.replyBarCloseDiv {
-    margin: 10px 10px 10px auto;
-}
-.replyBarCloseButton {
-    width: 25px;
-    height: 25px;
+    width: 100%;
+    position: relative;
 }
 #chatInfoPanel {
     width: 250px;
     min-width: 250px;
     border: inset 5px blue;
 }
-#currentlyOnlineUsersPanel {
-    width: 100px;
-    min-width: 100px;
-    border: inset 5px purple;
-}
+
 #activeConversationsPanel {
     width: 250px;
     min-width: 250px;
@@ -109,16 +99,31 @@ button {
     align-items: center;
     text-align: left;
     margin: 0;
-    padding: 0;
+    padding: 5px 0 5px 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: 50px;
+    height: 60px;
+}
+#currentlyOnlineUsersPanel {
+    width: 60px;
+    min-width: 60px;
+    border: inset 5px purple;
 }
 .blockText {
     text-align: left;
     /*white-space: pre-line;*/
+    white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+}
+.conversationBlockText {
+    display: flex;
+    flex-direction: column;
+}
+.closeButton {
+    margin: 10px 10px 10px auto;
+    width: 25px;
+    height: 25px;
 }
 #userInfoPanel {
     height: 100px;
@@ -138,7 +143,16 @@ button {
     align-items: center;
 }
 
-
+.groupChatButtonsDiv {
+    display: flex;
+    justify-content: space-evenly;
+    /*background-color: red;*/
+}
+.groupChatButton {
+    width: 30px;
+    height: 30px;
+    border-radius: 30px;
+}
 
 .panelTitle {
     height: 70px;
@@ -150,6 +164,7 @@ button {
 .panelList {
     display: flex;
     flex-direction: column;
+    overflow: auto;
 }
 
 
@@ -175,6 +190,9 @@ button {
 .messageDiv.myText {
     flex-direction: row-reverse;
 }
+.messageDiv.hasReply {
+    margin-top: 10px;
+}
 .messageBubble {
     background-color: red;
     border-radius: 10px;
@@ -188,9 +206,10 @@ button {
     background-color: blue;
     overflow-wrap: break-word;
     border-radius: 10px;
+    /*overflow-y: clip;*/
+    overflow-x: visible;
     padding: 15px;
     max-height: 200px;
-    overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
     user-select: none;
@@ -227,6 +246,7 @@ button {
 }
 canvas {
     vertical-align: middle;
+    cursor: pointer;
 }
 
 #messageSendButton {

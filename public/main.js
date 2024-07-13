@@ -146,6 +146,7 @@ export function openConversation(conversationID) {
     read(conversationID)
     data.openConversationID = conversationID
     data.openModal = data.modals.None
+    data.focusMessageInput = true
 }
 export function leaveConversation(conversationID, userID) {
     if (conversationID === -1) return
@@ -238,6 +239,12 @@ export function startEdit(messageID) {
     messageInput.val(conversation.texts.find(text => text.messageID === messageID).message)
     messageInput.focus()
     data.editing = messageID
+    data.replyingTo = -1
+}
+
+export function shortenText(text, length) {
+    if (text.length > length) text = text.substring(0, length-3) + "..."
+    return text
 }
 
 export function createNewGroupChat() {

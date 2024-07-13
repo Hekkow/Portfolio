@@ -16,8 +16,12 @@ export default {
               @mouseleave="messageHovered = false"
               :style="{ fontWeight: notification ? 'bold' : 'normal'}"
       >
-        <div class="blockText">{{ conversationBlockText }}</div>
-        <button class="closeConversationButton" v-if="messageHovered"
+        <div class="conversationBlockText">
+          <div class="blockText">{{ getConversationName(conversation.conversationID) }}</div>
+          <div class="blockText" v-if="lastMessage"><profile-pic :userid="lastMessage.userID" :size="21" style="display: inline-block"></profile-pic>{{ conversationLastText }}</div>
+        </div>
+        
+        <button class="closeButton" v-if="messageHovered"
                 @click.stop="leaveConversation(conversation.conversationID, data.userID)">x
         </button>
       </button>
@@ -59,13 +63,11 @@ export default {
         lastMessage() {
             return this.conversation.texts[this.conversation.texts.length - 1]
         },
-        conversationBlockText() {
-            let conversationName = getConversationName(this.conversation.conversationID)
-            if (!this.lastMessage) return conversationName
+        conversationLastText() {
             let lastMessageText = this.lastMessage.message
             let lastTextUsername = this.lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(this.lastMessage.userID).username
-            return conversationName + "\n" + lastTextUsername + ": " + lastMessageText
-        }
+            return lastTextUsername + ": " + lastMessageText
+        },
     }
 
 }

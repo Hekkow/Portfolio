@@ -16,7 +16,6 @@ import ShapesList from "./ProfilePicCreator/ShapesList.js";
 import ShapeItem from "./ProfilePicCreator/ShapeItem.js";
 import ProfilePictureCreator from "./ProfilePicCreator/ProfilePictureCreator.js";
 import UserProfilePopup from "./UserProfilePopup.js";
-import PanelTitle from "./PanelTitle.js";
 import TypingBar from "./TypingBar.js";
 import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
@@ -47,7 +46,6 @@ app.component('shapes-list', ShapesList)
 app.component('shape-item', ShapeItem)
 app.component('profile-picture-creator', ProfilePictureCreator)
 app.component('user-profile-popup', UserProfilePopup)
-app.component('panel-title', PanelTitle)
 app.component('typing-bar', TypingBar)
 app.component('reply-bar', ReplyBar)
 app.component('user-info-panel', UserInfoPanel)
