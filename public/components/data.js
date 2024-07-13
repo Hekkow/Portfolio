@@ -32,4 +32,5 @@ export const data = Vue.reactive({
     Modes: Modes,
     mode: Modes.Move,
     settingsOpen: false,
+    focusMessageInput: false
 })

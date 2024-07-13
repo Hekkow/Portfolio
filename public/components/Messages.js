@@ -14,6 +14,7 @@ export default {
     `,
     methods: {
         replyClicked(messageID) {
+            data.focusMessageInput = true
             this.$refs.message.find(message => message.message.messageID === messageID).replyHighlight()
         }
     },

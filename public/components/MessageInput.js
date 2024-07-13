@@ -23,6 +23,12 @@ export default {
     watch: {
         'data.openConversationID'(id) {
             if (id !== -1) this.focusTextArea()
+        },
+        'data.focusMessageInput' (focus) {
+            if (focus) {
+                this.focusTextArea()
+                data.focusMessageInput = false
+            }
 
         }
     },

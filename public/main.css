@@ -192,6 +192,8 @@ button {
     max-height: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
+    cursor: pointer;
+    user-select: none;
 }
 .replyBubble.myText {
     margin-right: 0;

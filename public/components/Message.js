@@ -14,7 +14,6 @@ export default {
            @mouseenter="onMouseEnter()"
            @mouseleave="messageHovered = false"
            ref="messageDiv"
-           @transitionend="this.highlighted = false"
       >
         <profile-pic :size=50 :userid="message.userID" style="margin: 0 10px 10px 10px;"></profile-pic>
         

@@ -7,7 +7,7 @@ export default {
         }
     },
     template: `
-        <div v-if="data.replyingTo !== -1 || data.editing !== -1"  class="replyBar">
+        <div v-if="replyBarOpen"  class="replyBar">
           <div class="replyBarText">
             {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
@@ -21,6 +21,11 @@ export default {
             let message = data.loadedConversations.get(data.openConversationID).texts.find(message => message.messageID === data.replyingTo)
             let messageText = message.message
             return 'Replying to ' + data.loadedUsers.get(message.userID).username + ': ' + messageText
+        },
+        replyBarOpen() {
+            let open = data.replyingTo !== -1 || data.editing !== -1
+            if (open) data.focusMessageInput = true
+            return open
         }
     },
     watch: {
