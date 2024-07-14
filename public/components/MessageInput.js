@@ -18,6 +18,15 @@ export default {
             this.$nextTick(() => {
                 this.$refs.messageInput.focus()
             })
+        },
+        resizeInput() {
+            let textArea = this.$refs.messageInput
+            textArea.style.height = 'auto';
+            textArea.style.height = textArea.scrollHeight + "px";
+            let style = window.getComputedStyle(textArea)
+            console.log(textArea.scrollHeight, style.maxHeight)
+            if (textArea.scrollHeight > parseFloat(style.maxHeight)) textArea.style.overflowY = 'scroll'
+            else textArea.style.overflowY = 'hidden'
         }
     },
     watch: {
@@ -34,7 +43,9 @@ export default {
     },
     template: `
       <div id="messageInputDiv" v-show="data.openConversationID !== -1">
-        <textarea id="messageInput" ref="messageInput"></textarea>
+        <textarea id="messageInput" ref="messageInput" rows=1 @input="() => {
+            resizeInput()
+        }"></textarea>
         <button id="messageSendButton" @click="sendMessage()"></button>
       </div>
     `,
@@ -45,5 +56,7 @@ export default {
     },
     mounted() {
         $(window).on('focus', () => this.focusTextArea())
-    }
+        let textArea = this.$refs.messageInput
+        textArea.setAttribute("style", "height: 20px;");
+    },
 }

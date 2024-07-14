@@ -225,16 +225,26 @@ button {
     border: 1px solid black;
 }
 
+:root {
+    --line-height: 20px;
+    --lines: 3;
+    --extra: 10px;
+}
+
 #messageInput {
     box-sizing: border-box;
     width: 80%;
-    height: 55px;
-    font-size: 16px;
+    /*height: calc(var(--line-height) + var(--extra));*/
+    /*line-height: var(--line-height);*/
+    /*font-size: 17px;*/
     padding-left: 20px;
+    padding-top: 3px;
+    max-height: calc(var(--line-height) * var(--lines) + var(--extra));
     outline: 0;
+    overflow: hidden;
     border: 1px solid #4ab1ef;
     background-color: white;
-    border-radius: 30px;
+    /*border-radius: 30px;*/
     transition: all 0.15s ease;
     margin-top: 20px;
     margin-bottom: 20px;
