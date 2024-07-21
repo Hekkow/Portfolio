@@ -24,9 +24,9 @@ export default {
             textArea.style.height = 'auto';
             textArea.style.height = textArea.scrollHeight + "px";
             let style = window.getComputedStyle(textArea)
-            console.log(textArea.scrollHeight, style.maxHeight)
-            if (textArea.scrollHeight > parseFloat(style.maxHeight)) textArea.style.overflowY = 'scroll'
-            else textArea.style.overflowY = 'hidden'
+            console.log(textArea.scrollHeight, parseFloat(style.maxHeight))
+            if (textArea.scrollHeight > parseFloat(style.maxHeight)) textArea.classList.add('scroll')
+            else textArea.classList.remove('scroll')
         }
     },
     watch: {
@@ -36,9 +36,9 @@ export default {
         'data.focusMessageInput' (focus) {
             if (focus) {
                 this.focusTextArea()
+                this.resizeInput()
                 data.focusMessageInput = false
             }
-
         }
     },
     template: `
@@ -57,6 +57,10 @@ export default {
     mounted() {
         $(window).on('focus', () => this.focusTextArea())
         let textArea = this.$refs.messageInput
-        textArea.setAttribute("style", "height: 20px;");
+        let style = getComputedStyle(textArea)
+        let lineHeight = parseFloat(style.getPropertyValue('--line-height'))
+        let paddingTop = parseFloat(style.getPropertyValue('padding-top'))
+        let paddingBottom = parseFloat(style.getPropertyValue('padding-bottom'))
+        textArea.setAttribute("style", "height: " + (lineHeight + paddingTop + paddingBottom) + "px;")
     },
 }

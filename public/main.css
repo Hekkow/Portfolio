@@ -2,12 +2,16 @@ html {
     font-weight: bold;
     font-family: Arial, serif;
 }
+#messages, .replyBarText, .panelList, #messageInput {
+    scrollbar-width: thin;
+}
 #app {
     display: flex;
     font-weight: bold;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    scrollbar-width: thin;
 }
 #loadingOverlay {
     position: absolute;
@@ -38,7 +42,7 @@ button {
     flex-direction: column;
     position: relative;
     flex-grow: 1;
-    max-width: calc(100% - 100px - 250px - 250px - 10*4px);
+    /*max-width: calc(100% - 100px - 250px - 250px - 10*4px);*/
 }
 #messages {
     flex-grow: 1;
@@ -119,11 +123,14 @@ button {
 .conversationBlockText {
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 .closeButton {
     margin: 10px 10px 10px auto;
     width: 25px;
     height: 25px;
+    min-width: 25px;
+    min-height: 25px;
 }
 #userInfoPanel {
     height: 100px;
@@ -194,7 +201,8 @@ button {
     margin-top: 10px;
 }
 .messageBubble {
-    background-color: red;
+    /*background-color: red;*/
+    border: 3px solid #1589e4;
     border-radius: 10px;
     max-width: 500px;
     padding: 10px;
@@ -203,7 +211,8 @@ button {
 .replyBubble {
     position: relative;
     margin: -20px -20px 10px 0;
-    background-color: blue;
+    background-color: white;
+    border: 3px solid #e63066;
     overflow-wrap: break-word;
     border-radius: 10px;
     /*overflow-y: clip;*/
@@ -223,32 +232,44 @@ button {
     bottom: -20px;
     display: flex;
     border: 1px solid black;
+    z-index: 10;
 }
 
 :root {
-    --line-height: 20px;
-    --lines: 3;
-    --extra: 10px;
+    --line-height: 23px;
+    --lines: 6;
+    --accent-blue: #4ab1ef;
+    --main-blue: #1589e4;
+    --padding-bottom: 14px;
+    --padding-top: 8px;
+
 }
 
 #messageInput {
     box-sizing: border-box;
     width: 80%;
-    /*height: calc(var(--line-height) + var(--extra));*/
-    /*line-height: var(--line-height);*/
-    /*font-size: 17px;*/
+    height: auto;
+    line-height: var(--line-height);
+    font-size: 17px;
     padding-left: 20px;
-    padding-top: 3px;
-    max-height: calc(var(--line-height) * var(--lines) + var(--extra));
+    padding-top: var(--padding-top);
+    padding-bottom: var(--padding-bottom);
+    max-height: calc(var(--line-height) * var(--lines) + var(--padding-bottom) + var(--padding-top));
     outline: 0;
-    overflow: hidden;
-    border: 1px solid #4ab1ef;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    border: 3px solid var(--accent-blue);
     background-color: white;
-    /*border-radius: 30px;*/
+    border-radius: 10px;
     transition: all 0.15s ease;
     margin-top: 20px;
     margin-bottom: 20px;
     resize: none;
+}
+#messageInput.scroll {
+    overflow-y: scroll;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
 }
 .userPic {
     margin: 0;
@@ -266,13 +287,13 @@ canvas {
     margin-left: 30px;
     border-radius: 60px;
     outline: 0;
-    border: 3px solid #4ab1ef;
+    border: 3px solid var(--accent-blue);
     background-color: white;
     transition: all 0.15s ease;
     cursor: pointer;
 }
 #messageSendButton:hover {
-    border: 3px solid #4ab1ef;
+    border: 3px solid var(--accent-blue);
     background-color: #4ab1ef;
 }
 
@@ -321,5 +342,4 @@ canvas {
     width: 600px;
     height: 400px;
     background-color: white;
-
 }

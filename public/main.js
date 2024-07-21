@@ -178,9 +178,9 @@ export function startConversation(receivingUserID) {
 function editMessage(message) {
     data.loadedConversations.get(message.conversationID).texts.find(text => text.messageID === message.messageID).message = message.message
 }
-function addMessage(message) { // can't just push because for some reason vue isn't reacting
+function addMessage(message) {
     let conversation = data.loadedConversations.get(message.conversationID)
-    conversation.texts = [...conversation.texts, message]
+    conversation.texts = [...conversation.texts, message] // can't just push because for some reason vue isn't reacting
 }
 export function sendMessage() {
     let messageInput = $('#messageInput')
@@ -206,6 +206,7 @@ export function sendMessage() {
         ws.send(JSON.stringify({type: data.editing === -1 ? Type.NEWMESSAGE : Type.EDITMESSAGE, message: message}))
     }
     closeReply()
+    data.focusMessageInput = true
 }
 function closeReply() {
     data.editing = -1

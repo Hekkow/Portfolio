@@ -4,24 +4,28 @@ export default {
     data() {
         return {
             data: data,
-            messageHovered: false,
+            blockHovered: false,
             direct: 0
         }
     },
     template: `
-      <button v-if="!(conversation.conversationType === direct && data.loadedUsers.get(data.userID).blocked.some(userID => conversation.users.includes(userID)))"
-              class="conversationBlock itemBlock"
-              @click="openConversation(conversation.conversationID)"
-              @mouseenter="messageHovered = true"
-              @mouseleave="messageHovered = false"
-              :style="{ fontWeight: notification ? 'bold' : 'normal'}"
+      <button
+          v-if="!(conversation.conversationType === direct && data.loadedUsers.get(data.userID).blocked.some(userID => conversation.users.includes(userID)))"
+          class="conversationBlock itemBlock"
+          @click="openConversation(conversation.conversationID)"
+          @mouseenter="blockHovered = true"
+          @mouseleave="blockHovered = false"
+          :style="{ fontWeight: notification ? 'bold' : 'normal'}"
       >
         <div class="conversationBlockText">
           <div class="blockText">{{ getConversationName(conversation.conversationID) }}</div>
-          <div class="blockText" v-if="lastMessage"><profile-pic :userid="lastMessage.userID" :size="21" style="display: inline-block"></profile-pic>{{ conversationLastText }}</div>
+          <div class="blockText" v-if="lastMessage">
+            <profile-pic :userid="lastMessage.userID" :size="21" style="display: inline-block"></profile-pic>
+            {{ conversationLastText }}
+          </div>
         </div>
-        
-        <button class="closeButton" v-if="messageHovered"
+
+        <button class="closeButton" v-if="blockHovered"
                 @click.stop="leaveConversation(conversation.conversationID, data.userID)">x
         </button>
       </button>

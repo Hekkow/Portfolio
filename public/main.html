@@ -19,7 +19,7 @@
         </div>
         <div id="activeConversationsPanel">
             <div id="activeConversationsMain">
-                <div class="panelTitle">Active Conversations</div>
+                <div class="panelTitle" style="text-align:left">Active Conversations</div>
                 <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
                 <div id="activeConversationsExtraButtons" class="panelList">
                     <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
