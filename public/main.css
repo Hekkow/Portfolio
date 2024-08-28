@@ -222,6 +222,16 @@ button:hover {
     margin-right: 0;
     margin-left: -20px;
 }
+.replyProfilePic {
+    position: absolute;
+    top: -7px
+}
+.replyProfilePic.myText {
+    right: -27px;
+}
+.replyProfilePic.notMyText {
+    left: -27px;
+}
 .readIndicators {
     position: relative;
     bottom: -20px;

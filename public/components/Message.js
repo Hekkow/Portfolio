@@ -23,7 +23,7 @@ export default {
               v-if="message.replyingTo !== -1"
               @click="() => this.$emit('reply-clicked', message.replyingTo)"
           >
-            <profile-pic :userid="reply.userID" :size="21" style="position: absolute; right: -27px; top: -7px"></profile-pic>
+            <profile-pic :userid="reply.userID" :size="21" :class="{replyProfilePic: true, myText: replyMyText, notMyText: !replyMyText}"></profile-pic>
             {{shortenText(reply.message, 600)}}
           </div>
           <div class='messageTextDiv'>
@@ -53,6 +53,9 @@ export default {
         reply() {
             return data.loadedConversations.get(data.openConversationID).texts.find(text => text.messageID === this.message.replyingTo)
         },
+        replyMyText() {
+            return data.userID === this.reply.userID
+        }
     },
 // turn getDisplayableMessage into computed later
     methods: {

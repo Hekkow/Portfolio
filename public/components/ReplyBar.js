@@ -12,7 +12,7 @@ export default {
           <div class="replyBarText">
             Replying to 
             <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative; top: -3px"></profile-pic>
-            {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
+            | {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
           <button @click="function() {
               data.replyingTo = -1
