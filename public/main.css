@@ -226,7 +226,6 @@ button:hover {
     position: relative;
     bottom: -20px;
     display: flex;
-    border: 1px solid black;
     z-index: 10;
 }
 
