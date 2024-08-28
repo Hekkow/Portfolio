@@ -8,7 +8,7 @@ export default {
     },
     template: `
       <div id="userInfoPanel" v-if="data.userID !== -1">
-        <profile-pic :size="50" :userid="data.userID"></profile-pic>
+        <profile-pic :size="50" :userid="data.userID" style="margin: var(--profile-pic-margin)"></profile-pic>
         <p>{{username}}</p>
         <button @click="data.settingsOpen = true" class="closeButton" title="Settings">⚙️</button>
       </div>

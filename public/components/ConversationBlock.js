@@ -19,7 +19,7 @@ export default {
       >
         <div class="conversationBlockText">
           <div class="blockText">{{ getConversationName(conversation.conversationID) }}</div>
-          <div class="blockText" v-if="lastMessage">
+          <div class="blockText" v-if="lastMessage" style="margin-top: 4px;">
             <profile-pic :userid="lastMessage.userID" :size="21" style="display: inline-block"></profile-pic>
             {{ conversationLastText }}
           </div>
@@ -68,9 +68,10 @@ export default {
             return this.conversation.texts[this.conversation.texts.length - 1]
         },
         conversationLastText() {
-            let lastMessageText = this.lastMessage.message
-            let lastTextUsername = this.lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(this.lastMessage.userID).username
-            return lastTextUsername + ": " + lastMessageText
+            return this.lastMessage.message
+            // let lastMessageText = this.lastMessage.message
+            // let lastTextUsername = this.lastMessage.userID === -1 ? "Server" : data.loadedUsers.get(this.lastMessage.userID).username
+            // return lastTextUsername + ": " + lastMessageText
         },
     }
 

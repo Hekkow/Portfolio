@@ -100,10 +100,10 @@ button:hover {
     align-items: center;
     text-align: left;
     margin: 0;
-    padding: 5px 0 5px 0;
     overflow: hidden;
     text-overflow: ellipsis;
     height: 60px;
+    padding: var(--profile-pic-margin);
 }
 #currentlyOnlineUsersPanel {
     width: 60px;
@@ -133,6 +133,7 @@ button:hover {
     flex-shrink: 0;
     display: flex;
     align-items: center;
+    background-color: red;
 }
 
 #messageInputDiv {
@@ -236,7 +237,7 @@ button:hover {
     --main-blue: #1589e4;
     --padding-bottom: 14px;
     --padding-top: 8px;
-
+    --profile-pic-margin: 5px;
 }
 
 #messageInput {
