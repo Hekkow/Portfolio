@@ -15,29 +15,38 @@ export default {
         inviteToGroupChat,
     },
     template: `
-        <div v-if="data.openModal === data.modals.CreateGroupChat">
-          <p>Create</p>
-          <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>
-          <modal-button v-if="data.createGroupChatUsers.length > 0" @click="createNewGroupChat()">Create</modal-button>
+      <div v-if="data.openModal !== data.modals.None" class="modalBackground" @click="function(event) {
+          if (event.target.classList.contains('modalBackground')) data.openModal = data.modals.None
+      }">
+        <div class="modal">
+          <div v-if="data.openModal === data.modals.CreateGroupChat">
+            <p>Create</p>
+            <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>
+            <modal-button v-if="data.createGroupChatUsers.length > 0" @click="createNewGroupChat()">Create</modal-button>
+          </div>
+          <div v-if="data.openModal === data.modals.InviteToGroupChat">
+            <p>Invite</p>
+            <user-checkbox v-for="user in inviteUsers" :user="user"></user-checkbox>
+            <modal-button v-if="data.createGroupChatUsers.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
+          </div>
+          <div v-if="data.openModal === data.modals.RenameGroupChat">
+            <p>Rename</p>
+            <input type="text" v-model="inputText">
+            <modal-button @click='renameGroupChat(inputText)'>Rename</modal-button>
+          </div>
+          <div v-if="data.openModal === data.modals.TransferGroupChat">
+            <p>Transfer Ownership</p>
+            <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
+            <modal-button v-if="data.createGroupChatUsers.length === 1" @click="transferLeader()">Transfer</modal-button>
+          </div>
+          <div v-if="data.openModal === data.modals.BlockedUsers">
+            <p>Blocked users</p>
+            <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
+            <modal-button v-if="data.createGroupChatUsers.length === 1" @click="unblockUser(data.createGroupChatUsers[0])">Unblock</modal-button>
+          </div>
         </div>
-        <div v-if="data.openModal === data.modals.InviteToGroupChat">
-          <p>Invite</p>
-          <user-checkbox v-for="user in inviteUsers" :user="user"></user-checkbox>
-          <modal-button v-if="data.createGroupChatUsers.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
-        </div>
-        <div v-if="data.openModal === data.modals.RenameGroupChat">
-          <input type="text" v-model="inputText">
-          <modal-button @click='renameGroupChat(inputText)'>Rename</modal-button>
-        </div>
-        <div v-if="data.openModal === data.modals.TransferGroupChat">
-          <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
-          <modal-button v-if="data.createGroupChatUsers.length === 1" @click="transferLeader()">Transfer</modal-button>
-        </div>
-        <div v-if="data.openModal === data.modals.BlockedUsers">
-          <p>Blocked users</p>
-          <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
-          <modal-button v-if="data.createGroupChatUsers.length === 1" @click="unblockUser(data.createGroupChatUsers[0])">Unblock</modal-button>
-        </div>
+      </div>
+        
     `,
     // make actual user-radio later
     watch: {
