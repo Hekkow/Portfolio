@@ -1,5 +1,4 @@
 html {
-    font-weight: bold;
     font-family: Arial, serif;
 }
 #messages, .replyBarText, .panelList, #messageInput {
@@ -7,7 +6,6 @@ html {
 }
 #app {
     display: flex;
-    font-weight: bold;
     justify-content: center;
     align-items: center;
     overflow: hidden;
@@ -28,16 +26,19 @@ button {
     outline: 0;
     border: 0;
     cursor: pointer;
+    background-color: white;
+    /*transition: 0.3s;*/
+}
+button:hover {
+    background-color: gray;
 }
 /* main panels */
 #mainContainer {
     width: 80%;
     height: 80%;
     display: flex;
-    border: inset 5px red;
 }
 #currentConversation {
-    border: inset 5px black;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -46,18 +47,15 @@ button {
 }
 #messages {
     flex-grow: 1;
-    border: inset 5px pink;
     overflow: auto;
     position: relative;
 }
 .typingBar {
-    border: inset 5px blue;
     margin-top: auto;
     text-overflow: ellipsis;
     overflow: hidden;
 }
 .replyBar {
-    border: inset 5px blue;
     margin-top: auto;
     padding-bottom: 5px;
     display: flex;
@@ -74,34 +72,28 @@ button {
     text-overflow: ellipsis;
     overflow-x: hidden;
     overflow-y: visible;
-    /*overflow-y: auto;*/
     max-height: 200px;
     margin-right: 10px;
     width: 100%;
     max-width: 100%;
     position: relative;
     padding-top: 5px;
-    /*display: flex;*/
 }
 #chatInfoPanel {
     width: 250px;
     min-width: 250px;
-    border: inset 5px blue;
 }
 
 #activeConversationsPanel {
     width: 250px;
     min-width: 250px;
-    border: inset 5px yellow;
     display: flex;
     flex-direction: column;
-    /*height: 0;*/
 }
 #activeConversationsMain {
     flex-grow: 1;
     overflow-y: auto;
     overflow-x: hidden;
-    border: inset 5px red;
 }
 .itemBlock {
     display: flex;
@@ -116,7 +108,6 @@ button {
 #currentlyOnlineUsersPanel {
     width: 60px;
     min-width: 60px;
-    border: inset 5px purple;
 }
 .blockText {
     text-align: left;
@@ -140,7 +131,6 @@ button {
 #userInfoPanel {
     height: 100px;
     flex-shrink: 0;
-    border: inset 5px purple;
     display: flex;
     align-items: center;
 }
@@ -149,7 +139,6 @@ button {
     min-height: 100px;
     max-height: 500px;
     flex-shrink: 0;
-    border: inset 5px black;
     display: flex;
     justify-content: center;
     align-items: center;
