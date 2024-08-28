@@ -42,7 +42,7 @@ button {
     flex-direction: column;
     position: relative;
     flex-grow: 1;
-    /*max-width: calc(100% - 100px - 250px - 250px - 10*4px);*/
+    max-width: calc(100% - 60px - 250px - 250px - 10*4px);
 }
 #messages {
     flex-grow: 1;
@@ -62,6 +62,7 @@ button {
     padding-bottom: 5px;
     display: flex;
     align-items: center;
+    max-width: 100%;
 }
 .replyBarText, .messageText {
     overflow-wrap: break-word;
@@ -72,11 +73,15 @@ button {
 .replyBarText {
     text-overflow: ellipsis;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: visible;
+    /*overflow-y: auto;*/
     max-height: 200px;
     margin-right: 10px;
     width: 100%;
+    max-width: 100%;
     position: relative;
+    padding-top: 5px;
+    /*display: flex;*/
 }
 #chatInfoPanel {
     width: 250px;

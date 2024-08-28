@@ -1,5 +1,6 @@
 import {data} from "./data.js";
 import {scrollToBottom} from "../main.js";
+
 export default {
     data() {
         return {
@@ -9,13 +10,9 @@ export default {
     template: `
         <div v-if="replyBarOpen"  class="replyBar">
           <div class="replyBarText">
-            <div style="position: fixed; background-color: red">
-              Replying to <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block"></profile-pic>
-            </div>
-            <div style="margin-top: 21px">
-              {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
-            </div>
-            
+            Replying to 
+            <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative; top: -3px"></profile-pic>
+            {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
           <button @click="function() {
               data.replyingTo = -1
@@ -28,9 +25,7 @@ export default {
             return data.loadedConversations.get(data.openConversationID).texts.find(message => message.messageID === data.replyingTo)
         },
         replyingToMessage() {
-            let messageText = this.reply.message
-            return messageText
-            // return 'Replying to ' + data.loadedUsers.get(this.reply.userID).username + '\n' + messageText
+            return this.reply.message
         },
         replyBarOpen() {
             let open = data.replyingTo !== -1 || data.editing !== -1
