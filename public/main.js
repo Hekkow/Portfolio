@@ -4,7 +4,7 @@ import {setupProfilePicCreator} from "./ProfilePictureCreation.js";
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
-
+let maxMessageLength = 10000
 if (!sessionID) window.location.href = '/'
 else connection()
 function connection() {
@@ -122,7 +122,12 @@ function receivedNewMessage(message) {
     }
 }
 export function updateTitleNotifications() {
-    document.title = countNotifications() + ""
+    let numberNotifications = countNotifications()
+    let newTitle = countNotifications() + ""
+    if (numberNotifications === 0) {
+        newTitle = "Title" // switch to previous title later
+    }
+    document.title = newTitle
 }
 function countNotifications() {
     return $('[style*="font-weight: bold"]').length
@@ -186,9 +191,14 @@ function addMessage(message) {
 export function sendMessage() {
     let messageInput = $('#messageInput')
     let text = messageInput.val().trim()
+    if (!text || !text.trim()) return
+    if (text.length > maxMessageLength) {
+        console.log("message too long")
+        return
+    }
     messageInput.val("")
     messageInput.focus()
-    if (!text || !text.trim()) return
+
     let message = {
         conversationID: data.openConversationID,
         userID: data.userID,

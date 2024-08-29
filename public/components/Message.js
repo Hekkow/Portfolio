@@ -71,6 +71,7 @@ export default {
             })
         },
         getDisplayableMessage(message, reply) {
+            if (!data.loadedUsers.has(data.userID)) return this.addLinks(message.message)
             if (data.loadedUsers.get(data.userID).blocked.includes(message.userID)) return "Message from blocked user"
             return this.addLinks(message.message)
         },

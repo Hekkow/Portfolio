@@ -20,6 +20,7 @@ export default {
     },
     computed: {
         blocked() {
+            if (!data.loadedUsers.has(data.userID)) return false
             return !data.loadedUsers.get(data.userID).blocked.includes(this.user.userID)
         }
     }
