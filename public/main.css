@@ -1,3 +1,28 @@
+
+:root {
+    --line-height: 23px;
+    --lines: 6;
+    --accent-color: #4ab1ef;
+    --main-color: #1589e4;
+    --reply-color: #e63066;
+    --modal-color: white;
+    --modal-background-color: rgba(110, 165, 239, 0.5);
+    --message-background-color: white;
+    --button-background-color: white;
+    --button-background-hover-color: gray;
+    --loading-overlay-background-color: black;
+    --text-input-background-color: white;
+    --border-radius: 10px;
+    --border: 3px solid;
+    --padding-bottom: 14px;
+    --padding-top: 8px;
+    --profile-pic-margin: 5px;
+    --active-conversations-width: 250px;
+    --chat-info-width: 250px;
+    --online-users-width: 60px;
+    --bottom-height: 100px;
+    --max-message-width: 500px;
+}
 html {
     font-family: Arial, serif;
 }
@@ -13,7 +38,7 @@ html {
 }
 #loadingOverlay {
     position: absolute;
-    background-color: black;
+    background-color: var(--loading-overlay-background-color);
     z-index: 100;
 }
 html, body, #app, #loadingOverlay {
@@ -26,11 +51,10 @@ button {
     outline: 0;
     border: 0;
     cursor: pointer;
-    background-color: white;
-    /*transition: 0.3s;*/
+    background-color: var(--button-background-color);
 }
 button:hover {
-    background-color: gray;
+    background-color: var(--button-background-hover-color);
 }
 /* main panels */
 #mainContainer {
@@ -43,7 +67,7 @@ button:hover {
     flex-direction: column;
     position: relative;
     flex-grow: 1;
-    max-width: calc(100% - 60px - 250px - 250px - 10*4px);
+    max-width: calc(100% - var(--online-users-width) - var(--active-conversations-width) - var(--chat-info-width));
 }
 #messages {
     flex-grow: 1;
@@ -80,13 +104,13 @@ button:hover {
     padding-top: 5px;
 }
 #chatInfoPanel {
-    width: 250px;
-    min-width: 250px;
+    width: var(--chat-info-width);
+    min-width: var(--chat-info-width);
 }
 
 #activeConversationsPanel {
-    width: 250px;
-    min-width: 250px;
+    width: var(--active-conversations-width);
+    min-width: var(--active-conversations-width);
     display: flex;
     flex-direction: column;
 }
@@ -106,12 +130,11 @@ button:hover {
     padding: var(--profile-pic-margin);
 }
 #currentlyOnlineUsersPanel {
-    width: 60px;
-    min-width: 60px;
+    width: var(--online-users-width);
+    min-width: var(--online-users-width);
 }
 .blockText {
     text-align: left;
-    /*white-space: pre-line;*/
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -129,15 +152,15 @@ button:hover {
     min-height: 25px;
 }
 #userInfoPanel {
-    height: 100px;
+    height: var(--bottom-height);
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    background-color: red;
+    background-color: var(--reply-color);
 }
 
 #messageInputDiv {
-    min-height: 100px;
+    min-height: var(--bottom-height);
     max-height: 500px;
     flex-shrink: 0;
     display: flex;
@@ -148,7 +171,6 @@ button:hover {
 .groupChatButtonsDiv {
     display: flex;
     justify-content: space-evenly;
-    /*background-color: red;*/
 }
 .groupChatButton {
     width: 30px;
@@ -169,8 +191,6 @@ button:hover {
     overflow: auto;
 }
 
-
-
 .messageDiv {
     width: 100%;
     min-height: 50px;
@@ -182,11 +202,11 @@ button:hover {
     padding-top: 10px;
     flex-direction: row;
     padding-bottom: 5px;
-    background-color: white;
+    background-color: var(--message-background-color);
     transition: background-color 1s;
 }
 .messageDiv.highlighted {
-    background-color: red;
+    background-color: var(--reply-color);
     transition: background-color 0s;
 }
 .messageDiv.myText {
@@ -196,10 +216,9 @@ button:hover {
     margin-top: 10px;
 }
 .messageBubble {
-    /*background-color: red;*/
-    border: 3px solid #1589e4;
-    border-radius: 10px;
-    max-width: 500px;
+    border: var(--border) var(--main-color);
+    border-radius: var(--border-radius);
+    max-width: var(--max-message-width);
     padding: 10px;
     margin: 0;
     position: relative;
@@ -207,11 +226,10 @@ button:hover {
 .replyBubble {
     position: relative;
     margin: -20px -20px 10px 0;
-    background-color: white;
-    border: 3px solid #e63066;
+    background-color: var(--message-background-color);
+    border: var(--border) var(--reply-color);
     overflow-wrap: break-word;
-    border-radius: 10px;
-    /*overflow-y: clip;*/
+    border-radius: var(--border-radius);
     overflow-x: visible;
     padding: 15px;
     max-height: 200px;
@@ -239,6 +257,7 @@ button:hover {
     display: flex;
     z-index: 10;
     left: 0;
+    max-width: var(--max-message-width)
 }
 .readIndicators.myText {
     right: 0;
@@ -252,7 +271,7 @@ button:hover {
 }
 
 .modalBackground {
-    background-color: rgba(110, 165, 239, 0.5);
+    background-color: var(--modal-background-color);
     position: absolute;
     width: 100%;
     height: 100%;
@@ -266,18 +285,9 @@ button:hover {
 .modal {
     width: 600px;
     height: 400px;
-    background-color: white;
+    background-color: var(--modal-color);
+}
 
-}
-:root {
-    --line-height: 23px;
-    --lines: 6;
-    --accent-blue: #4ab1ef;
-    --main-blue: #1589e4;
-    --padding-bottom: 14px;
-    --padding-top: 8px;
-    --profile-pic-margin: 5px;
-}
 
 #messageInput {
     box-sizing: border-box;
@@ -292,9 +302,9 @@ button:hover {
     outline: 0;
     overflow-x: hidden;
     overflow-y: hidden;
-    border: 3px solid var(--accent-blue);
-    background-color: white;
-    border-radius: 10px;
+    border: var(--border) var(--accent-color);
+    background-color: var(--text-input-background-color);
+    border-radius: var(--border-radius);
     transition: all 0.15s ease;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -321,14 +331,13 @@ canvas {
     margin-left: 30px;
     border-radius: 60px;
     outline: 0;
-    border: 3px solid var(--accent-blue);
-    background-color: white;
+    border: var(--border) var(--accent-color);
+    background-color: var(--text-input-background-color);
     transition: all 0.15s ease;
     cursor: pointer;
 }
 #messageSendButton:hover {
-    border: 3px solid var(--accent-blue);
-    background-color: #4ab1ef;
+    background-color: var(--accent-color);
 }
 
 .hoverButtons {
@@ -352,21 +361,21 @@ canvas {
     display: flex;
     width: 200px;
     flex-direction: column;
-    border: 5px solid blue;
-    background-color: white;
+    border: var(--border) var(--accent-color);
+    background-color: var(--modal-color);
 }
 .userPopupButton {
-    background-color: white;
+    background-color: var(--button-background-color);
 }
 .userPopupButton:hover {
-    background-color: #dababa;
+    background-color: var(--button-background-hover-color);
 }
 
 .fullScreenOverlay {
     width: 100%;
     height: 100%;
     position: absolute;
-    background-color: black;
+    background-color: var(--modal-background-color);
     z-index: 50;
     display: flex;
     align-items: center;
@@ -375,5 +384,5 @@ canvas {
 #mainSettingsPanel {
     width: 600px;
     height: 400px;
-    background-color: white;
+    background-color: var(--modal-color);
 }
