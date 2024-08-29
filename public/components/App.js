@@ -20,6 +20,8 @@ import TypingBar from "./TypingBar.js";
 import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
 import Settings from "./Settings.js";
+import LoadingOverlay from "./LoadingOverlay.js";
+import ModalTitle from "./ModalTitle.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -50,4 +52,6 @@ app.component('typing-bar', TypingBar)
 app.component('reply-bar', ReplyBar)
 app.component('user-info-panel', UserInfoPanel)
 app.component('settings', Settings)
+app.component('loading-overlay', LoadingOverlay)
+app.component('modal-title', ModalTitle)
 export default app

@@ -20,27 +20,27 @@ export default {
       }">
         <div class="modal">
           <div v-if="data.openModal === data.modals.CreateGroupChat">
-            <p>Create</p>
+            <modal-title>Create</modal-title>
             <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>
             <modal-button v-if="data.createGroupChatUsers.length > 0" @click="createNewGroupChat()">Create</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.InviteToGroupChat">
-            <p>Invite</p>
+            <modal-title>Invite</modal-title>
             <user-checkbox v-for="user in inviteUsers" :user="user"></user-checkbox>
             <modal-button v-if="data.createGroupChatUsers.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.RenameGroupChat">
-            <p>Rename</p>
+            <modal-title>Rename</modal-title>
             <input type="text" v-model="inputText">
             <modal-button @click='renameGroupChat(inputText)'>Rename</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.TransferGroupChat">
-            <p>Transfer Ownership</p>
+            <modal-title>Transfer Ownership</modal-title>
             <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
             <modal-button v-if="data.createGroupChatUsers.length === 1" @click="transferLeader()">Transfer</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.BlockedUsers">
-            <p>Blocked users</p>
+            <modal-title>Blocked users</modal-title>
             <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
             <modal-button v-if="data.createGroupChatUsers.length === 1" @click="unblockUser(data.createGroupChatUsers[0])">Unblock</modal-button>
           </div>

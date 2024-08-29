@@ -36,12 +36,7 @@ html {
     align-items: center;
     /*overflow: hidden;*/
 }
-#loadingOverlay {
-    position: absolute;
-    background-color: var(--loading-overlay-background-color);
-    z-index: 100;
-}
-html, body, #app, #loadingOverlay {
+html, body, #app{
     width: 100%;
     height: 100%;
     margin: 0;
@@ -302,7 +297,11 @@ button:hover {
     height: 400px;
     background-color: var(--modal-color);
 }
-
+.modalTitle {
+    width: 100%;
+    text-align: center;
+    line-height: 30px;
+}
 
 #messageInput {
     box-sizing: border-box;

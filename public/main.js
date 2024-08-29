@@ -4,6 +4,7 @@ import {setupProfilePicCreator} from "./ProfilePictureCreation.js";
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
+
 if (!sessionID) window.location.href = '/'
 else connection()
 function connection() {
@@ -13,10 +14,9 @@ function connection() {
         ws.send(JSON.stringify({type: Type.LOGIN, sessionID: sessionID}))
         console.log("Connected")
         clearInterval(connectionRepeater) // stops repeated reconnection attempts
-        $('#loadingOverlay').css('display', 'none')
     }
     ws.onclose = () => {
-        $('#loadingOverlay').css('display', 'block')
+        data.userID = -1
         connectionRepeater = setInterval(() => { // when connection broken, every 400ms, try to reconnect if possible
             if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                 console.log("Attempting to reconnect")
@@ -108,6 +108,7 @@ function loadLocalData(newData) { // very inefficient i do believe, gets called 
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
     data.openConversationID = 3 // replace with cookie later
+    read(data.openConversationID)
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
