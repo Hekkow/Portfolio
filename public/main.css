@@ -302,7 +302,24 @@ button:hover {
     text-align: center;
     line-height: 30px;
 }
+.dropdown {
+    position: relative;
+}
+.dropdown:hover .dropdownContent {
+    display: flex;
+}
+.dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: black;
+    z-index: 1;
+    min-width: 160px;
+    flex-direction: column;
+    right: 0;
+}
+.dropdownButton {
 
+}
 #messageInput {
     box-sizing: border-box;
     width: 80%;

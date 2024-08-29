@@ -7,9 +7,12 @@ export default {
     },
     template: `
       <div class="groupChatButtonsDiv" v-if="data.openConversationID !== -1">
-        <button class="groupChatButton" @click="data.openModal = data.modals.InviteToGroupChat" title="Invite to group chat">+</button>
-        <button class="groupChatButton" @click="data.openModal = data.modals.RenameGroupChat" v-if="groupChat && leader" title="Rename group chat">></button>
-        <button class="groupChatButton" @click="data.openModal = data.modals.TransferGroupChat" v-if="groupChat && leader" title="Transfer leadership of group chat">>></button>
+        <dropdown label="X">
+          <button class="dropdownButton" @click="data.openModal = data.modals.InviteToGroupChat">Invite</button>
+          <button class="dropdownButton" @click="data.openModal = data.modals.RenameGroupChat" v-if="groupChat && leader">Rename</button>
+          <button class="dropdownButton" @click="data.openModal = data.modals.TransferGroupChat" v-if="groupChat && leader">Transfer leadership</button>
+        </dropdown>
+
       </div>
     `,
     props: {

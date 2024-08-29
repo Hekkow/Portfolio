@@ -22,6 +22,7 @@ import UserInfoPanel from "./UserInfoPanel.js";
 import Settings from "./Settings.js";
 import LoadingOverlay from "./LoadingOverlay.js";
 import ModalTitle from "./ModalTitle.js";
+import Dropdown from "./Dropdown.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -54,4 +55,5 @@ app.component('user-info-panel', UserInfoPanel)
 app.component('settings', Settings)
 app.component('loading-overlay', LoadingOverlay)
 app.component('modal-title', ModalTitle)
+app.component('dropdown', Dropdown)
 export default app
