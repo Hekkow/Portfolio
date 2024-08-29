@@ -46,7 +46,6 @@ export default {
           </div>
         </div>
       </div>
-        
     `,
     // make actual user-radio later
     watch: {

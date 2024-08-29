@@ -202,6 +202,7 @@ button:hover {
     max-width: 500px;
     padding: 10px;
     margin: 0;
+    position: relative;
 }
 .replyBubble {
     position: relative;
@@ -233,11 +234,23 @@ button:hover {
     left: -27px;
 }
 .readIndicators {
-    position: relative;
-    bottom: -20px;
+    position: absolute;
+    bottom: -10px;
     display: flex;
     z-index: 10;
+    left: 0;
 }
+.readIndicators.myText {
+    right: 0;
+    flex-direction: row-reverse;
+}
+.readIndicatorsProfilePic.notMyText {
+    margin: 0 0 0 3px;
+}
+.readIndicatorsProfilePic.myText {
+    margin: 0 3px 0 0;
+}
+
 .modalBackground {
     background-color: rgba(110, 165, 239, 0.5);
     position: absolute;
