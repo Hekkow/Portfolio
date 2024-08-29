@@ -13,28 +13,29 @@
 <div id="app">
     <settings></settings>
     <div id="mainContainer">
-        <div id="currentlyOnlineUsersPanel">
+        <div id="currentlyOnlineUsersPanel" class="panel">
             <div class="panelTitle">Users</div>
-            <user-list type="user-block"></user-list>
+            <div class="panelArea">
+                <user-list type="user-block"></user-list>
+            </div>
         </div>
-        <div id="activeConversationsPanel">
-            <div id="activeConversationsMain">
-                <div class="panelTitle">Active Conversations</div>
-                <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
-                <div id="activeConversationsExtraButtons" class="panelList">
-                    <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
-                        <div class="blockText">Create group chat</div>
-                    </button>
-                    <modal></modal>
+        <div id="activeConversationsPanel" class="panel">
+            <div class="panelTitle">Active Conversations</div>
+            <div class="panelArea">
+                <div id="activeConversationsMain">
+                    <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
+                    <div id="activeConversationsExtraButtons" class="panelList">
+                        <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
+                            <div class="blockText">Create group chat</div>
+                        </button>
+                        <modal></modal>
+                    </div>
+                    <user-info-panel></user-info-panel>
                 </div>
             </div>
-            <user-info-panel></user-info-panel>
         </div>
-        <div id="currentConversation">
+        <div id="currentConversation" class="panel">
             <messages></messages>
-            <typing-bar></typing-bar>
-            <reply-bar></reply-bar>
-            <message-input></message-input>
         </div>
         <div id="chatInfoPanel">
             <div class="panelTitle">Chat Info</div>

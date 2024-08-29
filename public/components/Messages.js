@@ -9,8 +9,13 @@ export default {
     },
     template: `
       <div class="panelTitle" v-if="data.openConversationID !== -1">{{getConversationName(data.openConversationID)}}</div>
-      <div id="messages">
-        <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message" @reply-clicked="replyClicked" :ref="'message'"></message>
+      <div class="panelArea" style="overflow: auto;">
+          <div id="messages">
+            <message v-if="data.openConversationID !== -1" v-for="message in texts" :message="message" @reply-clicked="replyClicked" :ref="'message'"></message>
+          </div>
+          <typing-bar></typing-bar>
+          <reply-bar></reply-bar>
+          <message-input></message-input>
       </div>
     `,
     methods: {
