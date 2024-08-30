@@ -1,8 +1,8 @@
 import {data} from "./data.js";
-import {blockUser, startConversation} from "../main.js";
+import {blockUser, startConversation, toggleCensor} from "../main.js";
 
 export default {
-    methods: {startConversation, blockUser},
+    methods: {toggleCensor, startConversation, blockUser},
     data() {
         return {
             data: data,
@@ -14,6 +14,7 @@ export default {
         {{user.username}}
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="startConversation(user.userID)">Start conversation</button>
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="blockUser(user.userID)">Block</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID" @click="toggleCensor(user.userID)">Censor</button>
       </div>
     `,
     computed: {
