@@ -339,6 +339,7 @@ function logout() {
 $(document).click(event => {
     data.userPopupID = -1
     data.messageMenu = -1
+    $('.dropdownOpened').removeClass('dropdownOpened')
 })
 
 function rejoinGeneral() {

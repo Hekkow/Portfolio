@@ -318,8 +318,11 @@ button:hover {
 .dropdown {
     position: relative;
 }
-.dropdown:hover .dropdownContent {
-    display: flex;
+/*.dropdown:hover .dropdownContent {*/
+/*    display: flex;*/
+/*}*/
+.dropdownOpened {
+    display: flex !important;
 }
 .dropdownContent {
     display: none;

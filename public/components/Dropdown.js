@@ -7,8 +7,8 @@ export default {
     },
     template: `
         <div class="dropdown">
-          <button class="dropdownButton">{{$props.label}}</button>
-          <div class="dropdownContent">
+          <button class="dropdownButton" @click.stop="$refs.dropdownContent.classList.toggle('dropdownOpened')">{{$props.label}}</button>
+          <div class="dropdownContent" ref="dropdownContent">
             <slot/>
           </div>
         </div>
