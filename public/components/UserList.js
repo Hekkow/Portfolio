@@ -16,6 +16,7 @@ export default {
         >
         </conversation-block>
         <participant-block v-if="type==='participant-block'" v-for="user in participants" :user="user"></participant-block>
+        <slot/>
       </div>
     `,
     props: {

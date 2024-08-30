@@ -7,12 +7,17 @@ export default {
         }
     },
     template: `
-      <div class="settings fullScreenOverlay" v-if="data.settingsOpen">
+      <div class="modalBackground" v-if="data.settingsOpen">
         <div id="mainSettingsPanel">
-          <button onclick="logout()">Logout</button>
-          <button onclick="rejoinGeneral()">Rejoin Howdy</button>
-          <button onclick="showBlockedUsersPopup()">Blocked Users</button>
-          <button onclick="startProfilePicCreator()">Create Profile Picture</button>
+          <div id="settingsLeftPanel">
+            <button onclick="logout()">Logout</button>
+            <button onclick="rejoinGeneral()">Rejoin Howdy</button>
+            <button onclick="showBlockedUsersPopup()">Blocked Users</button>
+            <button onclick="startProfilePicCreator()">Create Profile Picture</button>
+            <button>Change username</button>
+            <button>Change password</button>
+          </div>
+          
         </div>
       </div>
     `,

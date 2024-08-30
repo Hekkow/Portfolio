@@ -22,13 +22,12 @@
             <div class="panelTitle">Active Conversations</div>
             <div class="panelArea">
                 <div id="activeConversationsMain">
-                    <user-list type="conversation-block" v-if="data.userID !== -1"></user-list>
-                    <div id="activeConversationsExtraButtons" class="panelList">
+                    <user-list type="conversation-block" v-if="data.userID !== -1">
                         <button id="showCreateGroupChatPopupButton" class="itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
                             <div class="blockText">Create group chat</div>
                         </button>
-                        <modal></modal>
-                    </div>
+                    </user-list>
+                    <modal></modal>
                     <user-info-panel></user-info-panel>
                 </div>
             </div>
@@ -36,10 +35,13 @@
         <div id="currentConversation" class="panel">
             <messages></messages>
         </div>
-        <div id="chatInfoPanel">
+        <div id="chatInfoPanel" class="panel">
             <div class="panelTitle">Chat Info</div>
-            <group-chat-buttons></group-chat-buttons>
-            <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
+
+            <div class="panelArea" style="border: 0">
+                <group-chat-buttons></group-chat-buttons>
+                <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
+            </div>
         </div>
     </div>
     <profile-picture-creator v-show="data.profilePictureOpen"></profile-picture-creator>
