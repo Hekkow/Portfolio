@@ -8,9 +8,9 @@ const Helper = require('./public/helper.js')
 let clients = []
 let typing = new Map()
 Database.initPromise.then(async () => {
-    // await Database.deleteAll()
-    // await Database.createLatestIDs()
-    // await Database.createPublicConversation()
+    await Database.deleteAll()
+    await Database.createLatestIDs()
+    await Database.createPublicConversation()
 })
 app.use(express.static('public'));
 app.use(express.json());
@@ -56,6 +56,9 @@ app.ws('/main', (ws, req) => {
                 break
             case Helper.Type.UNBLOCKUSER:
                 unblockUser(data)
+                break
+            case Helper.Type.CENSORUPDATE:
+                updateCensors(data)
                 break
             case Helper.Type.SAVEPROFILEPIC:
                 saveProfilePicture(data)
@@ -127,6 +130,9 @@ function unblockUser(data) {
         if (!client) return
         client.socket.send(JSON.stringify({type: Helper.Type.UNBLOCKUSER, userID: data.userID}))
     })
+}
+function updateCensors(data) {
+    Database.updateCensors(data.userID, data.censored)
 }
 function sendTyping(ws, conversationID) {
     if (!typing.has(conversationID)) ws.send(JSON.stringify({type: Helper.Type.TYPING, conversationID: conversationID, conversationTyping: []}))

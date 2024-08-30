@@ -4,7 +4,7 @@ import {setupProfilePicCreator} from "./ProfilePictureCreation.js";
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
-let maxMessageLength = 10000
+let maxMessageLength = 5000
 if (!sessionID) window.location.href = '/'
 else connection()
 function connection() {
@@ -197,6 +197,7 @@ export function sendMessage() {
     let text = messageInput.val().trim()
     if (!text || !text.trim()) return
     if (text.length > maxMessageLength) {
+        data.openPopup = data.popups.LongMessage
         console.log("message too long")
         return
     }
@@ -213,6 +214,7 @@ export function sendMessage() {
     }
     let conversation = data.loadedConversations.get(data.openConversationID)
     if (conversation.conversationType === direct && data.loadedUsers.get(conversation.users.find(userID => userID !== data.userID)).blocked.includes(data.userID)) {
+        data.openPopup = data.popups.Blocked
         console.log("You're blocked")
     }
     else {
@@ -347,7 +349,19 @@ function rejoinGeneral() {
     if (data.loadedConversations.has(howdyID)) return
     ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
 }
+export function toggleCensor(userID) {
+    console.log('censor')
+    let user = data.loadedUsers.get(data.userID)
+    if (user.censored.includes(userID)) {
+        user.censored = user.censored.filter(id => id !== userID)
+    }
+    else {
+        user.censored.push(userID)
+    }
+    data.activateCensor = userID
+    ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
 
+}
 window.rejoinGeneral = rejoinGeneral
 window.showBlockedUsersPopup = showBlockedUsersPopup
 window.getConversationName = getConversationName

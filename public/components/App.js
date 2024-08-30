@@ -25,6 +25,7 @@ import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
 import {updateTitleNotifications} from "../main.js";
 import UserRadio from "./UserRadio.js";
+import Popup from "./Popup.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -68,4 +69,5 @@ app.component('loading-overlay', LoadingOverlay)
 app.component('modal-title', ModalTitle)
 app.component('dropdown', Dropdown)
 app.component('user-radio', UserRadio)
+app.component('popup', Popup)
 export default app

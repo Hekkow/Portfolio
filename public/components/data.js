@@ -6,6 +6,11 @@ export const Modes = {
     Rotation: 4,
     Radius: 5,
 }
+export let popups = {
+    None: 'None',
+    Blocked: 'Blocked',
+    LongMessage: 'LongMessage'
+}
 export const data = Vue.reactive({
     loadedUsers: new Map(),
     loadedConversations: new Map(),
@@ -33,5 +38,8 @@ export const data = Vue.reactive({
     Modes: Modes,
     mode: Modes.Move,
     settingsOpen: false,
-    focusMessageInput: false
+    focusMessageInput: false,
+    popups: popups,
+    openPopup: popups.None,
+    activateCensor: -1
 })

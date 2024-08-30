@@ -29,7 +29,7 @@ class Database {
     async register(username, password) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, password: password, conversations: [], userID: id, blocked: [], profilePic: ""}
+        let user = {username: username, password: password, conversations: [], userID: id, blocked: [], profilePic: "", censored: []}
         await this.users.insertOne(user)
         await this.addUsersToGroupChat(publicConversationID, [id])
         user.password = null
@@ -40,6 +40,9 @@ class Database {
     }
     async unblock(userID, blockedUserID) {
         await this.users.findOneAndUpdate({userID: userID}, {$pull: {blocked: blockedUserID}})
+    }
+    async updateCensors(userID, censored) {
+        await this.users.findOneAndUpdate({userID: userID}, {$set: {censored: censored}})
     }
     async findUserWithID(userID) {
         let user = await this.users.findOne({userID: userID})

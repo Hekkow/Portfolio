@@ -1,8 +1,8 @@
 import {data} from "./data.js";
 import {canvasHeight, canvasWidth, drawShape} from "../ProfilePictureCreation.js";
-import {showUserPopup} from "../main.js";
+import {scrollToBottom, showUserPopup, toggleCensor} from "../main.js";
 export default {
-    methods: {showUserPopup},
+    methods: {toggleCensor, showUserPopup},
     data() {
         return {
             data: data
@@ -17,6 +17,7 @@ export default {
             let scale = canvasWidth/parseFloat($(canvasRef.value).attr('width'))
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+            if (data.loadedUsers.get(data.userID).censored.includes(props.userid)) return
             let shapes = data.loadedUsers.get(props.userid).profilePic
             if (!(shapes instanceof Map)) shapes = new Map(Object.entries(shapes))
             for (let shape of Array.from(shapes.values()).sort((a, b) => b.z - a.z)) {
@@ -32,7 +33,7 @@ export default {
     template: `
       
       <div class='userPic' :style="'clip-path: circle(' + size / 2 + 'px at center); width: ' + size + 'px; height: ' + size + 'px;'" :title="userName">
-        <canvas :width="size" :height="size" ref="canvasRef" @click="function(event) {showUserPopup($props.userid, event)}"></canvas>
+        <canvas :width="size" :height="size" ref="canvasRef" @click="function(event) {showUserPopup($props.userid, event)}" @contextmenu.prevent="toggleCensor($props.userid)"></canvas>
       </div>
     `,
     props: {
@@ -48,6 +49,13 @@ export default {
     watch: {
         'profilePic'() {
             this.drawShapes()
+        },
+        'data.activateCensor'() {
+            if (data.activateCensor === this.$props.userid) {
+                this.drawShapes()
+                this.$nextTick(() => data.activateCensor = -1)
+
+            }
         }
     },
     computed: {
