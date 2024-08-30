@@ -7,6 +7,7 @@ export default {
     },
     template: `
       <input type="checkbox" :value="user.userID" name="groupChatPopup" v-model="data.createGroupChatUsers"><label :for="user.userID">{{user.username}}</label>
+      
     `,
     props: {
         user: {

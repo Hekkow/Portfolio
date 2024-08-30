@@ -308,6 +308,12 @@ button:hover {
     width: 100%;
     text-align: center;
     line-height: 30px;
+    position: relative;
+}
+.modalCloseButton {
+    position: absolute;
+    right: 0;
+    top: 0;
 }
 .dropdown {
     position: relative;

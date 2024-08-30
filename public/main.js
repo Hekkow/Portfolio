@@ -123,11 +123,13 @@ function receivedNewMessage(message) {
 }
 export function updateTitleNotifications() {
     let numberNotifications = countNotifications()
-    let newTitle = countNotifications() + ""
-    if (numberNotifications === 0) {
-        newTitle = "Title" // switch to previous title later
+    let conversationOpen = data.openConversationID !== -1
+    let conversationName = "Chat app"
+    if (conversationOpen) conversationName = getConversationName(data.openConversationID)
+    if (numberNotifications !== 0) {
+        conversationName = '(' + numberNotifications + ') ' + conversationName
     }
-    document.title = newTitle
+    document.title = conversationName
 }
 function countNotifications() {
     return $('[style*="font-weight: bold"]').length

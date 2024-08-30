@@ -23,13 +23,24 @@ import Settings from "./Settings.js";
 import LoadingOverlay from "./LoadingOverlay.js";
 import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
+import {updateTitleNotifications} from "../main.js";
 const app = Vue.createApp({
     data() {
         return {
             data: data,
 
         }
-    }
+    },
+    watch: {
+        'data.openConversationID': {
+            immediate: true,
+            handler() {
+                console.log("TEST")
+                updateTitleNotifications()
+            }
+        }
+    },
+
 });
 app.component('user-block', UserBlock)
 app.component('user-list', UserList)

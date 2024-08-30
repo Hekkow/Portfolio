@@ -7,6 +7,8 @@ export default {
     },
     template: `<div class="modalTitle">
       <slot/>
+      <button class="modalCloseButton" @click="data.openModal = data.modals.None">x</button>
     </div>
     `,
+
 }
