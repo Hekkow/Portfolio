@@ -24,7 +24,8 @@ export const data = Vue.reactive({
         BlockedUsers: 'BlockedUsers'
     },
     openModal: 'None',
-    createGroupChatUsers: [],
+    usersCheckbox: [],
+    userRadio: -1,
     shapes: new Map(),
     userPopupID: -1,
     typingConversations: new Map(),

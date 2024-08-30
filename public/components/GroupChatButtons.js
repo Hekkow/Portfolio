@@ -25,6 +25,7 @@ export default {
             return data.loadedConversations.get(data.openConversationID).leader === data.userID
         },
         groupChat() {
+            if (!data.loadedConversations.has(data.openConversationID)) return
             return data.loadedConversations.get(data.openConversationID).conversationType === group
         }
     }

@@ -24,6 +24,7 @@ import LoadingOverlay from "./LoadingOverlay.js";
 import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
 import {updateTitleNotifications} from "../main.js";
+import UserRadio from "./UserRadio.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -35,7 +36,6 @@ const app = Vue.createApp({
         'data.openConversationID': {
             immediate: true,
             handler() {
-                console.log("TEST")
                 updateTitleNotifications()
             }
         }
@@ -67,4 +67,5 @@ app.component('settings', Settings)
 app.component('loading-overlay', LoadingOverlay)
 app.component('modal-title', ModalTitle)
 app.component('dropdown', Dropdown)
+app.component('user-radio', UserRadio)
 export default app

@@ -23,13 +23,13 @@ export default {
             <modal-title>Create</modal-title>
             <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>
             <p v-if="createGroupChatUsers.length === 0">No invitable users online</p>
-            <modal-button v-if="data.createGroupChatUsers.length > 0" @click="createNewGroupChat()">Create</modal-button>
+            <modal-button v-if="data.usersCheckbox.length > 0" @click="createNewGroupChat()">Create</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.InviteToGroupChat">
             <modal-title>Invite</modal-title>
             <user-checkbox v-for="user in inviteUsers" :user="user"></user-checkbox>
             <p v-if="inviteUsers.length === 0">No invitable users online</p>
-            <modal-button v-if="data.createGroupChatUsers.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
+            <modal-button v-if="data.usersCheckbox.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.RenameGroupChat">
             <modal-title>Rename</modal-title>
@@ -38,15 +38,15 @@ export default {
           </div>
           <div v-if="data.openModal === data.modals.TransferGroupChat">
             <modal-title>Transfer Ownership</modal-title>
-            <user-checkbox v-for="user in groupChatUsers" :user="user"></user-checkbox>
+            <user-radio v-for="user in groupChatUsers" :user="user" :input-type="'radio'"></user-radio>
             <p v-if="groupChatUsers.length === 0">Nobody to transfer to</p>
-            <modal-button v-if="data.createGroupChatUsers.length === 1" @click="transferLeader()">Transfer</modal-button>
+            <modal-button v-if="data.usersRadio !== -1" @click="transferLeader()">Transfer</modal-button>
           </div>
           <div v-if="data.openModal === data.modals.BlockedUsers">
             <modal-title>Blocked users</modal-title>
             <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
             <p v-if="blockedUsers.length === 0">No users blocked</p>
-            <modal-button v-if="data.createGroupChatUsers.length === 1" @click="unblockUser(data.createGroupChatUsers[0])">Unblock</modal-button>
+            <modal-button v-if="data.usersCheckbox.length === 1" @click="unblockUser(data.usersCheckbox[0])">Unblock</modal-button>
           </div>
         </div>
       </div>
@@ -54,7 +54,8 @@ export default {
     // make actual user-radio later
     watch: {
         'data.openModal': function() {
-            this.data.createGroupChatUsers = [];
+            this.data.usersCheckbox = [];
+            this.data.usersRadio = -1;
         }
     },
     computed: {

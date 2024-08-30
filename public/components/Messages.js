@@ -28,6 +28,7 @@ export default {
     computed: {
         texts() {
             if (data.openConversationID === -1) return
+            if (!data.loadedConversations.has(data.openConversationID)) return
             return data.loadedConversations.get(data.openConversationID).texts;
         }
     },

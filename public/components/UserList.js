@@ -34,6 +34,7 @@ export default {
             return conversations.toSorted((a, b) => new Date(b.texts[b.texts.length - 1]?.date || 0) - new Date(a.texts[a.texts.length - 1]?.date || 0))
         },
         participants() {
+            if (!data.loadedConversations.has(data.openConversationID)) return []
             return data.loadedConversations.get(data.openConversationID).users.map(userID => data.loadedUsers.get(userID))
         }
     }

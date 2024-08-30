@@ -107,6 +107,7 @@ function loadLocalData(newData) { // very inefficient i do believe, gets called 
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
+    if (!data.loadedConversations.has(3)) return
     data.openConversationID = 3 // replace with cookie later
     read(data.openConversationID)
 }
@@ -139,6 +140,7 @@ $(window).focus(() => {
 })
 function read(conversationID) {
     if (conversationID === -1) return
+    if (!data.loadedConversations.has(conversationID)) return
     let conversation = data.loadedConversations.get(conversationID)
     let lastText = conversation.texts[conversation.texts.length - 1]
     if (!lastText) return
@@ -262,19 +264,19 @@ export function shortenText(text, length) {
 }
 
 export function createNewGroupChat() {
-    ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: [...data.createGroupChatUsers, data.userID], conversationType: group, leader: data.userID}))
+    ws.send(JSON.stringify({type: Type.REQUESTCONVERSATION, conversationID: [...data.usersCheckbox, data.userID], conversationType: group, leader: data.userID}))
     // conversationID here is users array
-    // can replace [...data.createGroupChatUsers, data.userID] with just data.createGroupChatUsers and use leader on server side
+    // can replace [...data.usersCheckbox, data.userID] with just data.createGroupChatUsers and use leader on server side
 }
 export function inviteToGroupChat() {
-    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: data.openConversationID, users: data.createGroupChatUsers}))
+    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: data.openConversationID, users: data.usersCheckbox}))
 }
 
 export function renameGroupChat(newName) {
     ws.send(JSON.stringify({type: Type.RENAMEGROUPCHAT, conversationID: data.openConversationID, newName: newName}))
 }
 export function transferLeader() {
-    ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.createGroupChatUsers[0], originalLeader: data.userID }))
+    ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.usersRadio, originalLeader: data.userID }))
 }
 export function scrollToBottom() {
     let messages = $('#messages')
@@ -288,6 +290,7 @@ function isConversationWithBlocked(conversationID) {
         conversation.users.some(userID => conversation.users.some(otherUserID => data.loadedUsers.get(userID).blocked.includes(otherUserID)))
 }
 export function getConversationName(conversationID) {
+    if (!data.loadedConversations.has(conversationID)) return ""
     let conversation = data.loadedConversations.get(conversationID)
     let conversationName = conversation.conversationName
     if (!conversationName) conversationName = conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
