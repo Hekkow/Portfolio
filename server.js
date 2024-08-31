@@ -8,9 +8,9 @@ const Helper = require('./public/helper.js')
 let clients = []
 let typing = new Map()
 Database.initPromise.then(async () => {
-    await Database.deleteAll()
-    await Database.createLatestIDs()
-    await Database.createPublicConversation()
+    // await Database.deleteAll()
+    // await Database.createLatestIDs()
+    // await Database.createPublicConversation()
 })
 app.use(express.static('public'));
 app.use(express.json());

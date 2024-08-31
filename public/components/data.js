@@ -1,16 +1,3 @@
-export const Modes = {
-    Move: 0,
-    Width: 1,
-    Height: 2,
-    Size: 3,
-    Rotation: 4,
-    Radius: 5,
-}
-export let popups = {
-    None: 'None',
-    Blocked: 'Blocked',
-    LongMessage: 'LongMessage'
-}
 export const data = Vue.reactive({
     loadedUsers: new Map(),
     loadedConversations: new Map(),
@@ -26,7 +13,9 @@ export const data = Vue.reactive({
         RenameGroupChat: 'RenameGroupChat',
         TransferGroupChat: 'TransferGroupChat',
         CreateGroupChat: 'CreateGroupChat',
-        BlockedUsers: 'BlockedUsers'
+        BlockedUsers: 'BlockedUsers',
+        Settings: 'Settings',
+        Loading: 'Loading'
     },
     openModal: 'None',
     usersCheckbox: [],
@@ -35,11 +24,29 @@ export const data = Vue.reactive({
     userPopupID: -1,
     typingConversations: new Map(),
     read: new Map(),
-    Modes: Modes,
-    mode: Modes.Move,
-    settingsOpen: false,
+    Modes: {
+        Move: 0,
+        Width: 1,
+        Height: 2,
+        Size: 3,
+        Rotation: 4,
+        Radius: 5,
+    },
+    mode: 0,
     focusMessageInput: false,
-    popups: popups,
-    openPopup: popups.None,
-    activateCensor: -1
+    popups: {
+        None: 'None',
+        Blocked: 'Blocked',
+        LongMessage: 'LongMessage'
+    },
+    openPopup: 'None',
+    activateCensor: -1,
+    settingsTabs: {
+        User: 'User',
+        ProfilePic: 'ProfilePic',
+        Chats: 'Chats',
+        Blocked: 'Blocked',
+        Censored: 'Censored'
+    },
+    openSettings: 'User'
 })

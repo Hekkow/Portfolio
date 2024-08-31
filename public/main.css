@@ -418,7 +418,7 @@ canvas {
 .userPopupButton:hover {
     background-color: var(--button-background-hover-color);
 }
-#mainSettingsPanel {
+#settings {
     width: 600px;
     height: 400px;
     background-color: var(--modal-color);
@@ -429,4 +429,9 @@ canvas {
     display: flex;
     flex-direction: column;
     width: 100px;
+}
+#settingsMainPanel {
+    display: flex;
+    flex-grow: 1;
+    background-color: red;
 }

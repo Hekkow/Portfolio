@@ -299,7 +299,7 @@ export function getConversationName(conversationID) {
     return conversationName
 }
 
-function startProfilePicCreator() {
+export function startProfilePicCreator() {
     data.profilePictureOpen = true
     setupProfilePicCreator()
 }
@@ -331,10 +331,10 @@ export function unblockUser(userID) {
     user.blocked.splice(user.blocked.indexOf(userID), 1)
     ws.send(JSON.stringify({type: Type.UNBLOCKUSER, userID: data.userID, blockedUserID: userID}))
 }
-function showBlockedUsersPopup() {
+export function showBlockedUsersPopup() {
     data.openModal = data.modals.BlockedUsers
 }
-function logout() {
+export function logout() {
     Cookies.remove(loginCookie)
     window.location.href = '/'
 }
@@ -344,7 +344,7 @@ $(document).click(event => {
     $('.dropdownOpened').removeClass('dropdownOpened')
 })
 
-function rejoinGeneral() {
+export function rejoinGeneral() {
     let howdyID = 3
     if (data.loadedConversations.has(howdyID)) return
     ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
