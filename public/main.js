@@ -119,6 +119,7 @@ function receivedNewMessage(message) {
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
     else {
         addMessage(message)
+        updateTitleNotifications()
         if (data.openConversationID === message.conversationID && !document.hidden) read(message.conversationID)
     }
 }
@@ -133,7 +134,29 @@ export function updateTitleNotifications() {
     document.title = conversationName
 }
 function countNotifications() {
-    return $('[style*="font-weight: bold"]').length
+    if (!data.loadedUsers.has(data.userID)) return 0
+    let count = 0
+    for (let conversationID of data.loadedUsers.get(data.userID).conversations) {
+        if (!data.loadedConversations.has(conversationID)) continue
+        let texts = data.loadedConversations.get(conversationID).texts
+        let lastRead
+        if (!data.read.has(conversationID) || !(lastRead = data.read.get(conversationID).find(readMessage => readMessage.userID === data.userID))) {
+            count += texts.length
+            if (count > 9) return 10
+        }
+        else {
+            for (let text of texts.toReversed()) {
+                console.log(text.message, text.messageID, lastRead.messageID)
+                if (text.messageID === lastRead.messageID) break
+                if (text.messageID > lastRead.messageID) {
+                    count++
+                }
+                if (count > 9) return 10
+            }
+        }
+
+    }
+    return count
 }
 $(window).focus(() => {
     read(data.openConversationID)
@@ -298,13 +321,10 @@ export function getConversationName(conversationID) {
     if (!conversationName) conversationName = conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
     return conversationName
 }
-
-
 export function saveProfilePicture() {
     ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...data.shapes])}))
     data.openModal = data.modals.None
     updateProfilePicture(data.userID, data.shapes)
-
 }
 function updateProfilePicture(userID, profilePic) {
     data.loadedUsers.get(userID).profilePic = profilePic
