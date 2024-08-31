@@ -299,15 +299,10 @@ export function getConversationName(conversationID) {
     return conversationName
 }
 
-export function startProfilePicCreator() {
-    data.profilePictureOpen = true
-    setupProfilePicCreator()
-}
-
 
 export function saveProfilePicture() {
     ws.send(JSON.stringify({type: Type.SAVEPROFILEPIC, userID: data.userID, profilePic: Object.fromEntries([...data.shapes])}))
-    data.profilePictureOpen = false
+    data.openModal = data.modals.None
     updateProfilePicture(data.userID, data.shapes)
 
 }
@@ -350,7 +345,6 @@ export function rejoinGeneral() {
     ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
 }
 export function toggleCensor(userID) {
-    console.log('censor')
     let user = data.loadedUsers.get(data.userID)
     if (user.censored.includes(userID)) {
         user.censored = user.censored.filter(id => id !== userID)
@@ -365,7 +359,6 @@ export function toggleCensor(userID) {
 window.rejoinGeneral = rejoinGeneral
 window.showBlockedUsersPopup = showBlockedUsersPopup
 window.getConversationName = getConversationName
-window.startProfilePicCreator = startProfilePicCreator
 window.logout = logout
 
 // not sure if i need these

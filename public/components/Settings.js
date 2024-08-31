@@ -1,7 +1,8 @@
 import {data} from "./data.js";
-import {logout, rejoinGeneral, showBlockedUsersPopup, startProfilePicCreator} from "../main.js";
+import {logout, rejoinGeneral, showBlockedUsersPopup} from "../main.js";
+import {setupProfilePicCreator} from "../ProfilePictureCreation.js";
 export default {
-    methods: {showBlockedUsersPopup, rejoinGeneral, startProfilePicCreator, logout},
+    methods: {setupProfilePicCreator, showBlockedUsersPopup, rejoinGeneral, logout},
     data() {
         return {
             data: data,
@@ -23,7 +24,8 @@ export default {
             <button @click="logout()">Logout</button>
           </div>
           <div v-if="data.openSettings === data.settingsTabs.ProfilePic">
-            <button @click="startProfilePicCreator()">Create Profile Picture</button>
+            <profile-picture-creator></profile-picture-creator>
+<!--            <button @click="startProfilePicCreator()">Create Profile Picture</button>-->
           </div>
           <div v-if="data.openSettings === data.settingsTabs.Chats">
             <button @click="rejoinGeneral()">Rejoin Howdy</button>

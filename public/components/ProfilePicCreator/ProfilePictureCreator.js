@@ -1,7 +1,7 @@
 import {data} from "../data.js";
 import {
     createShape,
-    drawShapes,
+    drawShapes, setupProfilePicCreator,
     Shapes,
 } from "../../ProfilePictureCreation.js";
 import {saveProfilePicture} from "../../main.js";
@@ -14,7 +14,6 @@ export default {
         }
     },
     template: `
-      <div id="profilePicCreatorBackground">
         <div id="profilePicCreatorMainPanel">
           <div id="canvasArea">
             
@@ -27,7 +26,6 @@ export default {
               </div>
               <div id="canvasCircle"><canvas width="300" height="300" id="editCanvas"></canvas></div>
               <div class="canvasAreaColumn">
-              
                 <button v-if="showArrows && [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius].includes(data.mode)">+</button>
               </div>
             </div>
@@ -41,23 +39,18 @@ export default {
             <shapes-list></shapes-list>
           </div>
         </div>
-      </div>
     `,
-    watch: {
-        visible: {
-            immediate: true,
-            handler() {
-                if (!data.profilePictureOpen || data.userID === -1) return
-                drawShapes()
-            }
-        }
+    updated() {
+        if (data.openSettings !== data.settingsTabs.ProfilePic && data.userID === -1) return
+        drawShapes()
+    },
+    mounted() {
+        setupProfilePicCreator()
+        drawShapes()
     },
     computed: {
         showArrows() {
             return data.shapes.size > 0
         },
-        visible() {
-            return data.profilePictureOpen
-        }
     }
 }

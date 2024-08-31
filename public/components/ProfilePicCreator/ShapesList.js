@@ -10,7 +10,7 @@ export default {
     },
     template: `
       <div id="shapesList">
-        <shape-item v-if="data.profilePictureOpen" v-for="shape in sortedShapes()" :shape="shape"></shape-item>
+        <shape-item v-for="shape in sortedShapes()" :shape="shape"></shape-item>
       </div>
     `,
     mounted() {
