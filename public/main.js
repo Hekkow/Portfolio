@@ -318,7 +318,10 @@ export function getConversationName(conversationID) {
     if (!data.loadedConversations.has(conversationID)) return ""
     let conversation = data.loadedConversations.get(conversationID)
     let conversationName = conversation.conversationName
-    if (!conversationName) conversationName = conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
+    if (!conversationName) {
+        if (conversation.users.length === 1) conversationName = data.loadedUsers.get(data.userID).username
+        else conversationName = conversation.users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID).username).join(', ')
+    }
     return conversationName
 }
 export function saveProfilePicture() {

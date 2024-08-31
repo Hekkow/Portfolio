@@ -1,8 +1,8 @@
 import {data} from "./data.js";
-import {blockUser, startConversation, toggleCensor} from "../main.js";
+import {blockUser, startConversation, toggleCensor, unblockUser} from "../main.js";
 
 export default {
-    methods: {toggleCensor, startConversation, blockUser},
+    methods: {unblockUser, toggleCensor, startConversation, blockUser},
     data() {
         return {
             data: data,
@@ -13,13 +13,17 @@ export default {
         <profile-pic :size="50" :userid="user.userID" style="margin-bottom: var(--profile-pic-margin)"></profile-pic>
         {{user.username}}
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="startConversation(user.userID)">Start conversation</button>
-        <button class="userPopupButton" v-if="user.userID !== data.userID" @click="blockUser(user.userID)">Block</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID && !userBlocked" @click="blockUser(user.userID)">Block</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID && userBlocked" @click="unblockUser(user.userID)">Unblock</button>
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="toggleCensor(user.userID)">Censor</button>
       </div>
     `,
     computed: {
         user() {
             return data.loadedUsers.get(data.userPopupID)
+        },
+        userBlocked() {
+            return data.loadedUsers.get(data.userID).blocked.includes(data.userPopupID)
         }
     }
 }
