@@ -43,12 +43,6 @@ export default {
             <p v-if="groupChatUsers.length === 0">Nobody to transfer to</p>
             <modal-button v-if="data.usersRadio !== -1" @click="transferLeader()">Transfer</modal-button>
         </div>
-        <div class="modal" v-if="data.userID !== -1 && data.openModal === data.modals.BlockedUsers">
-            <modal-title>Blocked users</modal-title>
-            <user-checkbox v-for="user in blockedUsers" :user="user"></user-checkbox>
-            <p v-if="blockedUsers.length === 0">No users blocked</p>
-            <modal-button v-if="data.usersCheckbox.length === 1" @click="unblockUser(data.usersCheckbox[0])">Unblock</modal-button>
-        </div>
         <div class="settings" v-if="data.userID !== -1 && data.openModal === data.modals.Settings">
             <settings></settings>
         </div>
@@ -70,8 +64,6 @@ export default {
         groupChatUsers() {
             return data.loadedConversations.get(data.openConversationID).users.filter(userID => userID !== data.userID).map(userID => data.loadedUsers.get(userID))
         },
-        blockedUsers() {
-            return data.loadedUsers.get(data.userID).blocked.map(userID => data.loadedUsers.get(userID))
-        }
+
     }
 }

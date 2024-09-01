@@ -1,8 +1,8 @@
 import {data} from "./data.js";
-import {blockUser, startConversation, toggleCensor, unblockUser} from "../main.js";
+import {blockUser, censor, startConversation, toggleCensor, unblockUser, uncensor} from "../main.js";
 
 export default {
-    methods: {unblockUser, toggleCensor, startConversation, blockUser},
+    methods: {uncensor, censor, unblockUser, toggleCensor, startConversation, blockUser},
     data() {
         return {
             data: data,
@@ -15,7 +15,8 @@ export default {
         <button class="userPopupButton" v-if="user.userID !== data.userID" @click="startConversation(user.userID)">Start conversation</button>
         <button class="userPopupButton" v-if="user.userID !== data.userID && !userBlocked" @click="blockUser(user.userID)">Block</button>
         <button class="userPopupButton" v-if="user.userID !== data.userID && userBlocked" @click="unblockUser(user.userID)">Unblock</button>
-        <button class="userPopupButton" v-if="user.userID !== data.userID" @click="toggleCensor(user.userID)">Censor</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID && !userCensored" @click="censor(user.userID)">Censor</button>
+        <button class="userPopupButton" v-if="user.userID !== data.userID && userCensored" @click="uncensor(user.userID)">Uncensor</button>
       </div>
     `,
     computed: {
@@ -24,6 +25,10 @@ export default {
         },
         userBlocked() {
             return data.loadedUsers.get(data.userID).blocked.includes(data.userPopupID)
+        },
+        userCensored() {
+            return data.loadedUsers.get(data.userID).censored.includes(data.userPopupID)
+
         }
     }
 }

@@ -141,12 +141,14 @@ function countNotifications() {
         let texts = data.loadedConversations.get(conversationID).texts
         let lastRead
         if (!data.read.has(conversationID) || !(lastRead = data.read.get(conversationID).find(readMessage => readMessage.userID === data.userID))) {
+            let lastText = texts[texts.length-1]
+            if (lastText && lastText.userID === data.userID) break
             count += texts.length
             if (count > 9) return 10
         }
         else {
             for (let text of texts.toReversed()) {
-                console.log(text.message, text.messageID, lastRead.messageID)
+                console.log('here1', count)
                 if (text.messageID === lastRead.messageID) break
                 if (text.messageID > lastRead.messageID) {
                     count++
@@ -349,9 +351,6 @@ export function unblockUser(userID) {
     user.blocked.splice(user.blocked.indexOf(userID), 1)
     ws.send(JSON.stringify({type: Type.UNBLOCKUSER, userID: data.userID, blockedUserID: userID}))
 }
-export function showBlockedUsersPopup() {
-    data.openModal = data.modals.BlockedUsers
-}
 export function logout() {
     Cookies.remove(loginCookie)
     window.location.href = '/'
@@ -370,17 +369,25 @@ export function rejoinGeneral() {
 export function toggleCensor(userID) {
     let user = data.loadedUsers.get(data.userID)
     if (user.censored.includes(userID)) {
-        user.censored = user.censored.filter(id => id !== userID)
+        censor(userID)
     }
     else {
-        user.censored.push(userID)
+        uncensor(userID)
     }
+}
+export function censor(userID) {
+    let user = data.loadedUsers.get(data.userID)
+    user.censored.push(userID)
     data.activateCensor = userID
     ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
-
+}
+export function uncensor(userID) {
+    let user = data.loadedUsers.get(data.userID)
+    user.censored = user.censored.filter(id => id !== userID)
+    data.activateCensor = userID
+    ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
 }
 window.rejoinGeneral = rejoinGeneral
-window.showBlockedUsersPopup = showBlockedUsersPopup
 window.getConversationName = getConversationName
 window.logout = logout
 

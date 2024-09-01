@@ -25,6 +25,8 @@ import {updateTitleNotifications} from "../main.js";
 import UserRadio from "./UserRadio.js";
 import Popup from "./Popup.js";
 import Settings from "./Settings.js";
+import BlockedUser from "./BlockedUser.js";
+import CensoredUser from "./CensoredUser.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -68,4 +70,6 @@ app.component('dropdown', Dropdown)
 app.component('user-radio', UserRadio)
 app.component('popup', Popup)
 app.component('settings', Settings)
+app.component('blocked-user', BlockedUser)
+app.component('censored-user', CensoredUser)
 export default app

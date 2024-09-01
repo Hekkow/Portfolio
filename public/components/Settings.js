@@ -1,8 +1,8 @@
 import {data} from "./data.js";
-import {logout, rejoinGeneral, showBlockedUsersPopup} from "../main.js";
+import {logout, rejoinGeneral} from "../main.js";
 import {setupProfilePicCreator} from "../ProfilePictureCreation.js";
 export default {
-    methods: {setupProfilePicCreator, showBlockedUsersPopup, rejoinGeneral, logout},
+    methods: {setupProfilePicCreator, rejoinGeneral, logout},
     data() {
         return {
             data: data,
@@ -25,17 +25,31 @@ export default {
           </div>
           <div v-if="data.openSettings === data.settingsTabs.ProfilePic">
             <profile-picture-creator></profile-picture-creator>
-<!--            <button @click="startProfilePicCreator()">Create Profile Picture</button>-->
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Chats">
+          <div v-if="data.openSettings === data.settingsTabs.Chats && !data.loadedUsers.get(data.userID).conversations.includes(3)">
             <button @click="rejoinGeneral()">Rejoin Howdy</button>
           </div>
           <div v-if="data.openSettings === data.settingsTabs.Blocked">
-            <button @click="showBlockedUsersPopup()">Blocked Users</button>
+            <p v-if="blockedUsers.length === 0">No users blocked</p>
+            <blocked-user v-for="user in blockedUsers" :user="user"></blocked-user>
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Censored"></div>
+          <div v-if="data.openSettings === data.settingsTabs.Censored">
+            <p v-if="censoredUsers.length === 0">No users censored</p>
+            <censored-user v-for="user in censoredUsers" :user="user"></censored-user>
+          </div>
         </div>
       </div>
         
     `,
+    computed: {
+        user() {
+            return data.loadedUsers.get(data.userID)
+        },
+        blockedUsers() {
+            return this.user.blocked.map(userID => data.loadedUsers.get(userID))
+        },
+        censoredUsers() {
+            return this.user.censored.map(userID => data.loadedUsers.get(userID))
+        }
+    }
 }

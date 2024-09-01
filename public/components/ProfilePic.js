@@ -17,6 +17,7 @@ export default {
             let scale = canvasWidth/parseFloat($(canvasRef.value).attr('width'))
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+            if (!data.loadedUsers.has(data.userID)) return
             if (data.loadedUsers.get(data.userID).censored.includes(props.userid)) return
             let shapes = data.loadedUsers.get(props.userid).profilePic
             if (!(shapes instanceof Map)) shapes = new Map(Object.entries(shapes))
