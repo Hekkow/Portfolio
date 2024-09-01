@@ -4,6 +4,7 @@ export let canvasHeight = 300
 let canvas
 export let ctx
 export function drawShapes() {
+    if (!ctx) return
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, canvasWidth, canvasHeight)
     // draws each shape starting from the last in the list

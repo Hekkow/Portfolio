@@ -14,7 +14,7 @@ export default {
         }
     },
     template: `
-        <div id="profilePicCreatorMainPanel">
+        <div id="profilePicCreatorMainPanel" style="background-color: green">
           <div id="canvasArea">
             
             <div id="canvasAreaTop" class="canvasAreaRow"><button v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">+</button></div>
@@ -41,7 +41,7 @@ export default {
         </div>
     `,
     updated() {
-        if (data.openSettings !== data.settingsTabs.ProfilePic && data.userID === -1) return
+        if (data.openSettings !== data.settingsTabs.ProfilePic || data.userID === -1) return
         drawShapes()
     },
     mounted() {

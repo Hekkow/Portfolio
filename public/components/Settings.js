@@ -26,8 +26,8 @@ export default {
           <div v-if="data.openSettings === data.settingsTabs.ProfilePic">
             <profile-picture-creator></profile-picture-creator>
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Chats && !data.loadedUsers.get(data.userID).conversations.includes(3)">
-            <button @click="rejoinGeneral()">Rejoin Howdy</button>
+          <div v-if="data.openSettings === data.settingsTabs.Chats">
+            <button v-if="!data.loadedUsers.get(data.userID).conversations.includes(3)" @click="rejoinGeneral()">Rejoin Howdy</button>
           </div>
           <div v-if="data.openSettings === data.settingsTabs.Blocked">
             <p v-if="blockedUsers.length === 0">No users blocked</p>

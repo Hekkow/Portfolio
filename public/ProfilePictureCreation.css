@@ -1,23 +1,13 @@
-#profilePicCreatorBackground {
-    background-color: deepskyblue;
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    z-index: 20;
-}
 #profilePicCreatorMainPanel {
     background-color: white;
     display: flex;
+    max-height: 100%;
 }
-/*#shapesList {*/
-/*    width: 300px;*/
-/*    overflow: auto;*/
-/*    max-height: 95%;*/
-/*}*/
+#shapesList {
+    width: 300px;
+    overflow: auto;
+    max-height: 95%;
+}
 
 
 .controls {
@@ -56,7 +46,6 @@
     clip-path: circle(150px at center);
 }
 #controlPanel {
-    width: 500px;
     overflow: auto;
 }
 .shapeDiv {

@@ -419,7 +419,7 @@ canvas {
     background-color: var(--button-background-hover-color);
 }
 #settings {
-    width: 600px;
+    min-width: 600px;
     height: 400px;
     background-color: var(--modal-color);
     display: flex;
@@ -429,6 +429,7 @@ canvas {
     display: flex;
     flex-direction: column;
     width: 100px;
+    min-width: 100px;
 }
 #settingsMainPanel {
     display: flex;

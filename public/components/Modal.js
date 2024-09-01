@@ -43,9 +43,7 @@ export default {
             <p v-if="groupChatUsers.length === 0">Nobody to transfer to</p>
             <modal-button v-if="data.usersRadio !== -1" @click="transferLeader()">Transfer</modal-button>
         </div>
-        <div class="settings" v-if="data.userID !== -1 && data.openModal === data.modals.Settings">
-            <settings></settings>
-        </div>
+        <settings v-if="data.userID !== -1 && data.openModal === data.modals.Settings"></settings>
       </div>
     `,
     watch: {
