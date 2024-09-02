@@ -18,22 +18,30 @@ export default {
           <button @click="data.openSettings = data.settingsTabs.Censored">Censored</button>
         </div>
         <div id="settingsMainPanel">
-          <div v-if="data.openSettings === data.settingsTabs.User">
-            <button>Change username</button>
-            <button>Change password</button>
-            <button @click="logout()">Logout</button>
+          <div v-if="data.openSettings === data.settingsTabs.User" class="settingsTab">
+            <settings-row>
+              <button>Change username</button>
+            </settings-row>
+            <settings-row>
+              <button>Change password</button>
+            </settings-row>
+            
+            <settings-row>
+              <button @click="logout()">Logout</button>
+            </settings-row>
+            
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.ProfilePic">
+          <div v-if="data.openSettings === data.settingsTabs.ProfilePic" class="settingsTab">
             <profile-picture-creator></profile-picture-creator>
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Chats">
+          <div v-if="data.openSettings === data.settingsTabs.Chats" class="settingsTab">
             <button v-if="!data.loadedUsers.get(data.userID).conversations.includes(3)" @click="rejoinGeneral()">Rejoin Howdy</button>
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Blocked">
+          <div v-if="data.openSettings === data.settingsTabs.Blocked" class="settingsTab">
             <p v-if="blockedUsers.length === 0">No users blocked</p>
             <blocked-user v-for="user in blockedUsers" :user="user"></blocked-user>
           </div>
-          <div v-if="data.openSettings === data.settingsTabs.Censored">
+          <div v-if="data.openSettings === data.settingsTabs.Censored" class="settingsTab">
             <p v-if="censoredUsers.length === 0">No users censored</p>
             <censored-user v-for="user in censoredUsers" :user="user"></censored-user>
           </div>

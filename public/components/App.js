@@ -28,6 +28,7 @@ import Settings from "./Settings.js";
 import BlockedUser from "./BlockedUser.js";
 import CensoredUser from "./CensoredUser.js";
 import SliderRow from "./ProfilePicCreator/SliderRow.js";
+import SettingsRow from "./SettingsRow.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -73,4 +74,5 @@ app.component('settings', Settings)
 app.component('blocked-user', BlockedUser)
 app.component('censored-user', CensoredUser)
 app.component('slider-row', SliderRow)
+app.component('settings-row', SettingsRow)
 export default app

@@ -8,9 +8,10 @@ export default {
         }
     },
     template: `
-        <div>
+        <div class="userRow">
+          <profile-pic :size="30" :userid="$props.user.userID" class="userRowProfilePic"/>
           {{$props.user.username}}
-          <button @click="uncensor($props.user.userID)">Uncensor</button>
+          <button @click="uncensor($props.user.userID)" class="userRowButton">Uncensor</button>
         </div>
     `,
     props: {

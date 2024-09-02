@@ -148,7 +148,6 @@ function countNotifications() {
         }
         else {
             for (let text of texts.toReversed()) {
-                console.log('here1', count)
                 if (text.messageID === lastRead.messageID) break
                 if (text.messageID > lastRead.messageID) {
                     count++
@@ -369,10 +368,10 @@ export function rejoinGeneral() {
 export function toggleCensor(userID) {
     let user = data.loadedUsers.get(data.userID)
     if (user.censored.includes(userID)) {
-        censor(userID)
+        uncensor(userID)
     }
     else {
-        uncensor(userID)
+        censor(userID)
     }
 }
 export function censor(userID) {

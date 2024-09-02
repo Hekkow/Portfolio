@@ -410,6 +410,7 @@ canvas {
     border: var(--border) var(--accent-color);
     background-color: var(--modal-color);
     z-index: 15;
+    border-radius: var(--border-radius)
 }
 .userPopupButton {
     background-color: var(--button-background-color);
@@ -433,4 +434,28 @@ canvas {
 #settingsMainPanel {
     display: flex;
     flex-grow: 1;
+}
+.settingsTab {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+}
+.settingsRow {
+    min-height: 30px;
+    display: flex;
+    /*justify-content: center;*/
+    align-items: center;
+}
+.userRow {
+    height: 40px;
+    align-items: center;
+    display: flex;
+    /*background-color: red;*/
+}
+.userRowButton {
+    margin: 0 10px 0 auto;
+}
+.userRowProfilePic {
+    margin: 0 5px 0 5px;
 }

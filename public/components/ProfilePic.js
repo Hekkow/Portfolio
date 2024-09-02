@@ -11,12 +11,15 @@ export default {
     setup(props) {
         const canvasRef = Vue.ref(null)
         function drawShapes() {
+            console.log("HERE??", props.userid)
             if (props.userid === -1) return
+
             if (!canvasRef.value) return
             let ctx = canvasRef.value.getContext('2d')
             let scale = canvasWidth/parseFloat($(canvasRef.value).attr('width'))
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvasWidth, canvasHeight)
+
             if (!data.loadedUsers.has(data.userID)) return
             if (data.loadedUsers.get(data.userID).censored.includes(props.userid)) return
             let shapes = data.loadedUsers.get(props.userid).profilePic
