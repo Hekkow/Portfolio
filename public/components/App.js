@@ -27,11 +27,11 @@ import Popup from "./Popup.js";
 import Settings from "./Settings.js";
 import BlockedUser from "./BlockedUser.js";
 import CensoredUser from "./CensoredUser.js";
+import SliderRow from "./ProfilePicCreator/SliderRow.js";
 const app = Vue.createApp({
     data() {
         return {
             data: data,
-
         }
     },
     watch: {
@@ -72,4 +72,5 @@ app.component('popup', Popup)
 app.component('settings', Settings)
 app.component('blocked-user', BlockedUser)
 app.component('censored-user', CensoredUser)
+app.component('slider-row', SliderRow)
 export default app

@@ -158,7 +158,6 @@ button:hover {
     flex-shrink: 0;
     display: flex;
     align-items: center;
-    background-color: var(--reply-color);
     margin-top: auto;
 }
 
@@ -434,5 +433,4 @@ canvas {
 #settingsMainPanel {
     display: flex;
     flex-grow: 1;
-    background-color: red;
 }

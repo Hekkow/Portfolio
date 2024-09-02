@@ -14,7 +14,7 @@ export default {
         }
     },
     template: `
-        <div id="profilePicCreatorMainPanel" style="background-color: green">
+        <div id="profilePicCreatorMainPanel">
           <div id="canvasArea">
             
             <div id="canvasAreaTop" class="canvasAreaRow"><button v-if="showArrows && [data.Modes.Height, data.Modes.Size, data.Modes.Move].includes(data.mode)">+</button></div>

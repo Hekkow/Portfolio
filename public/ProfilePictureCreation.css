@@ -1,5 +1,4 @@
 #profilePicCreatorMainPanel {
-    background-color: white;
     display: flex;
     max-height: 100%;
 }
@@ -8,7 +7,6 @@
     overflow: auto;
     max-height: 95%;
 }
-
 
 .controls {
     display: flex;
@@ -51,28 +49,37 @@
 .shapeDiv {
     display: flex;
     position: relative;
-    border-radius: 10px;
-    border: 5px solid #20a2e8;
+    border-radius: var(--border-radius);
+    border: var(--border-thickness) solid var(--main-color);
+    overflow: hidden;
+    background-color: var(--modal-color);
 }
 .shapeDivLeftPanel {
     width: 50px;
-    /*background-color: red;*/
     display: flex;
     flex-direction: column;
-}
-.shapeDivLeftPanelButton {
-    height: 50px;
-    width: 50px;
+    border-right: var(--border-thickness) solid var(--main-color);
 }
 .shapeDivLeftPanel.active {
     width: 100%;
     flex-direction: row;
+    border-right: 0;
 }
+.shapeDivLeftPanelButton {
+    height: 50px;
+    width: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .shapeDivMainPanel {
-    /*background-color: green;*/
     flex-grow: 1;
 }
 .shapeDivMainPanelSection {
     display: flex;
     flex-direction: column;
+}
+.shapeItemHandle {
+    cursor: pointer;
 }

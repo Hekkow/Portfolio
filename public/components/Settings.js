@@ -17,7 +17,7 @@ export default {
           <button @click="data.openSettings = data.settingsTabs.Blocked">Blocked</button>
           <button @click="data.openSettings = data.settingsTabs.Censored">Censored</button>
         </div>
-        <div id="settingsMainPanel" style="background-color: red">
+        <div id="settingsMainPanel">
           <div v-if="data.openSettings === data.settingsTabs.User">
             <button>Change username</button>
             <button>Change password</button>

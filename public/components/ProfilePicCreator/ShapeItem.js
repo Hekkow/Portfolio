@@ -31,38 +31,42 @@ export default {
       <div class="shapeDiv" ref="shapeDiv" :data-shapeid="shape.shapeID">
         
         <div :class="{'shapeDivLeftPanel': true, 'active': !currentlyOpen}" ref="leftPanel">
-          <button @click="currentlyOpen = !currentlyOpen" class="shapeDivLeftPanelButton">+</button>
+          <button @click="currentlyOpen = !currentlyOpen" class="shapeDivLeftPanelButton">{{ currentlyOpen ? '-' : '+' }}</button>
           <div class='userPic' :style="'clip-path: circle(' + previewSize / 2 + 'px at center); width: ' + previewSize + 'px;'">
             <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
           </div>
           <div class="shapeItemHandle shapeDivLeftPanelButton">DRAG</div>
-          <button class="shapeDivLeftPanelButton">{{shape.z}}</button>
-          <button class="shapeDivLeftPanelButton">ID: {{shape.shapeID}}</button>
         </div>
         
         <div class="shapeDivMainPanel">
           <div v-if="currentlyOpen" class="controls">
+          <slider-row>
             <button @click="deleteShape(shape.shapeID)">Delete</button>
             <button @click="duplicateShape(shape.shapeID)">Duplicate</button>
-            <div class="sliderRow">
-              <label>Color</label>
-              <input type="color" class="pfpInput" :value="shape.color" @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
-            </div>
-            <button @click="setMode(data.Modes.Move, shape.shapeID)">Move</button>
-            <div class="shapeDivMainPanelSection" v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)">
-              <button @click="setMode(data.Modes.Width, shape.shapeID)">Width</button>
-              <button @click="setMode(data.Modes.Height, shape.shapeID)">Height</button>
-              <button  @click="setMode(data.Modes.Size, shape.shapeID)">Size</button>
-            </div>
+          </slider-row>
             
-            <button v-if="[Shapes.Circle].includes(shape.shape)" @click="setMode(data.Modes.Radius, shape.shapeID)">Radius</button>
-            <button v-if="![Shapes.Circle].includes(shape.shape)" @click="setMode(data.Modes.Rotation, shape.shapeID)">Rotation</button>
-            <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
+          <slider-row>
+            <label>Color</label>
+            <input type="color" class="pfpInput" :value="shape.color" @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
+          </slider-row>
+            <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Move"/>
+            <div class="shapeDivMainPanelSection" v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)">
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Width"/>
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Height"/>
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Size"/>
+            </div>
+            <slider-row v-if="[Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Radius"/>
+            <slider-row v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Rotation"/>
+            <slider-row>
+              <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
                 data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
                 setMode(data.Modes.Move, shape.shapeID)
-            }">
-              <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{shapeName}}</option>
-            </select>
+              }">
+                <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{shapeName}}</option>
+              </select>
+            </slider-row>
+            
+            
           </div>
         </div>
       </div>
