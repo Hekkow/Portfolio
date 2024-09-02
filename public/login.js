@@ -15,8 +15,12 @@ $('#loginForm').submit(function(e) {
     let password = $('#passwordInput').val()
     e.preventDefault();
 
-    if (!username || !username.trim() || !password || !password.trim()) {
-        alert("Missing something")
+    if (!username || !username.trim()) {
+        alert("Missing username")
+        return
+    }
+    else if (!password || !password.trim()) {
+        alert("Missing password")
         return
     }
     startLoadingAnimation()
