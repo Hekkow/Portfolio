@@ -11,7 +11,6 @@ export default {
     setup(props) {
         const canvasRef = Vue.ref(null)
         function drawShapes() {
-            console.log("HERE??", props.userid)
             if (props.userid === -1) return
 
             if (!canvasRef.value) return
@@ -35,7 +34,6 @@ export default {
         return { canvasRef, drawShapes }
     },
     template: `
-      
       <div class='userPic' :style="'clip-path: circle(' + size / 2 + 'px at center); width: ' + size + 'px; height: ' + size + 'px;'" :title="userName">
         <canvas :width="size" :height="size" ref="canvasRef" @click="function(event) {showUserPopup($props.userid, event)}" @contextmenu.prevent="toggleCensor($props.userid)"></canvas>
       </div>

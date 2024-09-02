@@ -32,7 +32,7 @@ export default {
             <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
           </div>
           <div :class="{readIndicators: true, myText: myText, notMyText: !myText}" v-if="readUsers.length > 0">
-            <profile-pic v-for="userID of readUsers.filter(id => !data.loadedUsers.get(data.userID).blocked.includes(id))" :size="21" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
+            <profile-pic v-for="userID of readUsers.filter(id => !blockedUsers.includes(id))" :size="21" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
           </div>
         </div>
         <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
@@ -58,7 +58,10 @@ export default {
         replyMyText() {
             return data.userID === this.reply.userID
         },
-
+        blockedUsers() {
+            if (!data.loadedUsers.has(data.userID)) return []
+            return data.loadedUsers.get(data.userID).blocked
+        }
     },
 // turn getDisplayableMessage into computed later
     methods: {
@@ -113,12 +116,6 @@ export default {
                 this.highlighted = false
             }, 1)
         },
-        userBlocked(userID) {
-            console.log(userID)
-            if (!data.loadedUsers.has(data.userID)) return true
-            console.log(data.loadedUsers.get(data.userID).blocked.includes(userID), data.loadedUsers.get(data.userID).blocked,userID)
-            return data.loadedUsers.get(data.userID).blocked.includes(userID)
-        }
     },
     props: {
         message: {

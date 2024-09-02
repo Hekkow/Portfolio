@@ -119,16 +119,16 @@ function updateTyping(data) {
 }
 function blockUser(data) {
     Database.block(data.userID, data.blockedUserID).then(() => {
-        let client = clients.find(client => client.userID === data.blockedUserID)
-        if (!client) return
-        client.socket.send(JSON.stringify({type: Helper.Type.BLOCKUSER, userID: data.userID}))
+        for (let socket of getSockets([data.blockedUserID])) {
+            socket.send(JSON.stringify({type: Helper.Type.BLOCKUSER, userID: data.userID}))
+        }
     })
 }
 function unblockUser(data) {
     Database.unblock(data.userID, data.blockedUserID).then(() => {
-        let client = clients.find(client => client.userID === data.blockedUserID)
-        if (!client) return
-        client.socket.send(JSON.stringify({type: Helper.Type.UNBLOCKUSER, userID: data.userID}))
+        for (let socket of getSockets([data.blockedUserID])) {
+            socket.send(JSON.stringify({type: Helper.Type.UNBLOCKUSER, userID: data.userID}))
+        }
     })
 }
 function updateCensors(data) {

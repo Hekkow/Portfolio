@@ -72,6 +72,7 @@ function connection() {
                 updateProfilePicture(message.userID, message.profilePic)
                 break
             case Type.BLOCKUSER:
+                console.log("BLOCKED BY ", message.userID)
                 data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
             case Type.UNBLOCKUSER:
