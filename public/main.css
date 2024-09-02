@@ -72,7 +72,7 @@ button:hover {
     flex-grow: 1;
     overflow: auto;
     position: relative;
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 .typingBar {
     margin-top: auto;
@@ -207,15 +207,13 @@ button:hover {
 }
 .messageDiv {
     width: 100%;
-    min-height: 50px;
     height: auto;
     margin: 0;
     display: flex;
     align-items: flex-start;
     position: relative;
-    padding-top: 10px;
     flex-direction: row;
-    padding-bottom: 5px;
+    padding-top: 7px;
     background-color: var(--message-background-color);
     transition: background-color 1s;
 }
@@ -264,6 +262,10 @@ button:hover {
 }
 .replyProfilePic.notMyText {
     left: -27px;
+}
+.messageProfilePicHolder {
+    margin: 0 10px 0 10px;
+    width: 50px;
 }
 .readIndicators {
     position: absolute;

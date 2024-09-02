@@ -15,7 +15,9 @@ export default {
            @mouseleave="messageHovered = false"
            ref="messageDiv"
       >
-        <profile-pic :size=50 :userid="message.userID" style="margin: 0 10px 10px 10px;"></profile-pic>
+        <div class="messageProfilePicHolder">
+          <profile-pic v-if="showProfilePic" :size=50 :userid="message.userID"/>
+        </div>
         
         <div class='messageBubble' ref='messageBubble'>
           <div 
@@ -114,6 +116,9 @@ export default {
     props: {
         message: {
             type: Object
+        },
+        showProfilePic: {
+            type: Boolean
         }
     }
 }
