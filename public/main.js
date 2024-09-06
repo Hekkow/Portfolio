@@ -104,7 +104,7 @@ function updateLocalConversations(conversations) {
         data.loadedConversations.set(conversation.conversationID, conversation)
     }
 }
-function loadLocalData(newData) { // very inefficient i do believe, gets called every time user joins
+function loadLocalData(newData) {
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
@@ -136,10 +136,13 @@ export function updateTitleNotifications() {
 }
 function countNotifications() {
     if (!data.loadedUsers.has(data.userID)) return 0
+    let user = data.loadedUsers.get(data.userID)
     let count = 0
-    for (let conversationID of data.loadedUsers.get(data.userID).conversations) {
+    for (let conversationID of user.conversations) {
         if (!data.loadedConversations.has(conversationID)) continue
-        let texts = data.loadedConversations.get(conversationID).texts
+        let conversation = data.loadedConversations.get(conversationID)
+        if (conversation.conversationType === direct && user.blocked.includes(conversation.users.find(id => id !== data.userID))) continue
+        let texts = conversation.texts
         let lastRead
         if (!data.read.has(conversationID) || !(lastRead = data.read.get(conversationID).find(readMessage => readMessage.userID === data.userID))) {
             let lastText = texts[texts.length-1]
@@ -345,11 +348,13 @@ export function blockUser(userID) {
     data.loadedUsers.get(data.userID).blocked.push(userID)
     if (isConversationWithBlocked(data.openConversationID)) data.openConversationID = -1
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: data.userID, blockedUserID: userID}))
+    updateTitleNotifications()
 }
 export function unblockUser(userID) {
     let user = data.loadedUsers.get(data.userID)
     user.blocked.splice(user.blocked.indexOf(userID), 1)
     ws.send(JSON.stringify({type: Type.UNBLOCKUSER, userID: data.userID, blockedUserID: userID}))
+    updateTitleNotifications()
 }
 export function logout() {
     Cookies.remove(loginCookie)
@@ -363,7 +368,7 @@ $(document).click(event => {
 
 export function rejoinGeneral() {
     let howdyID = 3
-    if (data.loadedConversations.has(howdyID)) return
+    if (data.loadedUsers.get(data.userID).conversations.includes(howdyID)) return
     ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
 }
 export function toggleCensor(userID) {

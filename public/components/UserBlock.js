@@ -1,4 +1,3 @@
-import {startConversation} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
@@ -6,11 +5,9 @@ export default {
             data: data,
         }
     },
-    methods: {startConversation},
     template: `
-      <button v-if="blocked" class="itemBlock" @click="startConversation(user.userID)">
+      <button v-if="blocked" class="itemBlock">
           <profile-pic :size=50 :userid="user.userID"></profile-pic>
-<!--          <div class="onlineUserListButtonText">{{user.username}}</div>-->
       </button>
     `,
     props: {

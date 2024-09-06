@@ -243,9 +243,6 @@ function loadLocalData(ws, user) { // very inefficient, sends multiple times
 function updateUserLists() {
     Database.findUsersWithID(Array.from(new Set(clients.map(client => client.userID)))).then((users) => {
         for (let client of clients) {
-            Database.findUserWithID(client.userID).then((user) => { // very very inefficient
-                loadLocalData(client.socket, user)
-            })
             client.socket.send(JSON.stringify({type: Helper.Type.ONLINEUSERSUPDATE, users: users}))
         }
     })
