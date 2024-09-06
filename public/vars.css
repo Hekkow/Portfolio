@@ -1,0 +1,31 @@
+:root {
+    --line-height: 23px;
+    --lines: 6;
+    --accent-color: #4ab1ef;
+    --main-color: #1589e4;
+    --reply-color: #e63066;
+    --modal-color: white;
+    --modal-background-color: rgba(110, 165, 239, 0.5);
+    --message-background-color: white;
+    --button-background-color: white;
+    --button-background-hover-color: gray;
+    --loading-overlay-background-color: black;
+    --text-input-background-color: white;
+    --border-radius: 10px;
+    --border-thickness: 3px;
+    --border: var(--border-thickness) solid;
+    --padding-bottom: 14px;
+    --padding-top: 8px;
+    --profile-pic-margin: 5px;
+    --active-conversations-width: 250px;
+    --chat-info-width: 250px;
+    --online-users-width: calc(60px + var(--border-thickness));
+    --bottom-height: 100px;
+    --max-message-width: 500px;
+    --panel-title-height: 70px;
+    --item-block-height: 60px;
+    --background-color: white;
+    --main-font-size: 17px;
+    --main-font: Arial, Helvetica;
+    --button-border-thickness: 2px;
+}

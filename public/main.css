@@ -1,36 +1,11 @@
-
-:root {
-    --line-height: 23px;
-    --lines: 6;
-    --accent-color: #4ab1ef;
-    --main-color: #1589e4;
-    --reply-color: #e63066;
-    --modal-color: white;
-    --modal-background-color: rgba(110, 165, 239, 0.5);
-    --message-background-color: white;
-    --button-background-color: white;
-    --button-background-hover-color: gray;
-    --loading-overlay-background-color: black;
-    --text-input-background-color: white;
-    --border-radius: 10px;
-    --border-thickness: 3px;
-    --border: var(--border-thickness) solid;
-    --padding-bottom: 14px;
-    --padding-top: 8px;
-    --profile-pic-margin: 5px;
-    --active-conversations-width: 250px;
-    --chat-info-width: 250px;
-    --online-users-width: calc(60px + var(--border-thickness));
-    --bottom-height: 100px;
-    --max-message-width: 500px;
-    --panel-title-height: 70px;
-    --item-block-height: 60px;
-}
 html {
-    font-family: Arial, serif;
+
+    font-family: var(--main-font), sans-serif;
 }
 * {
+    font-size: var(--main-font-size);
     scrollbar-width: thin;
+
 }
 #app {
     display: flex;
@@ -148,10 +123,13 @@ button:hover {
 }
 .closeButton {
     margin: 10px 10px 10px auto;
-    width: 25px;
-    height: 25px;
-    min-width: 25px;
-    min-height: 25px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    border: var(--border) var(--main-color);
+    padding: 0;
+    line-height: 12px;
 }
 #userInfoPanel {
     height: var(--bottom-height);
@@ -186,7 +164,6 @@ button:hover {
     line-height: var(--panel-title-height);
     text-align: center;
     vertical-align: middle;
-    font-size: 16px;
     border-bottom: var(--border) var(--main-color);
 }
 .panelList {
@@ -269,7 +246,7 @@ button:hover {
 }
 .readIndicators {
     position: absolute;
-    bottom: -10px;
+    bottom: -12px;
     display: flex;
     z-index: 10;
     max-width: var(--max-message-width)
@@ -333,16 +310,15 @@ button:hover {
     min-width: 160px;
     flex-direction: column;
     right: 0;
+    border: var(--border) var(--main-color)
 }
 .dropdownButton {
-
 }
 #messageInput {
     box-sizing: border-box;
     width: 80%;
     height: auto;
     line-height: var(--line-height);
-    font-size: 17px;
     padding-left: 20px;
     padding-top: var(--padding-top);
     padding-bottom: var(--padding-bottom);
@@ -398,6 +374,8 @@ canvas {
     position: relative;
     margin-left: 10px;
     margin-right: 0;
+    font-size: 13px;
+    border: var(--button-border-thickness) solid var(--main-color);
 }
 .hoverButton.myText {
     margin-left: 0;

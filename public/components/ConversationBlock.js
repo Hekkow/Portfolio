@@ -20,7 +20,7 @@ export default {
         <div class="conversationBlockText">
           <div class="blockText">{{ getConversationName(conversation.conversationID) }}</div>
           <div class="blockText" v-if="lastMessage" style="margin-top: 4px;">
-            <profile-pic :userid="lastMessage.userID" :size="21" style="display: inline-block"></profile-pic>
+            <profile-pic :userid="lastMessage.userID" :size="24" style="display: inline-block"></profile-pic>
             {{ conversationLastText }}
           </div>
         </div>

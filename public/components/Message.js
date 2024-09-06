@@ -32,7 +32,7 @@ export default {
             <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
           </div>
           <div :class="{readIndicators: true, myText: myText, notMyText: !myText}" v-if="readUsers.length > 0">
-            <profile-pic v-for="userID of readUsers.filter(id => !blockedUsers.includes(id))" :size="21" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
+            <profile-pic v-for="userID of readUsers.filter(id => !blockedUsers.includes(id))" :size="22" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
           </div>
         </div>
         <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
