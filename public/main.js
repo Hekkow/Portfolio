@@ -92,7 +92,11 @@ function connection() {
 function setUp(user) {
     updateLocalUsers([user])
     data.userID = user.userID
+}
+export function updateOpenConversationCookie() {
 
+    Cookies.set(openConversationCookie, data.openConversationID)
+    console.log("Setting ", Cookies.get(openConversationCookie))
 }
 function updateLocalUsers(users) {
     for (let user of users) {
@@ -108,8 +112,14 @@ function loadLocalData(newData) {
     updateLocalUsers(newData.users)
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
-    if (!data.loadedConversations.has(3)) return
-    data.openConversationID = 3 // replace with cookie later
+    let conversationToOpen = parseInt(Cookies.get(openConversationCookie))
+    console.log("HERE1")
+    if (!conversationToOpen) return
+    console.log("HER2")
+    console.log(data.loadedConversations, conversationToOpen)
+    if (!data.loadedConversations.has(conversationToOpen)) return
+    console.log("HERE")
+    data.openConversationID = conversationToOpen // replace with cookie later
     read(data.openConversationID)
 }
 function receivedNewMessage(message) {
@@ -182,6 +192,7 @@ export function openConversation(conversationID) {
     if (conversationID === -1) return
     setTyping(false)
     read(conversationID)
+    console.log("???")
     data.openConversationID = conversationID
     data.openModal = data.modals.None
     data.focusMessageInput = true
@@ -346,6 +357,7 @@ export function showUserPopup(userID, event) {
 }
 export function blockUser(userID) {
     data.loadedUsers.get(data.userID).blocked.push(userID)
+    console.log("WHAT")
     if (isConversationWithBlocked(data.openConversationID)) data.openConversationID = -1
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: data.userID, blockedUserID: userID}))
     updateTitleNotifications()

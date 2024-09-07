@@ -1,4 +1,5 @@
 let loginCookie = 'sessionID'
+let openConversationCookie = 'openConversation'
 let port = 6969
 // let host = '192.168.2.17'
 let host = 'localhost'

@@ -21,7 +21,7 @@ import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
 import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
-import {updateTitleNotifications} from "../main.js";
+import {updateOpenConversationCookie, updateTitleNotifications} from "../main.js";
 import UserRadio from "./UserRadio.js";
 import Popup from "./Popup.js";
 import Settings from "./Settings.js";
@@ -37,9 +37,10 @@ const app = Vue.createApp({
     },
     watch: {
         'data.openConversationID': {
-            immediate: true,
             handler() {
+                console.log("WHY HERE??")
                 updateTitleNotifications()
+                updateOpenConversationCookie()
             }
         }
     },

@@ -45,7 +45,6 @@ export default {
             }
         },
         'data.openConversationID': {
-            immediate: true,
             handler() {
                 this.$nextTick(() => scrollToBottom())
             }
