@@ -123,13 +123,13 @@ button:hover {
 }
 .closeButton {
     margin: 10px 10px 10px auto;
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    min-height: 28px;
-    border: var(--border) var(--main-color);
-    padding: 0;
-    line-height: 12px;
+    /*width: 28px;*/
+    /*height: 28px;*/
+    /*min-width: 28px;*/
+    /*min-height: 28px;*/
+    /*border: var(--border) var(--main-color);*/
+    /*padding: 0;*/
+    /*line-height: 12px;*/
 }
 #userInfoPanel {
     height: var(--bottom-height);
@@ -314,6 +314,9 @@ button:hover {
 }
 .dropdownButton {
 }
+.dropdownOpenButton {
+
+}
 #messageInput {
     box-sizing: border-box;
     width: 80%;
@@ -375,7 +378,6 @@ canvas {
     margin-left: 10px;
     margin-right: 0;
     font-size: 13px;
-    border: var(--button-border-thickness) solid var(--main-color);
 }
 .hoverButton.myText {
     margin-left: 0;
@@ -438,4 +440,16 @@ canvas {
 }
 .userRowProfilePic {
     margin: 0 5px 0 5px;
+}
+.borderedButton {
+    border: var(--button-border-thickness) solid var(--main-color);
+}
+.squareButton {
+    width: 25px;
+    height: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 0;
 }

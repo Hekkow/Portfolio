@@ -17,7 +17,7 @@ export default {
           <button @click="function() {
               data.replyingTo = -1
               data.editing = -1
-          }" class="closeButton">x</button>
+          }" class="closeButton borderedButton squareButton">x</button>
         </div>
     `,
     computed: {
