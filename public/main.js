@@ -94,9 +94,17 @@ function setUp(user) {
     data.userID = user.userID
 }
 export function updateOpenConversationCookie() {
-
     Cookies.set(openConversationCookie, data.openConversationID)
-    console.log("Setting ", Cookies.get(openConversationCookie))
+}
+export function saveTheme() {
+    Cookies.set(themeCookie, JSON.stringify(Array.from(data.theme.entries())))
+}
+export function deleteTheme() {
+    Cookies.remove(themeCookie)
+}
+export function loadTheme() {
+    let theme = Cookies.get(themeCookie)
+    if (theme) data.theme = new Map(JSON.parse(theme))
 }
 function updateLocalUsers(users) {
     for (let user of users) {
@@ -113,12 +121,8 @@ function loadLocalData(newData) {
     updateLocalConversations(newData.conversations)
     data.shapes = new Map(Object.entries(data.loadedUsers.get(data.userID).profilePic).map(([key, value]) => [parseInt(key), value])) // not 100% sure this is needed
     let conversationToOpen = parseInt(Cookies.get(openConversationCookie))
-    console.log("HERE1")
     if (!conversationToOpen) return
-    console.log("HER2")
-    console.log(data.loadedConversations, conversationToOpen)
     if (!data.loadedConversations.has(conversationToOpen)) return
-    console.log("HERE")
     data.openConversationID = conversationToOpen // replace with cookie later
     read(data.openConversationID)
 }

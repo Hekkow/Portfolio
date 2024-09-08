@@ -13,6 +13,7 @@ export default {
         <div id="settingsLeftPanel">
           <button @click="data.openSettings = data.settingsTabs.User">User</button>
           <button @click="data.openSettings = data.settingsTabs.ProfilePic">Profile Pic</button>
+          <button @click="data.openSettings = data.settingsTabs.Theme">Theme Editor</button>
           <button @click="data.openSettings = data.settingsTabs.Chats">Chats</button>
           <button @click="data.openSettings = data.settingsTabs.Blocked">Blocked</button>
           <button @click="data.openSettings = data.settingsTabs.Censored">Censored</button>
@@ -33,6 +34,9 @@ export default {
           </div>
           <div v-if="data.openSettings === data.settingsTabs.ProfilePic" class="settingsTab">
             <profile-picture-creator></profile-picture-creator>
+          </div>
+          <div v-if="data.openSettings === data.settingsTabs.Theme" class="settingsTab">
+            <theme-editor></theme-editor>
           </div>
           <div v-if="data.openSettings === data.settingsTabs.Chats" class="settingsTab">
             <button v-if="!data.loadedUsers.get(data.userID).conversations.includes(3)" @click="rejoinGeneral()">Rejoin Howdy</button>

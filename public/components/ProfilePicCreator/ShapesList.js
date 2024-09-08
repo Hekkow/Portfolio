@@ -32,6 +32,8 @@ export default {
                     for (let i = 0; i < sorted.length; i++) {
                         data.shapes.get(parseInt(sorted[i])).z = i + 2
                     }
+
+
                     $(ui.item).css('pointer-events', 'auto')
 
                 }

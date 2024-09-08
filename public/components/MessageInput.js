@@ -24,7 +24,6 @@ export default {
             textArea.style.height = 'auto';
             textArea.style.height = textArea.scrollHeight + "px";
             let style = window.getComputedStyle(textArea)
-            console.log(textArea.scrollHeight, parseFloat(style.maxHeight))
             if (textArea.scrollHeight > parseFloat(style.maxHeight)) textArea.classList.add('scroll')
             else textArea.classList.remove('scroll')
         }

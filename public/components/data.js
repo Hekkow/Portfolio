@@ -44,7 +44,9 @@ export const data = Vue.reactive({
         ProfilePic: 'ProfilePic',
         Chats: 'Chats',
         Blocked: 'Blocked',
-        Censored: 'Censored'
+        Censored: 'Censored',
+        Theme: 'Theme'
     },
-    openSettings: 'User'
+    openSettings: 'User',
+    theme: new Map()
 })

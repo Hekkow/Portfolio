@@ -21,7 +21,7 @@ import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
 import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
-import {updateOpenConversationCookie, updateTitleNotifications} from "../main.js";
+import {loadTheme, updateOpenConversationCookie, updateTitleNotifications} from "../main.js";
 import UserRadio from "./UserRadio.js";
 import Popup from "./Popup.js";
 import Settings from "./Settings.js";
@@ -29,6 +29,8 @@ import BlockedUser from "./BlockedUser.js";
 import CensoredUser from "./CensoredUser.js";
 import SliderRow from "./ProfilePicCreator/SliderRow.js";
 import SettingsRow from "./SettingsRow.js";
+import ThemeEditor from "./ThemeEditor.js";
+import ThemeEditorRow from "./ThemeEditorRow.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -38,13 +40,18 @@ const app = Vue.createApp({
     watch: {
         'data.openConversationID': {
             handler() {
-                console.log("WHY HERE??")
                 updateTitleNotifications()
                 updateOpenConversationCookie()
             }
         }
     },
-
+    mounted() {
+        loadTheme()
+        let root = document.querySelector(':root')
+        for (let [key, value] of data.theme.entries()) {
+            root.style.setProperty(key, value)
+        }
+    }
 });
 app.component('user-block', UserBlock)
 app.component('user-list', UserList)
@@ -76,4 +83,6 @@ app.component('blocked-user', BlockedUser)
 app.component('censored-user', CensoredUser)
 app.component('slider-row', SliderRow)
 app.component('settings-row', SettingsRow)
+app.component('theme-editor', ThemeEditor)
+app.component('theme-editor-row', ThemeEditorRow)
 export default app
