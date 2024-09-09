@@ -31,6 +31,7 @@ export const data = Vue.reactive({
         Radius: "Radius",
         Points: "Points",
         Inset: "Inset",
+        ControlPoint: "ControlPoint"
     },
     mode: "Move",
     focusMessageInput: false,

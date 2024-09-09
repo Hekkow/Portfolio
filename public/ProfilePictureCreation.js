@@ -3,6 +3,7 @@ export let canvasWidth = 300
 export let canvasHeight = 300
 let canvas
 export let ctx
+
 export function drawShapes() {
     if (!ctx) return
     ctx.fillStyle = "black"
@@ -44,6 +45,7 @@ export function setupProfilePicCreator() {
         else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
         else if (data.mode === data.Modes.Points) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
         else if (data.mode === data.Modes.Inset) data.shapes.get(currentShapeID).addInset(deltaMouse.x/50)
+        else if (data.mode === data.Modes.ControlPoint) data.shapes.get(currentShapeID).addControlPoint(deltaMouse.x, deltaMouse.y)
     })
 
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
@@ -82,33 +84,46 @@ export function drawShape(ctx, shape, scale, reset) {
             ctx.closePath()
             ctx.fill()
             break
-        case Shapes.Triangle:
-            ctx.beginPath()
-            ctx.moveTo(shape.vertexA.x, shape.vertexA.y)
-            ctx.lineTo(shape.vertexB.x, shape.vertexB.y)
-            ctx.lineTo(shape.vertexC.x, shape.vertexC.y)
-            ctx.closePath()
-            ctx.fill()
-            break
         case Shapes.Star:
             ctx.beginPath()
-            ctx.moveTo(0, 0+shape.r)
+            ctx.moveTo(0, shape.r)
             for (let i = 0; i < parseInt(shape.points); i++) {
                 ctx.rotate(Math.PI / parseInt(shape.points))
-                ctx.lineTo(0, 0 + (shape.r * shape.inset))
+                ctx.lineTo(0, shape.r * shape.inset)
                 ctx.rotate(Math.PI / parseInt(shape.points))
-                ctx.lineTo(0, 0 + shape.r)
+                ctx.lineTo(0, shape.r)
             }
             ctx.closePath()
             ctx.fill()
+            break
+        case Shapes.Heart:
+            ctx.beginPath()
+            ctx.moveTo(0, 0)
+            let t = [[-shape.w, 0], [0, shape.h], [shape.w, 0], [0, 0]]
+            for (let i = 0; i < 4; i++) {
+                ctx.bezierCurveTo(shape.controlPoints[i*2].x, shape.controlPoints[i*2].y, shape.controlPoints[i*2+1].x, shape.controlPoints[i*2+1].y, t[i][0], t[i][1])
+            }
+            ctx.closePath()
+            ctx.fill()
+            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint) {
+                for (let i = 0; i < 2; i++) {
+                    let point = shape.controlPoints[shape.selectedCurve*2+i]
+                    ctx.fillStyle = "blue"
+                    if (i === shape.selectedPoint) ctx.fillStyle = "green"
+                    ctx.beginPath()
+                    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2)
+                    ctx.closePath()
+                    ctx.fill()
+                }
+            }
     }
     ctx.restore()
 }
 export const Shapes = {
     Rectangle: 'Rectangle',
     Circle: 'Circle',
-    Triangle: 'Triangle',
-    Star: 'Star'
+    Star: 'Star',
+    Heart: 'Heart'
 }
 
 let dragging = false
@@ -160,9 +175,6 @@ class Rectangle extends Shape {
         this.w = 50
         this.h = 50
     }
-    addXY(x, y) {
-        super.addXY(x, y)
-    }
     addW(w) {
         this.w += w
     }
@@ -181,46 +193,6 @@ class Circle extends Shape {
         if (this.r <= 0) this.r = 0
     }
 }
-class Triangle extends Shape {
-    constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
-        super(shapeID, x, y, color)
-        this.shape = Shapes.Triangle
-        this.angleA = rad(60)
-        this.minAngle = rad(1)
-        this.maxAngle = rad(179)
-        this.minLength = 1
-        this.lengthB = 100
-        this.lengthC = 100
-        this.updateVertices()
-    }
-    addXY(x, y) {
-        super.addXY(x, y)
-        this.updateVertices()
-    }
-    addW(w) {
-        this.lengthB += w
-        if (this.lengthB <= this.minLength) this.lengthB = this.minLength
-        this.updateVertices()
-    }
-    addH(h) {
-        this.lengthC += h
-        if (this.lengthC <= this.minLength) this.lengthC = this.minLength
-        this.updateVertices()
-    }
-    updateVertices() {
-        this.vertexA = { x: this.x, y: this.y }
-        this.vertexB = { x: this.x + this.lengthB * Math.cos(this.angleA), y: this.y + this.lengthB * Math.sin(this.angleA) }
-        this.vertexC = { x: this.x + this.lengthC, y: this.y }
-        this.rotationTranslationX = (this.vertexA.x + this.vertexB.x + this.vertexC.x) / 3
-        this.rotationTranslationY = (this.vertexA.y + this.vertexB.y + this.vertexC.y) / 3
-    }
-    addAngleA(delta) {
-        this.angleA += delta
-        if (this.angleA <= this.minAngle) this.angleA = this.minAngle
-        if (this.angleA >= this.maxAngle) this.angleA = this.maxAngle
-        this.updateVertices()
-    }
-}
 class Star extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         super(shapeID, x, y, color)
@@ -235,12 +207,38 @@ class Star extends Shape {
     }
     addInset(i) {
         this.inset += i
-        // if (this.points < 2) this.points = 2
     }
     addR(r) {
         this.r += r
         if (this.r <= 0) this.r = 0
     }
+}
+class Heart extends Shape {
+    constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
+        super(shapeID, x, y, color)
+        this.shape = Shapes.Heart
+        this.controlPoints = [{x: -11, y: -33}, {x: -45, y: -30}, {x: -47, y: 26}, {x: -22, y: 23}, {x: 22, y: 23}, {x: 47, y: 26}, {x: 45, y: -30}, {x: 11, y: -33}]
+        this.selectedCurve = 0
+        this.selectedPoint = 0
+        this.w = 50
+        this.h = 50
+        this.symmetry = true
+    }
+    addW(w) {
+        this.w += w
+    }
+    addH(h) {
+        this.h += h
+    }
+    addControlPoint(x, y) {
+        this.controlPoints[this.selectedCurve*2+this.selectedPoint].x += x
+        this.controlPoints[this.selectedCurve*2+this.selectedPoint].y += y
+        if (this.symmetry) {
+            this.controlPoints[7-(this.selectedCurve*2+this.selectedPoint)].x -= x
+            this.controlPoints[7-(this.selectedCurve*2+this.selectedPoint)].y += y
+        }
+    }
+
 }
 export function shapeFactory(shape, newShapeType, shapeID) {
     let newShape
@@ -251,11 +249,11 @@ export function shapeFactory(shape, newShapeType, shapeID) {
         case Shapes.Circle:
             newShape = new Circle(shapeID, shape.x, shape.y, shape.color)
             break
-        case Shapes.Triangle:
-            newShape = new Triangle(shapeID, shape.x, shape.y, shape.color)
-            break
         case Shapes.Star:
             newShape = new Star(shapeID, shape.x, shape.y, shape.color)
+            break
+        case Shapes.Heart:
+            newShape = new Heart(shapeID, shape.x, shape.y, shape.color)
             break
     }
     for (let key in shape) {

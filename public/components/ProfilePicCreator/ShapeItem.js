@@ -50,18 +50,28 @@ export default {
             <input type="color" class="pfpInput" :value="shape.color" @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
           </slider-row>
             <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Move"/>
-            <div class="shapeDivMainPanelSection" v-if="[Shapes.Rectangle, Shapes.Triangle].includes(shape.shape)">
+            <div class="shapeDivMainPanelSection" v-if="[Shapes.Rectangle, Shapes.Heart].includes(shape.shape)">
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Width"/>
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Height"/>
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Size"/>
             </div>
+            <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Size" v-if="[Shapes.Rectangle].includes(shape.shape)"/>
             <slider-row v-if="[Shapes.Circle, Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Radius"/>
             <slider-row v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Rotation"/>
             <div class="shapeDivMainPanelSection" v-if="[Shapes.Star].includes(shape.shape)">
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Points"/>
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Inset"/>
             </div>
-            
+            <div class="shapeDivMainPanelSection" v-if="[Shapes.Heart].includes(shape.shape)">
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.ControlPoint" style="display: flex; flex-direction: column"/>
+              <button @click="shape.symmetry = !shape.symmetry">Symmetry</button>
+              <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)" v-if="data.mode === data.Modes.ControlPoint" style="display: flex; flex-direction: column">
+                <button @click="shape.selectedCurve = n-1">{{ n }}</button>
+                <div v-if="shape.selectedCurve === n-1" style="display: flex">
+                  <button @click="shape.selectedPoint = 0">1</button>
+                  <button @click="shape.selectedPoint = 1">2</button>
+                </div>
+              </div>
+            </div>
             <slider-row>
               <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
                 data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
@@ -85,7 +95,7 @@ export default {
         watchingShape: {
             // immediate: true,
             deep: true,
-            handler(newValue, oldValue) {
+            handler() {
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()
