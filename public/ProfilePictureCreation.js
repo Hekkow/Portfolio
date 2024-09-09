@@ -42,6 +42,8 @@ export function setupProfilePicCreator() {
         }
         else if (data.mode === data.Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
         else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
+        else if (data.mode === data.Modes.Points) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
+        else if (data.mode === data.Modes.Inset) data.shapes.get(currentShapeID).addInset(deltaMouse.x/50)
     })
 
     currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
@@ -68,17 +70,15 @@ export function drawShape(ctx, shape, scale, reset) {
     ctx.save()
     ctx.scale(1/scale, 1/scale)
     ctx.fillStyle = shape.color
-    ctx.translate(shape.rotationTranslationX, shape.rotationTranslationY)
+    ctx.translate(shape.x, shape.y)
     ctx.rotate(shape.rotation)
-    ctx.translate(-shape.rotationTranslationX, -shape.rotationTranslationY)
     switch (shape.shape) {
         case Shapes.Rectangle:
-            ctx.fillRect(shape.x, shape.y, shape.w, shape.h)
+            ctx.fillRect(-shape.w/2, -shape.h/2, shape.w, shape.h)
             break
         case Shapes.Circle:
             ctx.beginPath()
-            // + shape.r to center it around x, y
-            ctx.arc(shape.x+shape.r, shape.y+shape.r, shape.r, 0, Math.PI * 2)
+            ctx.arc(0, 0, shape.r, 0, Math.PI * 2)
             ctx.closePath()
             ctx.fill()
             break
@@ -90,6 +90,17 @@ export function drawShape(ctx, shape, scale, reset) {
             ctx.closePath()
             ctx.fill()
             break
+        case Shapes.Star:
+            ctx.beginPath()
+            ctx.moveTo(0, 0+shape.r)
+            for (let i = 0; i < parseInt(shape.points); i++) {
+                ctx.rotate(Math.PI / parseInt(shape.points))
+                ctx.lineTo(0, 0 + (shape.r * shape.inset))
+                ctx.rotate(Math.PI / parseInt(shape.points))
+                ctx.lineTo(0, 0 + shape.r)
+            }
+            ctx.closePath()
+            ctx.fill()
     }
     ctx.restore()
 }
@@ -97,6 +108,7 @@ export const Shapes = {
     Rectangle: 'Rectangle',
     Circle: 'Circle',
     Triangle: 'Triangle',
+    Star: 'Star'
 }
 
 let dragging = false
@@ -142,32 +154,20 @@ class Shape {
     }
 }
 class Rectangle extends Shape {
-    constructor(shapeID = -1, x = canvasWidth/2-50/2, y = canvasHeight/2-50/2, color = "#FF0000") {
+    constructor(shapeID = -1, x = canvasWidth/2, y = canvasHeight/2, color = "#FF0000") {
         super(shapeID, x, y, color)
         this.shape = Shapes.Rectangle
         this.w = 50
         this.h = 50
-        this.updateRotationTranslation()
     }
     addXY(x, y) {
         super.addXY(x, y)
-        this.updateRotationTranslation()
     }
     addW(w) {
-        let oldCenterX = this.rotationTranslationX
         this.w += w
-        this.x = oldCenterX - this.w / 2
-        this.updateRotationTranslation()
     }
     addH(h) {
-        let oldCenterY = this.rotationTranslationY
         this.h += h
-        this.y = oldCenterY - this.h / 2
-        this.updateRotationTranslation()
-    }
-    updateRotationTranslation() {
-        this.rotationTranslationX = this.x + this.w/2
-        this.rotationTranslationY = this.y + this.h/2
     }
 }
 class Circle extends Shape {
@@ -177,12 +177,8 @@ class Circle extends Shape {
         this.r = 25
     }
     addR(r) {
-        let difference = this.r
         this.r += r
         if (this.r <= 0) this.r = 0
-        difference -= this.r
-        this.x += difference
-        this.y += difference
     }
 }
 class Triangle extends Shape {
@@ -225,6 +221,27 @@ class Triangle extends Shape {
         this.updateVertices()
     }
 }
+class Star extends Shape {
+    constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
+        super(shapeID, x, y, color)
+        this.shape = Shapes.Star
+        this.r = 20
+        this.points = 5
+        this.inset = 5
+    }
+    addPoint(p) {
+        this.points += p
+        if (this.points < 2) this.points = 2
+    }
+    addInset(i) {
+        this.inset += i
+        // if (this.points < 2) this.points = 2
+    }
+    addR(r) {
+        this.r += r
+        if (this.r <= 0) this.r = 0
+    }
+}
 export function shapeFactory(shape, newShapeType, shapeID) {
     let newShape
     switch (newShapeType) {
@@ -236,6 +253,9 @@ export function shapeFactory(shape, newShapeType, shapeID) {
             break
         case Shapes.Triangle:
             newShape = new Triangle(shapeID, shape.x, shape.y, shape.color)
+            break
+        case Shapes.Star:
+            newShape = new Star(shapeID, shape.x, shape.y, shape.color)
             break
     }
     for (let key in shape) {

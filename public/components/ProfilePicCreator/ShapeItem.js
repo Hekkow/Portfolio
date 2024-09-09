@@ -55,8 +55,13 @@ export default {
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Height"/>
               <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Size"/>
             </div>
-            <slider-row v-if="[Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Radius"/>
+            <slider-row v-if="[Shapes.Circle, Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Radius"/>
             <slider-row v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Rotation"/>
+            <div class="shapeDivMainPanelSection" v-if="[Shapes.Star].includes(shape.shape)">
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Points"/>
+              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Inset"/>
+            </div>
+            
             <slider-row>
               <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
                 data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
@@ -78,9 +83,9 @@ export default {
     },
     watch: {
         watchingShape: {
-            immediate: true,
+            // immediate: true,
             deep: true,
-            handler() {
+            handler(newValue, oldValue) {
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()

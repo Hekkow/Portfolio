@@ -29,6 +29,8 @@ export const data = Vue.reactive({
         Size: "Size",
         Rotation: "Rotation",
         Radius: "Radius",
+        Points: "Points",
+        Inset: "Inset",
     },
     mode: "Move",
     focusMessageInput: false,

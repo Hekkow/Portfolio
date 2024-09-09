@@ -196,7 +196,6 @@ export function openConversation(conversationID) {
     if (conversationID === -1) return
     setTyping(false)
     read(conversationID)
-    console.log("???")
     data.openConversationID = conversationID
     data.openModal = data.modals.None
     data.focusMessageInput = true
@@ -361,7 +360,6 @@ export function showUserPopup(userID, event) {
 }
 export function blockUser(userID) {
     data.loadedUsers.get(data.userID).blocked.push(userID)
-    console.log("WHAT")
     if (isConversationWithBlocked(data.openConversationID)) data.openConversationID = -1
     ws.send(JSON.stringify({type: Type.BLOCKUSER, userID: data.userID, blockedUserID: userID}))
     updateTitleNotifications()
