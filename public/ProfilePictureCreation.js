@@ -31,10 +31,8 @@ export function setupProfilePicCreator() {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        if (!(data.shapes.get(currentShapeID) instanceof Shape)) {
-            data.shapes.set(currentShapeID, shapeFactory(data.shapes.get(currentShapeID), data.shapes.get(currentShapeID).shape, currentShapeID))
-        }
-        if (data.mode === data.Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        // fixShape(currentShapeID)
+        if (data.mode === data.Modes.Location) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
         else if (data.mode === data.Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
         else if (data.mode === data.Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         else if (data.mode === data.Modes.Size) {
@@ -48,10 +46,14 @@ export function setupProfilePicCreator() {
         else if (data.mode === data.Modes.ControlPoint) data.shapes.get(currentShapeID).addControlPoint(deltaMouse.x, deltaMouse.y)
     })
 
-    currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
+    currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0])) // this should probably be .shapeID instead of [0]
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
 }
-
+export function fixShape(shapeID) {
+    if (!(data.shapes.get(shapeID) instanceof Shape)) {
+        data.shapes.set(shapeID, shapeFactory(data.shapes.get(shapeID), data.shapes.get(shapeID).shape, shapeID))
+    }
+}
 export function deleteShape(shapeID) {
     data.shapes.delete(shapeID)
     if (shapeID === currentShapeID) currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
@@ -117,6 +119,7 @@ export function drawShape(ctx, shape, scale, reset) {
                 }
             }
     }
+    // console.log("HERE2", ctx.canvas)
     ctx.restore()
 }
 export const Shapes = {
@@ -135,6 +138,7 @@ export function createShape() {
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
     currentShapeID = shapeID
+    drawShapes() // shouldn't be needed but isn't updating properly without it
 }
 export function setMode(newMode, shapeID) {
     data.mode = newMode

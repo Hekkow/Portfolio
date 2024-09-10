@@ -1,18 +1,15 @@
 import {data} from "./data.js";
-import {} from "../main.js";
 export default {
     data() {
         return {
             data: data,
         }
     },
-    methods: {
-    },
     template: `
       <div v-if="data.openPopup !== data.popups.None" class="modalBackground" @click="function(event) {
           if (event.target.classList.contains('modalBackground')) data.openPopup = data.popups.None
       }">
-        <div class="modal">
+        <div class="popup">
           <div v-if="data.openPopup === data.popups.Blocked">
             This user has blocked you
           </div>
@@ -22,10 +19,4 @@ export default {
         </div>
       </div>
     `,
-    // make actual user-radio later
-    watch: {
-        'data.openPopup': function() {
-
-        }
-    }
 }

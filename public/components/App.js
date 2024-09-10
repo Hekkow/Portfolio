@@ -27,10 +27,10 @@ import Popup from "./Popup.js";
 import Settings from "./Settings.js";
 import BlockedUser from "./BlockedUser.js";
 import CensoredUser from "./CensoredUser.js";
-import SliderRow from "./ProfilePicCreator/SliderRow.js";
 import SettingsRow from "./SettingsRow.js";
 import ThemeEditor from "./ThemeEditor.js";
 import ThemeEditorRow from "./ThemeEditorRow.js";
+import ControlButton from "./ProfilePicCreator/ControlButton.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -82,8 +82,8 @@ app.component('popup', Popup)
 app.component('settings', Settings)
 app.component('blocked-user', BlockedUser)
 app.component('censored-user', CensoredUser)
-app.component('slider-row', SliderRow)
 app.component('settings-row', SettingsRow)
 app.component('theme-editor', ThemeEditor)
 app.component('theme-editor-row', ThemeEditorRow)
+app.component('control-button', ControlButton)
 export default app

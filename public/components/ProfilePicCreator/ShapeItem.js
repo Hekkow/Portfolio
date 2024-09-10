@@ -3,7 +3,7 @@ import {
     canvasWidth,
     deleteShape,
     drawShape,
-    drawShapes, duplicateShape,
+    drawShapes, duplicateShape, fixShape,
     setMode,
     shapeFactory,
     Shapes
@@ -29,59 +29,72 @@ export default {
     },
     template: `
       <div class="shapeDiv" ref="shapeDiv" :data-shapeid="shape.shapeID">
-        
+
         <div :class="{'shapeDivLeftPanel': true, 'active': !currentlyOpen}" ref="leftPanel">
-          <button @click="currentlyOpen = !currentlyOpen" class="shapeDivLeftPanelButton">{{ currentlyOpen ? '-' : '+' }}</button>
-          <div class='userPic' :style="'clip-path: circle(' + previewSize / 2 + 'px at center); width: ' + previewSize + 'px;'">
+          <button @click="currentlyOpen = !currentlyOpen" class="shapeDivLeftPanelButton">
+            {{ currentlyOpen ? '-' : '+' }}
+          </button>
+          <div class='userPic'
+               :style="'clip-path: circle(' + previewSize / 2 + 'px at center); width: ' + previewSize + 'px;'">
             <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
           </div>
           <div class="shapeItemHandle shapeDivLeftPanelButton">DRAG</div>
         </div>
-        
+
         <div class="shapeDivMainPanel">
           <div v-if="currentlyOpen" class="controls">
-          <slider-row>
-            <button @click="deleteShape(shape.shapeID)">Delete</button>
-            <button @click="duplicateShape(shape.shapeID)">Duplicate</button>
-          </slider-row>
-            
-          <slider-row>
-            <label>Color</label>
-            <input type="color" class="pfpInput" :value="shape.color" @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
-          </slider-row>
-            <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Move"/>
-            <div class="shapeDivMainPanelSection" v-if="[Shapes.Rectangle, Shapes.Heart].includes(shape.shape)">
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Width"/>
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Height"/>
-            </div>
-            <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Size" v-if="[Shapes.Rectangle].includes(shape.shape)"/>
-            <slider-row v-if="[Shapes.Circle, Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Radius"/>
-            <slider-row v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID" :mode="data.Modes.Rotation"/>
-            <div class="shapeDivMainPanelSection" v-if="[Shapes.Star].includes(shape.shape)">
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Points"/>
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.Inset"/>
-            </div>
-            <div class="shapeDivMainPanelSection" v-if="[Shapes.Heart].includes(shape.shape)">
-              <slider-row :shapeid="shape.shapeID" :mode="data.Modes.ControlPoint" style="display: flex; flex-direction: column"/>
-              <button @click="shape.symmetry = !shape.symmetry">Symmetry</button>
-              <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)" v-if="data.mode === data.Modes.ControlPoint" style="display: flex; flex-direction: column">
-                <button @click="shape.selectedCurve = n-1">{{ n }}</button>
+            <button class="controlButton" @click="deleteShape(shape.shapeID)">Delete</button>
+            <button class="controlButton" @click="duplicateShape(shape.shapeID)">Duplicate</button>
+
+            <control-button :shapeid="shape.shapeID" :mode="data.Modes.Location"/>
+            <control-button v-if="[Shapes.Rectangle, Shapes.Heart].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Width"/>
+            <control-button v-if="[Shapes.Rectangle, Shapes.Heart].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Height"/>
+            <control-button v-if="[Shapes.Rectangle].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Size"/>
+            <control-button v-if="[Shapes.Circle, Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Radius"/>
+            <control-button v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Rotation"/>
+            <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Points"/>
+            <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.Inset"/>
+            <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
+                    @click="shape.symmetry = !shape.symmetry">Symmetry
+            </button>
+            <control-button v-if="[Shapes.Heart].includes(shape.shape)" :shapeid="shape.shapeID"
+                            :mode="data.Modes.ControlPoint"/>
+            <div v-if="[Shapes.Heart].includes(shape.shape)" class="shapeDivMainPanelSection">
+              <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"
+                   v-if="data.mode === data.Modes.ControlPoint" style="display: flex; justify-content: space-between">
+                <button @click="shape.selectedCurve = n-1">Curve {{ n }}</button>
                 <div v-if="shape.selectedCurve === n-1" style="display: flex">
-                  <button @click="shape.selectedPoint = 0">1</button>
-                  <button @click="shape.selectedPoint = 1">2</button>
+                  <button @click="shape.selectedPoint = 0" :style="{color: shape.selectedPoint === 0 ? 'red' : null}">
+                    Point 1
+                  </button>
+                  <button @click="shape.selectedPoint = 1" :style="{color: shape.selectedPoint === 1 ? 'red' : null}">
+                    Point 2
+                  </button>
                 </div>
               </div>
             </div>
-            <slider-row>
+
+            <div class="sliderRow">
+              <label>Color</label>
+              <input type="color" class="pfpInput" :value="shape.color"
+                     @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
+            </div>
+            <div class="sliderRow">
+              <label>Shape</label>
               <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
                 data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
-                setMode(data.Modes.Move, shape.shapeID)
+                setMode(data.Modes.Location, shape.shapeID)
               }">
-                <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{shapeName}}</option>
+                <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{ shapeName }}</option>
               </select>
-            </slider-row>
-            
-            
+            </div>
           </div>
         </div>
       </div>
@@ -112,5 +125,6 @@ export default {
     },
     mounted() {
         this.drawPreview()
+        fixShape(this.shape.shapeID)
     },
 }

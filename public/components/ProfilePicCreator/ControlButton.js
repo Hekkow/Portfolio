@@ -13,10 +13,7 @@ export default {
         }
     },
     template: `
-      <div class="sliderRow">
-        <button v-if="!$slots.default" @click="setMode(mode, shapeid)">{{ mode }}</button>
-        <slot/>
-      </div>
+        <button class="controlButton" @click="setMode(mode, shapeid)">{{ mode }}</button>
     `,
     props: {
         shapeid: {

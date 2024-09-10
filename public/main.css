@@ -157,8 +157,10 @@ button:active {
 }
 
 .groupChatButtonsDiv {
-    display: flex;
+    position: relative;
+    display: inline-flex;
     justify-content: space-evenly;
+    line-height: 0;
 }
 .groupChatButton {
     width: 30px;
@@ -288,6 +290,11 @@ button:active {
     width: 600px;
     height: 400px;
     background-color: var(--modal-color);
+}
+.popup {
+    width: 300px;
+    height: 200px;
+    background-color: var(--popup-color);
 }
 .modalTitle {
     width: 100%;

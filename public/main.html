@@ -36,10 +36,10 @@
             <messages></messages>
         </div>
         <div id="chatInfoPanel" class="panel">
-            <div class="panelTitle">Chat Info</div>
+            <div class="panelTitle">Chat Info <group-chat-buttons></group-chat-buttons></div>
 
             <div class="panelArea" style="border: 0">
-                <group-chat-buttons></group-chat-buttons>
+
                 <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
             </div>
         </div>

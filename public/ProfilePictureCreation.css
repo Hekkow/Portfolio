@@ -5,12 +5,14 @@
 #shapesList {
     width: 300px;
     overflow: auto;
-    max-height: 95%;
+    display: flex;
+    flex-direction: column;
 }
 
 .controls {
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
+    flex-wrap: wrap;
 }
 .pfpInput {
     margin-left: auto;
@@ -20,6 +22,7 @@
     height: 30px;
     flex-direction: row;
     line-height: 30px;
+    flex-basis: 100%;
 }
 #canvasArea {
     display: flex;
@@ -45,6 +48,11 @@
 }
 #controlPanel {
     overflow: auto;
+    display: flex;
+    flex-direction: column;
+}
+.controlButton {
+    flex-basis: 50%;
 }
 .shapeDiv {
     display: flex;
@@ -53,6 +61,7 @@
     border: var(--border-thickness) solid var(--main-color);
     overflow: hidden;
     background-color: var(--modal-color);
+    flex-shrink: 0;
 }
 .shapeDivLeftPanel {
     width: 50px;
@@ -79,6 +88,7 @@
 .shapeDivMainPanelSection {
     display: flex;
     flex-direction: column;
+    flex-basis: 100%;
 }
 .shapeItemHandle {
     cursor: pointer;

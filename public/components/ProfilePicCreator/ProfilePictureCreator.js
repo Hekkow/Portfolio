@@ -11,8 +11,8 @@ export default {
         return {
             data: data,
             Shapes: Shapes,
-            vertical: [data.Modes.Height, data.Modes.Size, data.Modes.Move],
-            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.Rotation, data.Modes.Radius, data.Modes.Points, data.Modes.Inset],
+            vertical: [data.Modes.Height, data.Modes.Size, data.Modes.Location],
+            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Location, data.Modes.Rotation, data.Modes.Radius, data.Modes.Points, data.Modes.Inset],
         }
     },
     template: `
