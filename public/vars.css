@@ -8,7 +8,9 @@
     --modal-background-color: rgba(110, 165, 239, 0.5);
     --message-background-color: white;
     --button-background-color: white;
-    --button-background-hover-color: gray;
+    --button-background-hover-color: var(--main-color);
+    --button-text-hover-color: var(--button-background-color);
+    --button-background-active-color: var(--accent-color);
     --loading-overlay-background-color: black;
     --text-input-background-color: white;
     --border-radius: 10px;

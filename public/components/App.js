@@ -42,6 +42,7 @@ const app = Vue.createApp({
             handler() {
                 updateTitleNotifications()
                 updateOpenConversationCookie()
+
             }
         }
     },

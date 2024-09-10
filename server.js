@@ -143,14 +143,19 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
         // don't mess with the order
         if (!conversation && data.conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(data.conversationID)
         if (!conversation) conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
-        ws.send(JSON.stringify({type: Helper.Type.REQUESTCONVERSATION, conversation: conversation}))
+        if (!data.loadedUsers) data.loadedUsers = []
+        Database.findUsersWithID(conversation.users.filter(user => !data.loadedUsers.includes(user))).then(newUsers => {
+            ws.send(JSON.stringify({type: Helper.Type.REQUESTCONVERSATION, conversation: conversation, newUsers: newUsers}))
+        })
     })
 }
 function inviteToGroupChat(data) {
     Database.addUsersToGroupChat(data.conversationID, data.users).then((conversation) => {
-        for (let socket of getSockets(conversation.users)) {
-            socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation})) // can be optimized
-        }
+        Database.findUsersWithID(conversation.users).then(newUsers => {
+            for (let socket of getSockets(conversation.users)) {
+                socket.send(JSON.stringify({type: Helper.Type.INVITETOGROUPCHAT, conversation: conversation, newUsers: newUsers})) // can be optimized
+            }
+        })
     })
 }
 function renameGroupChat(data) {

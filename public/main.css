@@ -24,9 +24,16 @@ button {
     border: 0;
     cursor: pointer;
     background-color: var(--button-background-color);
+    color: black;
+    transition: 0.15s;
 }
 button:hover {
     background-color: var(--button-background-hover-color);
+    color: var(--button-text-hover-color)
+}
+button:active {
+    transition: 0s;
+    background-color: var(--button-background-active-color);
 }
 /* main panels */
 #mainContainer {

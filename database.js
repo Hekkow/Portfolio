@@ -50,8 +50,8 @@ class Database {
         return user
     }
     async findUsersWithID(userIDs) {
-        let promises = userIDs.map(userID => this.findUserWithID(userID))
-        let users = await Promise.all(promises)
+        let users = await this.users.find({ userID: { $in: userIDs } }).toArray()
+        users.forEach(user => { if (user) user.password = null})
         return users
     }
     async addUsersToGroupChat(conversationID, users) {

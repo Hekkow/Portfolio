@@ -48,6 +48,7 @@ function connection() {
                 editMessage(message.message)
                 break
             case Type.REQUESTCONVERSATION:
+                for (let newUser of message.newUsers) data.loadedUsers.set(newUser.userID, newUser)
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set([...user.conversations, message.conversation.conversationID])] // adds to conversations only if its not there
                 updateLocalConversations([message.conversation])
@@ -58,6 +59,7 @@ function connection() {
                 if (message.userID === data.userID) closeConversation(message.conversation.conversationID)
                 break
             case Type.INVITETOGROUPCHAT:
+                for (let newUser of message.newUsers) data.loadedUsers.set(newUser.userID, newUser)
                 updateLocalConversations([message.conversation])
                 let conversations = data.loadedUsers.get(data.userID).conversations
                 if (!conversations.includes(message.conversation.conversationID)) conversations.push(message.conversation.conversationID)
@@ -72,7 +74,6 @@ function connection() {
                 updateProfilePicture(message.userID, message.profilePic)
                 break
             case Type.BLOCKUSER:
-                console.log("BLOCKED BY ", message.userID)
                 data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
             case Type.UNBLOCKUSER:
@@ -128,7 +129,7 @@ function loadLocalData(newData) {
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID)) {
-        ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct }))
+        ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct, loadedUsers: Array.from(data.loadedUsers.keys()) }))
         return
     }
     if (message.userID === data.userID) data.loadedConversations.get(message.conversationID).texts.find(text => !text.messageID || text.messageID === -1).messageID = message.messageID
@@ -224,7 +225,7 @@ export function startConversation(receivingUserID) {
             return
         }
     }
-    ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct }))
+    ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct}))
 }
 
 function editMessage(message) {
@@ -240,7 +241,6 @@ export function sendMessage() {
     if (!text || !text.trim()) return
     if (text.length > maxMessageLength) {
         data.openPopup = data.popups.LongMessage
-        console.log("message too long")
         return
     }
     messageInput.val("")
@@ -257,7 +257,6 @@ export function sendMessage() {
     let conversation = data.loadedConversations.get(data.openConversationID)
     if (conversation.conversationType === direct && data.loadedUsers.get(conversation.users.find(userID => userID !== data.userID)).blocked.includes(data.userID)) {
         data.openPopup = data.popups.Blocked
-        console.log("You're blocked")
     }
     else {
         if (data.editing === -1) addMessage(message)
@@ -383,7 +382,7 @@ $(document).click(event => {
 export function rejoinGeneral() {
     let howdyID = 3
     if (data.loadedUsers.get(data.userID).conversations.includes(howdyID)) return
-    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID]}))
+    ws.send(JSON.stringify({type: Type.INVITETOGROUPCHAT, conversationID: howdyID, users: [data.userID], loadedUsers: Array.from(data.loadedUsers.keys())}))
 }
 export function toggleCensor(userID) {
     let user = data.loadedUsers.get(data.userID)

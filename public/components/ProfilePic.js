@@ -12,18 +12,14 @@ export default {
         const canvasRef = Vue.ref(null)
         function drawShapes() {
             if (props.userid === -1) return
-            console.log("AM I HERE?1", props.userid)
             if (!canvasRef.value) return
-            console.log("AM I HERE?2", props.userid)
             let ctx = canvasRef.value.getContext('2d')
             let scale = canvasWidth/parseFloat($(canvasRef.value).attr('width'))
             ctx.fillStyle = "black"
             ctx.fillRect(0, 0, canvasWidth, canvasHeight)
 
             if (!data.loadedUsers.has(data.userID)) return
-            console.log("AM I HERE?3", props.userid)
             if (data.loadedUsers.get(data.userID).censored.includes(props.userid)) return
-            console.log("AM I HERE?4", props.userid)
             let shapes = data.loadedUsers.get(props.userid).profilePic
             if (!(shapes instanceof Map)) shapes = new Map(Object.entries(shapes))
             for (let shape of Array.from(shapes.values()).sort((a, b) => b.z - a.z)) {
