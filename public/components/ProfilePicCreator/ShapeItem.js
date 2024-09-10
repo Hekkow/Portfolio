@@ -53,18 +53,18 @@ export default {
                             :mode="data.Modes.Height"/>
             <control-button v-if="[Shapes.Rectangle].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Size"/>
-            <control-button v-if="[Shapes.Circle, Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
+            <control-button v-if="[Shapes.Circle, Shapes.Star, Shapes.Polygon].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Radius"/>
             <control-button v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Rotation"/>
-            <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
+            <control-button v-if="[Shapes.Star, Shapes.Polygon].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Points"/>
             <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Inset"/>
             <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
                     @click="shape.symmetry = !shape.symmetry">Symmetry
             </button>
-            <control-button v-if="[Shapes.Heart].includes(shape.shape)" :shapeid="shape.shapeID"
+            <control-button v-if="[Shapes.Heart, Shapes.Polygon].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.ControlPoint"/>
             <div v-if="[Shapes.Heart].includes(shape.shape)" class="shapeDivMainPanelSection">
               <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"
@@ -80,7 +80,9 @@ export default {
                 </div>
               </div>
             </div>
-
+            <div v-if="[Shapes.Polygon].includes(shape.shape)" class="shapeDivMainPanelSection" style="flex-direction: row; flex-wrap: wrap">
+                <button class="controlButton" v-for="n of parseInt(shape.numberPoints)" v-if="data.mode === data.Modes.ControlPoint" @click="shape.selectedPoint = n-1">Point {{ n }}</button>
+            </div>
             <div class="sliderRow">
               <label>Color</label>
               <input type="color" class="pfpInput" :value="shape.color"

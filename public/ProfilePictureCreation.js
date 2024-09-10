@@ -31,7 +31,6 @@ export function setupProfilePicCreator() {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        // fixShape(currentShapeID)
         if (data.mode === data.Modes.Location) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
         else if (data.mode === data.Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
         else if (data.mode === data.Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
@@ -82,18 +81,18 @@ export function drawShape(ctx, shape, scale, reset) {
             break
         case Shapes.Circle:
             ctx.beginPath()
-            ctx.arc(0, 0, shape.r, 0, Math.PI * 2)
+            ctx.arc(0, 0, shape.radius, 0, Math.PI * 2)
             ctx.closePath()
             ctx.fill()
             break
         case Shapes.Star:
             ctx.beginPath()
-            ctx.moveTo(0, shape.r)
+            ctx.moveTo(0, shape.radius)
             for (let i = 0; i < parseInt(shape.points); i++) {
                 ctx.rotate(Math.PI / parseInt(shape.points))
-                ctx.lineTo(0, shape.r * shape.inset)
+                ctx.lineTo(0, shape.radius * shape.inset)
                 ctx.rotate(Math.PI / parseInt(shape.points))
-                ctx.lineTo(0, shape.r)
+                ctx.lineTo(0, shape.radius)
             }
             ctx.closePath()
             ctx.fill()
@@ -118,15 +117,36 @@ export function drawShape(ctx, shape, scale, reset) {
                     ctx.fill()
                 }
             }
+            break
+        case Shapes.Polygon: {
+            ctx.beginPath()
+            ctx.moveTo(0, 0)
+            if ($(ctx.canvas).is('#editCanvas')) {
+                for (let i = 0; i < parseInt(shape.numberPoints); i++) {
+                    let point = shape.points[i]
+                    ctx.fillStyle = "blue"
+                    ctx.beginPath()
+                    ctx.arc(point.x, point.y, 3, 0, Math.PI * 2)
+                    ctx.closePath()
+                    ctx.fill()
+                }
+                ctx.fillStyle = "red"
+                ctx.beginPath()
+                ctx.arc(0, 0, 3, 0, Math.PI * 2)
+                ctx.closePath()
+                ctx.fill()
+            }
+            break
+        }
     }
-    // console.log("HERE2", ctx.canvas)
     ctx.restore()
 }
 export const Shapes = {
     Rectangle: 'Rectangle',
     Circle: 'Circle',
     Star: 'Star',
-    Heart: 'Heart'
+    Heart: 'Heart',
+    Polygon: 'Polygon'
 }
 
 let dragging = false
@@ -190,18 +210,18 @@ class Circle extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         super(shapeID, x, y, color)
         this.shape = Shapes.Circle
-        this.r = 25
+        this.radius = 25
     }
-    addR(r) {
-        this.r += r
-        if (this.r <= 0) this.r = 0
+    addR(radius) {
+        this.radius += radius
+        if (this.radius <= 0) this.radius = 0
     }
 }
 class Star extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
         super(shapeID, x, y, color)
         this.shape = Shapes.Star
-        this.r = 20
+        this.radius = 20
         this.points = 5
         this.inset = 5
     }
@@ -213,8 +233,8 @@ class Star extends Shape {
         this.inset += i
     }
     addR(r) {
-        this.r += r
-        if (this.r <= 0) this.r = 0
+        this.radius += r
+        if (this.radius <= 0) this.radius = 0
     }
 }
 class Heart extends Shape {
@@ -242,7 +262,37 @@ class Heart extends Shape {
             this.controlPoints[7-(this.selectedCurve*2+this.selectedPoint)].y += y
         }
     }
-
+}
+class Polygon extends Shape {
+    constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
+        super(shapeID, x, y, color)
+        this.shape = Shapes.Polygon
+        this.points = []
+        this.numberPoints = 3
+        this.radius = 50
+        this.selectedPoint = 0
+        this.updatePoints()
+    }
+    addPoint(p) {
+        this.numberPoints += p
+        if (this.numberPoints < 3) this.numberPoints = 3
+        this.updatePoints()
+    }
+    updatePoints() {
+        let angle = 2*Math.PI/parseInt(this.numberPoints)
+        for (let i = 0; i < parseInt(this.numberPoints); i++) {
+            this.points[i] = {x: this.radius * Math.cos(angle*i), y: this.radius * Math.sin(angle*i)}
+        }
+    }
+    addR(r) {
+        this.radius += r
+        if (this.radius <= 0) this.radius = 0
+        this.updatePoints()
+    }
+    addControlPoint(x, y) {
+        this.points[this.selectedPoint].x += x * Math.cos(this.rotation) + y * Math.sin(this.rotation)
+        this.points[this.selectedPoint].y += -x * Math.sin(this.rotation) + y * Math.cos(this.rotation)
+    }
 }
 export function shapeFactory(shape, newShapeType, shapeID) {
     let newShape
@@ -258,6 +308,9 @@ export function shapeFactory(shape, newShapeType, shapeID) {
             break
         case Shapes.Heart:
             newShape = new Heart(shapeID, shape.x, shape.y, shape.color)
+            break
+        case Shapes.Polygon:
+            newShape = new Polygon(shapeID, shape.x, shape.y, shape.color)
             break
     }
     for (let key in shape) {
