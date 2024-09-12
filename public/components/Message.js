@@ -83,22 +83,22 @@ export default {
         addLinks(text) {
             // regex for finding url
             let pattern = /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&\/=]*)/g
-            let match;
-            let indices = [];
+            let match
+            let indices = []
             // goes through every time text matches pattern and adds that to indices
             while ((match = pattern.exec(text)) !== null) {
-                indices.push({match: match[0], index: match.index});
+                indices.push({match: match[0], index: match.index})
             }
             // for every link in the text, starting from end to beginning to not shift indices
             for (let i = indices.length - 1; i >= 0; i--) {
-                let url = indices[i].match;
-                if (!(url.startsWith('http://') || url.startsWith('https://'))) url = 'https://' + url;
+                let url = indices[i].match
+                if (!(url.startsWith('http://') || url.startsWith('https://'))) url = 'https://' + url
                 let extension = url.split('.').pop().toLowerCase()
-                let start = indices[i].index;
-                let end = start + indices[i].match.length;
+                let start = indices[i].index
+                let end = start + indices[i].match.length
                 // add a tags from start to end to not shift start/end
-                text = text.slice(0, end) + '</a>' + text.slice(end);
-                text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start);
+                text = text.slice(0, end) + '</a>' + text.slice(end)
+                text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start)
                 // adds video/image
                 if (['mp4', 'flv', 'mov', 'avi', 'webm', 'mkv'].includes(extension)) {
                     text += `<video controls><source src=${url} type="video/${extension}"></video>`

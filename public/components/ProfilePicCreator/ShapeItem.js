@@ -80,8 +80,16 @@ export default {
                 </div>
               </div>
             </div>
-            <div v-if="[Shapes.Polygon].includes(shape.shape)" class="shapeDivMainPanelSection" style="flex-direction: row; flex-wrap: wrap">
-                <button class="controlButton" v-for="n of parseInt(shape.numberPoints)" v-if="data.mode === data.Modes.ControlPoint" @click="shape.selectedPoint = n-1">Point {{ n }}</button>
+<!--            <div v-if="[Shapes.Polygon].includes(shape.shape)" class="shapeDivMainPanelSection" style="flex-direction: row; flex-wrap: wrap">-->
+<!--                <button class="controlButton" v-for="n of parseInt(shape.numberPoints)" v-if="data.mode === data.Modes.ControlPoint" @click="shape.selectedPoint = n-1">Point {{ n }}</button>-->
+<!--            </div>-->
+            <div v-if="[Shapes.Points].includes(shape.shape)" class="shapeDivMainPanelSection">
+              <div v-for="n of shape.points.length" style="display: flex; justify-content: space-between">
+                <button @click="shape.selectPoint(n)" :style="{color: shape.selectedPoint === n ? 'red' : null}">{{n}}</button>
+                <button @click="shape.addPoint(n)">Add point</button>
+                <button @click="shape.removePoint(n)">Remove point</button>
+              </div>
+              
             </div>
             <div class="sliderRow">
               <label>Color</label>
@@ -108,13 +116,12 @@ export default {
     },
     watch: {
         watchingShape: {
-            // immediate: true,
             deep: true,
             handler() {
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()
-                data.shapesDirty = true;
+                data.shapesDirty = true
             }
         },
     },

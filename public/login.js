@@ -13,7 +13,7 @@ if (sessionID) {
 $('#loginForm').submit(function(e) {
     let username = $('#usernameInput').val()
     let password = $('#passwordInput').val()
-    e.preventDefault();
+    e.preventDefault()
 
     if (!username || !username.trim()) {
         alert("Missing username")

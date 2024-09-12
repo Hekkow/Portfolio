@@ -118,6 +118,7 @@ export function drawShape(ctx, shape, scale, reset) {
                 }
             }
             break
+        case Shapes.Points:
         case Shapes.Polygon: {
             ctx.beginPath()
             ctx.moveTo(shape.points[0].x, shape.points[0].y)
@@ -127,9 +128,11 @@ export function drawShape(ctx, shape, scale, reset) {
             ctx.closePath()
             ctx.fill()
             if ($(ctx.canvas).is('#editCanvas')) {
-                for (let i = 0; i < parseInt(shape.numberPoints); i++) {
+                for (let i = 0; i < shape.points.length; i++) {
                     let point = shape.points[i]
                     ctx.fillStyle = "blue"
+                    if (i === shape.selectedPoint-1) ctx.fillStyle = "red"
+
                     ctx.beginPath()
                     ctx.arc(point.x, point.y, 3, 0, Math.PI * 2)
                     ctx.closePath()
@@ -151,7 +154,8 @@ export const Shapes = {
     Circle: 'Circle',
     Star: 'Star',
     Heart: 'Heart',
-    Polygon: 'Polygon'
+    Polygon: 'Polygon',
+    Points: 'Points'
 }
 
 let dragging = false
@@ -275,7 +279,6 @@ class Polygon extends Shape {
         this.points = []
         this.numberPoints = 3
         this.radius = 50
-        this.selectedPoint = 0
         this.updatePoints()
     }
     addPoint(p) {
@@ -285,6 +288,7 @@ class Polygon extends Shape {
     }
     updatePoints() {
         let angle = 2*Math.PI/parseInt(this.numberPoints)
+        this.points = []
         for (let i = 0; i < parseInt(this.numberPoints); i++) {
             this.points[i] = {x: this.radius * Math.cos(angle*i), y: this.radius * Math.sin(angle*i)}
         }
@@ -294,9 +298,40 @@ class Polygon extends Shape {
         if (this.radius <= 0) this.radius = 0
         this.updatePoints()
     }
+}
+class Points extends Shape {
+    constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
+        super(shapeID, x, y, color)
+        this.shape = Shapes.Points
+        this.points = []
+        this.selectedPoint = 0
+        let startNumberPoints = 3
+        let angle = 2*Math.PI/startNumberPoints
+        let radius = 50
+        for (let i = 0; i < startNumberPoints; i++) {
+            this.points[i] = {x: radius * Math.cos(angle*i), y: radius * Math.sin(angle*i)}
+        }
+    }
+    selectPoint(n) {
+        this.selectedPoint = n
+        data.mode = data.Modes.ControlPoint
+    }
+    addPoint(point) {
+        let previous = this.points[point-1]
+        let next = this.points[(point)%this.points.length]
+        this.points.splice(point, 0, {x: (previous.x+next.x)/2, y: (previous.y+next.y)/2})
+        this.selectPoint(point+1)
+    }
+    removePoint(point) {
+        if (this.points.length <= 3) return
+        this.points.splice(point-1, 1)
+        let nextSelect = point-1
+        if (point-1 <= 0) nextSelect = this.points.length
+        this.selectPoint(nextSelect)
+    }
     addControlPoint(x, y) {
-        this.points[this.selectedPoint].x += x * Math.cos(this.rotation) + y * Math.sin(this.rotation)
-        this.points[this.selectedPoint].y += -x * Math.sin(this.rotation) + y * Math.cos(this.rotation)
+        this.points[this.selectedPoint-1].x += x * Math.cos(this.rotation) + y * Math.sin(this.rotation)
+        this.points[this.selectedPoint-1].y += -x * Math.sin(this.rotation) + y * Math.cos(this.rotation)
     }
 }
 export function shapeFactory(shape, newShapeType, shapeID) {
@@ -316,6 +351,9 @@ export function shapeFactory(shape, newShapeType, shapeID) {
             break
         case Shapes.Polygon:
             newShape = new Polygon(shapeID, shape.x, shape.y, shape.color)
+            break
+        case Shapes.Points:
+            newShape = new Points(shapeID, shape.x, shape.y, shape.color)
             break
     }
     for (let key in shape) {
