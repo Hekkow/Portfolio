@@ -26,7 +26,7 @@ export default {
     },
     computed: {
         conversations() {
-            let userConversations = data.loadedUsers.get(data.userID).conversations
+            let userConversations = data.loadedUsers.get(data.userID).openConversations
             let conversationIDs = userConversations.filter(conversationID => data.loadedConversations.has(conversationID)) // only loaded conversations
             let conversations = conversationIDs.map(conversationID => data.loadedConversations.get(conversationID))
             // sorts by date of last message

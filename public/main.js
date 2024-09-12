@@ -51,6 +51,7 @@ function connection() {
                 for (let newUser of message.newUsers) data.loadedUsers.set(newUser.userID, newUser)
                 let user = data.loadedUsers.get(data.userID)
                 user.conversations = [...new Set([...user.conversations, message.conversation.conversationID])] // adds to conversations only if its not there
+                user.openConversations = [...new Set([...user.openConversations, message.conversation.conversationID])]
                 updateLocalConversations([message.conversation])
                 // updateTitleNotifications()
                 break
@@ -137,7 +138,7 @@ function loadLocalData(newData) {
     read(data.openConversationID)
 }
 function receivedNewMessage(message) {
-    if (!data.loadedConversations.has(message.conversationID)) {
+    if (!data.loadedConversations.has(message.conversationID) || !data.loadedUsers.get(data.userID).openConversations.includes(message.conversationID)) {
         ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: message.conversationID, conversationType: direct, loadedUsers: Array.from(data.loadedUsers.keys()) }))
         return
     }
@@ -234,7 +235,7 @@ export function startConversation(receivingUserID) {
             return
         }
     }
-    ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct}))
+    ws.send(JSON.stringify({ type: Type.REQUESTCONVERSATION, conversationID: [receivingUserID, data.userID], conversationType: direct, leader: data.userID}))
 }
 
 function editMessage(message) {

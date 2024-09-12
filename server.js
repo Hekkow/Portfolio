@@ -172,6 +172,8 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
         if (!conversation && data.conversationType === Helper.direct) conversation = await Database.findConversationWithUsers(data.conversationID)
         if (!conversation) conversation = await Database.createConversation({users: data.conversationID, conversationType: data.conversationType, leader: data.leader})
         if (!data.loadedUsers) data.loadedUsers = []
+        let userID = clients.find(client => client.socket === ws)
+        if (userID) await Database.addToOpenConversations(userID, data.conversationID)
         Database.findUsersWithID(conversation.users.filter(user => !data.loadedUsers.includes(user))).then(newUsers => {
             ws.send(JSON.stringify({type: Helper.Type.REQUESTCONVERSATION, conversation: conversation, newUsers: newUsers}))
         })
@@ -203,7 +205,7 @@ function transferLeader(data) {
 function closeConversation(data) {
     Database.findConversation(data.conversationID).then((originalConversation) => {
         Database.closeConversation(data.userID, data.conversationID, data.conversationType).then((conversation) => {
-            if (originalConversation.leader === data.userID) {
+            if (originalConversation.type === Helper.direct && originalConversation.leader === data.userID) {
                 if (conversation.users.length > 0) {
                     transferLeader({conversationID: data.conversationID, originalLeader: data.userID, newLeader: conversation.users[Math.floor(Math.random()*conversation.users.length)]})
                 }

@@ -29,7 +29,7 @@ class Database {
     async register(username, password) {
         let id = await this.getLatestUserID()
         let publicConversationID = 3
-        let user = {username: username, password: password, conversations: [], userID: id, blocked: [], profilePic: "", censored: []}
+        let user = {username: username, password: password, conversations: [], userID: id, blocked: [], profilePic: "", censored: [], openConversations: []}
         await this.users.insertOne(user)
         await this.addUsersToGroupChat(publicConversationID, [id])
         user.password = null
@@ -70,7 +70,7 @@ class Database {
         )
         await this.users.updateMany(
             {userID: { $in: users }},
-            {$addToSet: {conversations: conversationID}}
+            {$addToSet: {conversations: conversationID, openConversations: conversationID}}
         )
         return conversation
     }
@@ -101,7 +101,7 @@ class Database {
         await this.readMessages.updateOne({userID: message.userID, conversationID: message.conversationID}, {$set: {messageID: messageID}})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
-            {$addToSet: {conversations: conversation.conversationID}}
+            {$addToSet: {conversations: conversation.conversationID, openConversations: conversation.conversationID}},
         )
         return conversation
     }
@@ -136,13 +136,22 @@ class Database {
         let conversations = await Promise.all(promises)
         return conversations
     }
+    async addToOpenConversations(conversationID, userID) {
+        return await this.users.findOneAndUpdate({userID: userID}, {$addToSet: {openConversations: conversationID}})
+    }
     async closeConversation(userID, conversationID, conversationType) {
-        await this.users.findOneAndUpdate(
-            {userID: userID},
-            {$pull: {conversations: conversationID}}
-        )
         if (conversationType === Helper.group) {
+            await this.users.findOneAndUpdate(
+                {userID: userID},
+                {$pull: {conversations: conversationID}}
+            )
             return await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$pull: {users: userID}}, {returnDocument: "after"})
+        }
+        else {
+            await this.users.findOneAndUpdate(
+                {userID: userID},
+                {$pull: {openConversations: conversationID}}
+            )
         }
     }
     async deleteAll() {
@@ -164,6 +173,7 @@ class Database {
         for (let user of data.users) {
             this.users.updateOne({userID: user}, {$push: {conversations: conversation.conversationID}})
         }
+        this.users.updateOne({userID: data.leader}, {$push: {openConversations: conversation.conversationID} })
         await this.conversations.insertOne(conversation)
         return conversation
     }
