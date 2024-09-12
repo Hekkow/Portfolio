@@ -21,6 +21,9 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.LOGIN:
                 login(ws, data.sessionID)
                 break
+            case Helper.Type.LOGOUT:
+                logout(data.sessionID)
+                break
             case Helper.Type.REQUESTCONVERSATION:
                 sendRequestedConversation(ws, data)
                 break
@@ -63,13 +66,20 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.SAVEPROFILEPIC:
                 saveProfilePicture(data)
                 break
+            case Helper.Type.CHANGEUSERNAME:
+                changeUsername(data)
+                break
+            case Helper.Type.CHANGEPASSWORD:
+                changePassword(ws, data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
 })
 function disconnect(ws) {
+
     let clientIndex = clients.findIndex(client => client.socket === ws)
-    if (!clientIndex || !clients[clientIndex]) return
+    if (clientIndex === -1 || !clients[clientIndex]) return
     Database.findUserWithID(clients[clientIndex].userID).then(user => {
         for (let conversationID of user.conversations) {
             // this sends it even to conversations where not typing
@@ -87,11 +97,14 @@ function login(ws, sessionID) {
             return
         }
         console.log(user.username + " logged in")
-        clients.push({socket: ws, userID: userID})
+        clients.push({socket: ws, userID: userID, sessionID: sessionID})
         ws.send(JSON.stringify({type: Helper.Type.RECEIVEUSERNAME, user: user}))
         loadLocalData(ws, user)
         updateUserLists()
     })
+}
+function logout(sessionID) {
+    loginServer.removeUser(sessionID)
 }
 function saveProfilePicture(data) {
     Database.saveProfilePicture(data.userID, data.profilePic).then(user => {
@@ -130,6 +143,21 @@ function unblockUser(data) {
             socket.send(JSON.stringify({type: Helper.Type.UNBLOCKUSER, userID: data.userID}))
         }
     })
+}
+function changeUsername(data) {
+    Database.changeUsername(data.userID, data.username).then(worked => {
+        if (!worked) {
+            for (let socket of getSockets([data.userID])) socket.send(JSON.stringify({type: Helper.Type.CHANGEUSERNAME, userID: data.userID}))
+        }
+        else {
+            for (let client of clients) {
+                client.socket.send(JSON.stringify({type: Helper.Type.CHANGEUSERNAME, userID: data.userID, username: data.username}))
+            }
+        }
+    })
+}
+function changePassword(ws, data) {
+    Database.changePassword(data.userID, data.password).then(_ => ws.send(JSON.stringify({type: Helper.Type.CHANGEPASSWORD})))
 }
 function updateCensors(data) {
     Database.updateCensors(data.userID, data.censored)

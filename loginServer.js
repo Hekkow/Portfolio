@@ -20,4 +20,7 @@ router.post('/attemptLoginID', (req, res) => {
 function getUser(sessionID) {
     return sessionIDs.get(sessionID) || null
 }
-module.exports = { router, getUser }
+function removeUser(sessionID) {
+    sessionIDs.delete(sessionID)
+}
+module.exports = { router, getUser, removeUser}

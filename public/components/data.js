@@ -44,11 +44,11 @@ export const data = Vue.reactive({
     activateCensor: -1,
     settingsTabs: {
         User: 'User',
-        ProfilePic: 'ProfilePic',
+        ProfilePic: 'Profile Pic',
         Chats: 'Chats',
         Blocked: 'Blocked',
         Censored: 'Censored',
-        Theme: 'Theme'
+        Theme: 'Theme',
     },
     openSettings: 'User',
     theme: new Map(),

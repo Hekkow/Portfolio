@@ -35,6 +35,14 @@ class Database {
         user.password = null
         return user
     }
+    async changeUsername(userID, username) {
+        if (await this.users.findOne({username: username})) return false
+        await this.users.findOneAndUpdate({userID: userID}, {$set: {username: username}})
+        return true
+    }
+    async changePassword(userID, password) {
+        await this.users.findOneAndUpdate({userID: userID}, {$set: {password: password}})
+    }
     async block(userID, blockedUserID) {
         await this.users.findOneAndUpdate({userID: userID}, {$push: {blocked: blockedUserID}})
     }

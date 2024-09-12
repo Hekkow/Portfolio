@@ -1,30 +1,28 @@
 import {data} from "./data.js";
-import {logout, rejoinGeneral} from "../main.js";
+import {changePassword, changeUsername, logout, rejoinGeneral} from "../main.js";
 import {setupProfilePicCreator} from "../ProfilePictureCreation.js";
 export default {
-    methods: {setupProfilePicCreator, rejoinGeneral, logout},
+    methods: {changePassword, changeUsername, setupProfilePicCreator, rejoinGeneral, logout},
     data() {
         return {
             data: data,
+            username: '',
+            password: ''
         }
     },
     template: `
       <div id="settings">
         <div id="settingsLeftPanel">
-          <button @click="data.openSettings = data.settingsTabs.User">User</button>
-          <button @click="data.openSettings = data.settingsTabs.ProfilePic">Profile Pic</button>
-          <button @click="data.openSettings = data.settingsTabs.Theme">Theme Editor</button>
-          <button @click="data.openSettings = data.settingsTabs.Chats">Chats</button>
-          <button @click="data.openSettings = data.settingsTabs.Blocked">Blocked</button>
-          <button @click="data.openSettings = data.settingsTabs.Censored">Censored</button>
+          <button v-for="tab in Object.values(data.settingsTabs)" @click="data.openSettings = tab">{{tab}}</button>
+          
         </div>
         <div id="settingsMainPanel">
           <div v-if="data.openSettings === data.settingsTabs.User" class="settingsTab">
             <settings-row>
-              <button>Change username</button>
+              <button>Change username</button><input v-model="username"><button @click="changeUsername(username)">Change</button>
             </settings-row>
             <settings-row>
-              <button>Change password</button>
+              <button>Change password</button><input type="password" v-model="password"><button @click="changePassword(password)">Change</button>
             </settings-row>
             
             <settings-row>
@@ -62,6 +60,6 @@ export default {
         },
         censoredUsers() {
             return this.user.censored.map(userID => data.loadedUsers.get(userID))
-        }
+        },
     }
 }

@@ -25,6 +25,7 @@ export default {
             Shapes: Shapes,
             currentlyOpen: true,
             previewSize: 50,
+            fixing: false
         }
     },
     template: `
@@ -64,7 +65,7 @@ export default {
             <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
                     @click="shape.symmetry = !shape.symmetry">Symmetry
             </button>
-            <control-button v-if="[Shapes.Heart, Shapes.Polygon].includes(shape.shape)" :shapeid="shape.shapeID"
+            <control-button v-if="[Shapes.Heart, Shapes.Polygon, Shapes.Points].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.ControlPoint"/>
             <div v-if="[Shapes.Heart].includes(shape.shape)" class="shapeDivMainPanelSection">
               <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"
@@ -80,16 +81,12 @@ export default {
                 </div>
               </div>
             </div>
-<!--            <div v-if="[Shapes.Polygon].includes(shape.shape)" class="shapeDivMainPanelSection" style="flex-direction: row; flex-wrap: wrap">-->
-<!--                <button class="controlButton" v-for="n of parseInt(shape.numberPoints)" v-if="data.mode === data.Modes.ControlPoint" @click="shape.selectedPoint = n-1">Point {{ n }}</button>-->
-<!--            </div>-->
-            <div v-if="[Shapes.Points].includes(shape.shape)" class="shapeDivMainPanelSection">
+            <div v-if="[Shapes.Points].includes(shape.shape) && data.mode === data.Modes.ControlPoint" class="shapeDivMainPanelSection">
               <div v-for="n of shape.points.length" style="display: flex; justify-content: space-between">
                 <button @click="shape.selectPoint(n)" :style="{color: shape.selectedPoint === n ? 'red' : null}">{{n}}</button>
                 <button @click="shape.addPoint(n)">Add point</button>
                 <button @click="shape.removePoint(n)">Remove point</button>
               </div>
-              
             </div>
             <div class="sliderRow">
               <label>Color</label>
@@ -121,7 +118,8 @@ export default {
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()
-                data.shapesDirty = true
+                if (!this.fixing) data.shapesDirty = true
+                this.fixing = false
             }
         },
     },
@@ -136,5 +134,6 @@ export default {
     mounted() {
         this.drawPreview()
         fixShape(this.shape.shapeID)
+        this.fixing = true
     },
 }

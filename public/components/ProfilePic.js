@@ -20,6 +20,7 @@ export default {
 
             if (!data.loadedUsers.has(data.userID)) return
             if (data.loadedUsers.get(data.userID).censored.includes(props.userid)) return
+            if (!data.loadedUsers.has(props.userid)) return
             let shapes = data.loadedUsers.get(props.userid).profilePic
             if (!(shapes instanceof Map)) shapes = new Map(Object.entries(shapes))
             for (let shape of Array.from(shapes.values()).sort((a, b) => b.z - a.z)) {

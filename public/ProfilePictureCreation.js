@@ -304,7 +304,7 @@ class Points extends Shape {
         super(shapeID, x, y, color)
         this.shape = Shapes.Points
         this.points = []
-        this.selectedPoint = 0
+        this.selectedPoint = 1
         let startNumberPoints = 3
         let angle = 2*Math.PI/startNumberPoints
         let radius = 50
@@ -317,6 +317,7 @@ class Points extends Shape {
         data.mode = data.Modes.ControlPoint
     }
     addPoint(point) {
+        if (this.points.length >= 100) return
         let previous = this.points[point-1]
         let next = this.points[(point)%this.points.length]
         this.points.splice(point, 0, {x: (previous.x+next.x)/2, y: (previous.y+next.y)/2})

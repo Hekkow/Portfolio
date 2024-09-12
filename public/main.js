@@ -86,6 +86,16 @@ function connection() {
             case Type.READMESSAGE:
                 data.read.set(message.conversationID, Object.entries(message.read).map(([userID, messageID]) => ({userID: parseInt(userID), messageID: messageID})))
                 break
+            case Type.CHANGEUSERNAME:
+                if (message.username) {
+                    if (data.loadedUsers.has(message.userID)) data.loadedUsers.get(message.userID).username = message.username
+                    if (data.userID === message.userID) data.openModal = data.modals.None
+                }
+                else alert("username taken")
+                break
+            case Type.CHANGEPASSWORD:
+                alert("password changed")
+                break
         }
     }
 }
@@ -370,6 +380,7 @@ export function unblockUser(userID) {
     updateTitleNotifications()
 }
 export function logout() {
+    ws.send(JSON.stringify({type: Type.LOGOUT, sessionID: sessionID}))
     Cookies.remove(loginCookie)
     window.location.href = '/'
 }
@@ -404,6 +415,12 @@ export function uncensor(userID) {
     user.censored = user.censored.filter(id => id !== userID)
     data.activateCensor = userID
     ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
+}
+export function changeUsername(username) {
+    ws.send(JSON.stringify({type: Type.CHANGEUSERNAME, userID: data.userID, username: username}))
+}
+export function changePassword(password) {
+    ws.send(JSON.stringify({type: Type.CHANGEPASSWORD, userID: data.userID, password: password}))
 }
 
 $(window).on("beforeunload", function () {
