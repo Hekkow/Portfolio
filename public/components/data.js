@@ -29,7 +29,7 @@ export const data = Vue.reactive({
         Size: "Size",
         Rotation: "Rotation",
         Radius: "Radius",
-        Points: "Points",
+        NumberPoints: "Number of Points",
         Inset: "Inset",
         ControlPoint: "Control Point"
     },
@@ -51,5 +51,6 @@ export const data = Vue.reactive({
         Theme: 'Theme'
     },
     openSettings: 'User',
-    theme: new Map()
+    theme: new Map(),
+    shapesDirty: false
 })

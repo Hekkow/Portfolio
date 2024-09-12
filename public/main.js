@@ -1,6 +1,6 @@
 import App from '/components/App.js'
 import {data} from '/components/data.js'
-import {setupProfilePicCreator} from "./ProfilePictureCreation.js";
+
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
@@ -77,7 +77,6 @@ function connection() {
                 data.loadedUsers.get(message.userID).blocked.push(data.userID)
                 break
             case Type.UNBLOCKUSER:
-                // u is user, which i can't use because it's already declared in another case???????
                 let u = data.loadedUsers.get(message.userID)
                 u.blocked.splice(u.blocked.indexOf(data.userID), 1)
                 break
@@ -348,6 +347,7 @@ export function saveProfilePicture() {
     updateProfilePicture(data.userID, data.shapes)
 }
 function updateProfilePicture(userID, profilePic) {
+    if (userID === data.userID) data.shapesDirty = false
     data.loadedUsers.get(userID).profilePic = profilePic
     data.loadedUsers = new Map(data.loadedUsers) // needed for reactivity
 }
@@ -405,6 +405,12 @@ export function uncensor(userID) {
     data.activateCensor = userID
     ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
 }
+
+$(window).on("beforeunload", function () {
+    if (!data.shapesDirty) return
+    return 'If you leave before saving, your changes will be lost.'
+})
+
 window.rejoinGeneral = rejoinGeneral
 window.getConversationName = getConversationName
 window.logout = logout

@@ -12,7 +12,7 @@ export default {
             data: data,
             Shapes: Shapes,
             vertical: [data.Modes.Height, data.Modes.Size, data.Modes.Location],
-            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Location, data.Modes.Rotation, data.Modes.Radius, data.Modes.Points, data.Modes.Inset],
+            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Location, data.Modes.Rotation, data.Modes.Radius, data.Modes.NumberPoints, data.Modes.Inset],
         }
     },
     template: `

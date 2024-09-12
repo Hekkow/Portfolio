@@ -58,7 +58,7 @@ export default {
             <control-button v-if="![Shapes.Circle].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Rotation"/>
             <control-button v-if="[Shapes.Star, Shapes.Polygon].includes(shape.shape)" :shapeid="shape.shapeID"
-                            :mode="data.Modes.Points"/>
+                            :mode="data.Modes.NumberPoints"/>
             <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Inset"/>
             <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
@@ -114,6 +114,7 @@ export default {
                 // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()
+                data.shapesDirty = true;
             }
         },
     },

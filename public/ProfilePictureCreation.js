@@ -40,7 +40,7 @@ export function setupProfilePicCreator() {
         }
         else if (data.mode === data.Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
         else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
-        else if (data.mode === data.Modes.Points) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
+        else if (data.mode === data.Modes.NumberPoints) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
         else if (data.mode === data.Modes.Inset) data.shapes.get(currentShapeID).addInset(deltaMouse.x/50)
         else if (data.mode === data.Modes.ControlPoint) data.shapes.get(currentShapeID).addControlPoint(deltaMouse.x, deltaMouse.y)
     })
@@ -88,10 +88,10 @@ export function drawShape(ctx, shape, scale, reset) {
         case Shapes.Star:
             ctx.beginPath()
             ctx.moveTo(0, shape.radius)
-            for (let i = 0; i < parseInt(shape.points); i++) {
-                ctx.rotate(Math.PI / parseInt(shape.points))
+            for (let i = 0; i < parseInt(shape.numberPoints); i++) {
+                ctx.rotate(Math.PI / parseInt(shape.numberPoints))
                 ctx.lineTo(0, shape.radius * shape.inset)
-                ctx.rotate(Math.PI / parseInt(shape.points))
+                ctx.rotate(Math.PI / parseInt(shape.numberPoints))
                 ctx.lineTo(0, shape.radius)
             }
             ctx.closePath()
@@ -120,7 +120,12 @@ export function drawShape(ctx, shape, scale, reset) {
             break
         case Shapes.Polygon: {
             ctx.beginPath()
-            ctx.moveTo(0, 0)
+            ctx.moveTo(shape.points[0].x, shape.points[0].y)
+            for (let point of shape.points) {
+                ctx.lineTo(point.x, point.y)
+            }
+            ctx.closePath()
+            ctx.fill()
             if ($(ctx.canvas).is('#editCanvas')) {
                 for (let i = 0; i < parseInt(shape.numberPoints); i++) {
                     let point = shape.points[i]
@@ -222,12 +227,12 @@ class Star extends Shape {
         super(shapeID, x, y, color)
         this.shape = Shapes.Star
         this.radius = 20
-        this.points = 5
+        this.numberPoints = 5
         this.inset = 5
     }
     addPoint(p) {
-        this.points += p
-        if (this.points < 2) this.points = 2
+        this.numberPoints += p
+        if (this.numberPoints < 2) this.numberPoints = 2
     }
     addInset(i) {
         this.inset += i
