@@ -52,5 +52,7 @@ export const data = Vue.reactive({
     },
     openSettings: 'User',
     theme: new Map(),
-    shapesDirty: false
+    shapesDirty: false,
+    messagesAdded: false,
+    distanceBeforeRequest: 200
 })

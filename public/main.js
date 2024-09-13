@@ -97,6 +97,12 @@ function connection() {
             case Type.CHANGEPASSWORD:
                 alert("password changed")
                 break
+            case Type.REQUESTMOREMESSAGES:
+                data.messagesAdded = true
+                let conversation = data.loadedConversations.get(message.conversationID)
+                conversation.texts = message.texts.concat(conversation.texts)
+                conversation.allLoaded = message.allLoaded
+                break
         }
     }
 }
@@ -331,11 +337,29 @@ export function renameGroupChat(newName) {
 export function transferLeader() {
     ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.usersRadio, originalLeader: data.userID }))
 }
-export function scrollToBottom() {
+export function scrollToBottom(dontScroll, amount) { // should be named something other than dontscroll
     let messages = $('#messages')
-    // this doesnt work when loading chats because it starts at top and instantly returns
-    // if (messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > 100) return
-    messages.scrollTop(messages.prop("scrollHeight"))
+    if (amount) messages.scrollTop(amount)
+    else {
+        if (dontScroll && messages.prop("scrollHeight") - (messages.scrollTop() + messages.height()) > messages.outerHeight()) return
+        messages.scrollTop(messages.prop("scrollHeight"))
+    }
+}
+let canRequestMoreMessages = true
+function startMessageRequestCooldown() {
+    canRequestMoreMessages = false
+    setTimeout(() => {canRequestMoreMessages = true}, 100)
+}
+export function onMessagesScroll(scrollTop) {
+    if (scrollTop <= data.distanceBeforeRequest) {
+        let conversation = data.loadedConversations.get(data.openConversationID)
+        if (!conversation.allLoaded && canRequestMoreMessages && conversation.texts.length >= 50) {
+            ws.send(JSON.stringify({type: Type.REQUESTMOREMESSAGES, conversationID: data.openConversationID, numberMessages: conversation.texts.length, messageID: conversation.texts[0]
+                    .messageID}))
+            startMessageRequestCooldown()
+        }
+    }
+
 }
 function isConversationWithBlocked(conversationID) {
     let conversation = data.loadedConversations.get(conversationID)

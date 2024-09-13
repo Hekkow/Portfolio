@@ -2,7 +2,6 @@ let loginCookie = 'sessionID'
 let openConversationCookie = 'openConversation'
 let themeCookie = 'theme'
 let port = 6969
-// let host = '192.168.2.17'
 let host = 'localhost'
 let Type = {
     LOGIN: 'LOGIN',
@@ -27,7 +26,8 @@ let Type = {
     READMESSAGE: 'READMESSAGE',
     CENSORUPDATE: 'CENSORUPDATE',
     CHANGEUSERNAME: 'CHANGEUSERNAME',
-    CHANGEPASSWORD: 'CHANGEPASSWORD'
+    CHANGEPASSWORD: 'CHANGEPASSWORD',
+    REQUESTMOREMESSAGES: 'REQUESTMOREMESSAGES'
 
 }
 let direct = 0

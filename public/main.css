@@ -54,12 +54,14 @@ button:active {
     flex-grow: 1;
     overflow: auto;
     position: relative;
-    padding-bottom: 10px;
+    padding-bottom: 40px;
 }
 .typingBar {
     margin-top: auto;
     text-overflow: ellipsis;
     overflow: hidden;
+    height: 100px;
+    background-color: red;
 }
 .replyBar {
     margin-top: auto;

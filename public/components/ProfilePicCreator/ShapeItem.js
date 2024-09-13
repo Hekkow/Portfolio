@@ -68,7 +68,7 @@ export default {
             <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
                     @click="shape.symmetry = !shape.symmetry">Symmetry
             </button>
-            <control-button v-if="[Shapes.Heart, Shapes.Polygon, Shapes.Points].includes(shape.shape)" :shapeid="shape.shapeID"
+            <control-button v-if="[Shapes.Heart, Shapes.Points].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.ControlPoint"/>
             <div v-if="[Shapes.Heart].includes(shape.shape)" class="shapeDivMainPanelSection">
               <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"

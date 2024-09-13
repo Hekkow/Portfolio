@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {getConversationName, scrollToBottom} from "../main.js";
+import {onMessagesScroll, scrollToBottom} from "../main.js";
 
 export default {
     data() {
@@ -9,7 +9,7 @@ export default {
     },
     template: `
       <div class="panelArea" style="overflow: auto;">
-          <div id="messages">
+          <div id="messages" @scroll="onMessagesScroll($event.target.scrollTop)" ref="messages">
             <message v-if="data.openConversationID !== -1" v-for="(message, index) in texts" :message="message" :showProfilePic="showProfilePic(message, index)" @reply-clicked="replyClicked" :ref="'message'"/>
           </div>
           <typing-bar></typing-bar>
@@ -18,7 +18,7 @@ export default {
       </div>
     `,
     methods: {
-        getConversationName,
+        onMessagesScroll,
         replyClicked(messageID) {
             data.focusMessageInput = true
             this.$refs.message.find(message => message.message.messageID === messageID).replyHighlight()
@@ -32,15 +32,26 @@ export default {
         texts() {
             if (data.openConversationID === -1) return
             if (!data.loadedConversations.has(data.openConversationID)) return
-            return data.loadedConversations.get(data.openConversationID).texts;
+            return data.loadedConversations.get(data.openConversationID).texts
         },
-
+        textsLength() {
+            return this.texts ? this.texts.length : 0
+        }
     },
     watch: {
-        texts: {
+        textsLength: {
             immediate: true,
             handler() {
-                this.$nextTick(() => scrollToBottom())
+                if (!data.messagesAdded) {
+                    this.$nextTick(() => scrollToBottom(true))
+                }
+                else {
+                    let previousScrollHeight = this.$refs.messages.scrollHeight
+                    this.$nextTick(() => {
+                        scrollToBottom(false, this.$refs.messages.scrollHeight-(previousScrollHeight-data.distanceBeforeRequest))
+                    })
+                }
+                data.messagesAdded = false
             }
         },
         'data.openConversationID': {

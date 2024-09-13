@@ -98,6 +98,7 @@ class Database {
             {conversationID: message.conversationID},
             {$push: {texts: {userID: message.userID, message: message.message, replyingTo: message.replyingTo, messageID: messageID, date: message.date}}},
             {returnDocument: "after"})
+        if (conversation.texts.length === 1) await this.conversations.findOneAndUpdate({conversationID: message.conversationID}, {$set: {firstMessageID: messageID}})
         await this.readMessages.updateOne({userID: message.userID, conversationID: message.conversationID}, {$set: {messageID: messageID}})
         await this.users.updateMany(
             {userID: {$in: conversation.users} },
@@ -106,11 +107,13 @@ class Database {
         return conversation
     }
     async deleteMessage(conversationID, messageID) {
-        return await this.conversations.findOneAndUpdate(
+        let conversation = await this.conversations.findOneAndUpdate(
             {conversationID: conversationID},
             {$pull: {texts: {messageID: messageID}}},
             {returnDocument: "after"}
         )
+        if (conversation.firstMessageID === messageID) await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {firstMessageID: conversation.texts[0].messageID}})
+        return conversation
     }
     async editMessage(conversationID, messageID, message) {
         return await this.conversations.findOneAndUpdate(
@@ -128,8 +131,18 @@ class Database {
         return conversation
     }
     async findConversation(conversationID) {
-        let conversation = await this.conversations.findOne({conversationID: conversationID})
+        let maximumLoad = 50
+        let conversation = await this.conversations.findOne({conversationID: conversationID}, {projection: {texts: {$slice:-(maximumLoad+1)}}})
+        if (!conversation) return null
+        conversation.allLoaded = conversation?.texts.length <= maximumLoad
+        conversation.texts = conversation.texts.slice(0, maximumLoad)
         return conversation
+    }
+    async getMoreMessages(conversationID, numberMessages, messageID) {
+        let maximumLoad = 50
+        let conversation = await this.conversations.findOne({conversationID: conversationID}, {projection: {texts: {$slice:[-numberMessages-(maximumLoad), maximumLoad]}}})
+        let allLoaded = conversation.firstMessageID >= conversation.texts[0].messageID
+        return {texts: conversation.texts.filter(text => text.messageID < messageID), allLoaded: allLoaded}
     }
     async findConversations(conversationIDs) {
         let promises = conversationIDs.map(conversationID => this.findConversation(conversationID))

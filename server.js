@@ -72,6 +72,9 @@ app.ws('/main', (ws, req) => {
             case Helper.Type.CHANGEPASSWORD:
                 changePassword(ws, data)
                 break
+            case Helper.Type.REQUESTMOREMESSAGES:
+                sendMoreMessages(ws, data)
+                break
         }
     })
     ws.on('close', () => disconnect(ws))
@@ -177,6 +180,11 @@ function sendRequestedConversation(ws, data) { // conversationID can be users ar
         Database.findUsersWithID(conversation.users.filter(user => !data.loadedUsers.includes(user))).then(newUsers => {
             ws.send(JSON.stringify({type: Helper.Type.REQUESTCONVERSATION, conversation: conversation, newUsers: newUsers}))
         })
+    })
+}
+function sendMoreMessages(ws, data) {
+    Database.getMoreMessages(data.conversationID, data.numberMessages, data.messageID).then(newData => {
+        ws.send(JSON.stringify({type: Helper.Type.REQUESTMOREMESSAGES, conversationID: data.conversationID, texts: newData.texts, allLoaded: newData.allLoaded}))
     })
 }
 function inviteToGroupChat(data) {
