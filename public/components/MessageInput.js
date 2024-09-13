@@ -1,4 +1,4 @@
-import {sendMessage} from "../main.js";
+import {messageInputPasted, sendMessage} from "../main.js";
 import {data} from "./data.js";
 
 export default {
@@ -8,6 +8,7 @@ export default {
         }
     },
     methods: {
+        messageInputPasted,
         sendMessage,
         focusTextArea() {
             this.$nextTick(() => {
@@ -44,7 +45,7 @@ export default {
       <div id="messageInputDiv" v-show="data.openConversationID !== -1">
         <textarea id="messageInput" ref="messageInput" rows=1 @input="() => {
             resizeInput()
-        }"></textarea>
+        }" @paste="function(event) {messageInputPasted(event)}"></textarea>
         <button id="messageSendButton" @click="sendMessage()"></button>
       </div>
     `,

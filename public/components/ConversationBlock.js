@@ -25,10 +25,11 @@ export default {
           </div>
         </div>
 
-        <button class="closeButton borderedButton squareButton" v-if="blockHovered"
+        <button class="closeButton squareButton" v-if="blockHovered"
                 @click.stop="leaveConversation(conversation.conversationID, data.userID)">x
         </button>
       </button>
+      <hr>
     `,
     props: {
         conversation: {

@@ -1,12 +1,14 @@
 #profilePicCreatorMainPanel {
     display: flex;
     max-height: 100%;
+    height: 600px;
 }
 #shapesList {
-    width: 300px;
-    overflow: auto;
+    width: 400px;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
+    position: relative;
 }
 
 .controls {
@@ -23,10 +25,14 @@
     flex-direction: row;
     line-height: 30px;
     flex-basis: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-top: 5px;
 }
 #canvasArea {
     display: flex;
-    flex-direction: column;
+    /*flex-direction: column;*/
+    align-items: center;
 }
 .canvasAreaRow {
     display: flex;
@@ -42,6 +48,10 @@
     min-width: 50px;
     min-height: 50px;
 }
+#canvasAreaCentered {
+    display: flex;
+    flex-direction: column;
+}
 #canvasCircle {
     background-color: red;
     clip-path: circle(150px at center);
@@ -50,9 +60,13 @@
     overflow: auto;
     display: flex;
     flex-direction: column;
+    padding-top: 10px;
 }
 .controlButton {
     flex-basis: 50%;
+    text-align: left;
+    padding-left: 10px;
+    height: 35px;
 }
 .shapeDiv {
     display: flex;
@@ -62,6 +76,8 @@
     overflow: hidden;
     background-color: var(--modal-color);
     flex-shrink: 0;
+    margin: 10px;
+    padding: 10px 0 10px 0;
 }
 .shapeDivLeftPanel {
     width: 50px;

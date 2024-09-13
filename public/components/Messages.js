@@ -8,7 +8,6 @@ export default {
         }
     },
     template: `
-      <div class="panelTitle">{{data.openConversationID !== -1 ? getConversationName(data.openConversationID) : ""}}</div>
       <div class="panelArea" style="overflow: auto;">
           <div id="messages">
             <message v-if="data.openConversationID !== -1" v-for="(message, index) in texts" :message="message" :showProfilePic="showProfilePic(message, index)" @reply-clicked="replyClicked" :ref="'message'"/>

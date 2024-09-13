@@ -21,13 +21,15 @@ body {
 }
 #loginFormContainerOuter {
     width: 600px;
-    height: 400px;
+    /*height: 400px;*/
     background-color: var(--modal-color);
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: var(--border-radius);
     border: var(--border) var(--main-color);
+    flex-direction: column;
+    padding: 50px 0 50px 0;
     /*box-shadow: 0 10px 20px 5px #9ad2ff; !* horizontal vertical blur spread *!*/
 }
 #loginFormContainerInner {
@@ -65,7 +67,7 @@ body {
     border: var(--border) var(--main-color);
     padding: 0;
     transition-duration: 0.3s;
-    font-weight: bold;
+    /*font-weight: bold;*/
     height: 40px;
     box-sizing: border-box;
     text-indent: 15px;

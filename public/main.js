@@ -423,11 +423,20 @@ export function changeUsername(username) {
 export function changePassword(password) {
     ws.send(JSON.stringify({type: Type.CHANGEPASSWORD, userID: data.userID, password: password}))
 }
-
-$(window).on("beforeunload", function () {
-    if (!data.shapesDirty) return
-    return 'If you leave before saving, your changes will be lost.'
-})
+export function messageInputPasted(event) {
+    let items = event.clipboardData.items
+    for (let i = 0; i < items.length; i++) {
+        if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
+            event.preventDefault()
+            alert('thing pasted')
+        }
+    }
+}
+//
+// $(window).on("beforeunload", function () {
+//     if (!data.shapesDirty) return
+//     return 'If you leave before saving, your changes will be lost.'
+// })
 
 window.rejoinGeneral = rejoinGeneral
 window.getConversationName = getConversationName

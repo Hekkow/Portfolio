@@ -14,13 +14,11 @@
     <popup></popup>
     <div id="mainContainer">
         <div id="currentlyOnlineUsersPanel" class="panel">
-            <div class="panelTitle">Users</div>
             <div class="panelArea">
                 <user-list type="user-block"></user-list>
             </div>
         </div>
         <div id="activeConversationsPanel" class="panel">
-            <div class="panelTitle">Active Conversations</div>
             <div class="panelArea">
                 <div id="activeConversationsMain">
                     <user-list type="conversation-block" v-if="data.userID !== -1">
@@ -36,12 +34,7 @@
             <messages></messages>
         </div>
         <div id="chatInfoPanel" class="panel">
-            <div class="panelTitle">Chat Info <group-chat-buttons></group-chat-buttons></div>
-
-            <div class="panelArea" style="border: 0">
-
-                <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
-            </div>
+            <chat-info-panel></chat-info-panel>
         </div>
     </div>
     <user-profile-popup></user-profile-popup>

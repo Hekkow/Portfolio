@@ -24,7 +24,7 @@ export default {
             data: data,
             Shapes: Shapes,
             currentlyOpen: true,
-            previewSize: 50,
+            previewSize: 40,
             fixing: false
         }
     },
@@ -35,10 +35,13 @@ export default {
           <button @click="currentlyOpen = !currentlyOpen" class="shapeDivLeftPanelButton">
             {{ currentlyOpen ? '-' : '+' }}
           </button>
-          <div class='userPic'
-               :style="'clip-path: circle(' + previewSize / 2 + 'px at center); width: ' + previewSize + 'px;'">
-            <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
+          <div class="shapeDivLeftPanelButton">
+            <div class='userPic'
+                 :style="'clip-path: circle(' + previewSize / 2 + 'px at center); width: ' + previewSize + 'px;'">
+              <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
+            </div>
           </div>
+          
           <div class="shapeItemHandle shapeDivLeftPanelButton">DRAG</div>
         </div>
 

@@ -5,7 +5,6 @@ html {
 * {
     font-size: var(--main-font-size);
     scrollbar-width: thin;
-
 }
 #app {
     display: flex;
@@ -42,6 +41,7 @@ button:active {
     display: flex;
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
+    overflow: hidden;
 }
 #currentConversation {
     display: flex;
@@ -111,7 +111,18 @@ button:active {
     height: var(--item-block-height);
     min-height: var(--item-block-height);
     padding: var(--profile-pic-margin);
+}
+.conversationBlock {
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+hr {
+    /*width: 80%;*/
+    border: 0;
+    border-top: 1px solid var(--main-color);
+    /*height: 3px;*/
 
+    margin: 3px 13px;
 }
 #currentlyOnlineUsersPanel {
     width: var(--online-users-width);
@@ -189,7 +200,7 @@ button:active {
     display: flex;
     border-right: var(--border) var(--main-color);
     flex-direction: column;
-    max-height: calc(100% - var(--panel-title-height) - var(--border-thickness))
+    /*max-height: calc(100% - var(--panel-title-height) - var(--border-thickness))*/
 }
 .messageDiv {
     width: 100%;
@@ -290,11 +301,15 @@ button:active {
     width: 600px;
     height: 400px;
     background-color: var(--modal-color);
+    border: var(--border) var(--main-color);
+    border-radius: var(--border-radius);
 }
 .popup {
     width: 300px;
     height: 200px;
     background-color: var(--popup-color);
+    border: var(--border) var(--main-color);
+    border-radius: var(--border-radius);
 }
 .modalTitle {
     width: 100%;
@@ -406,19 +421,25 @@ canvas {
     border: var(--border) var(--accent-color);
     background-color: var(--modal-color);
     z-index: 15;
-    border-radius: var(--border-radius)
+    border-radius: var(--border-radius);
+    overflow: hidden;
 }
 .userPopupButton {
     background-color: var(--button-background-color);
+    text-align: left;
+    padding-left: 10px;
 }
 .userPopupButton:hover {
     background-color: var(--button-background-hover-color);
 }
 #settings {
     min-width: 600px;
-    height: 400px;
+    min-height: 400px;
     background-color: var(--modal-color);
     display: flex;
+    border: var(--border) var(--main-color);
+    border-radius: var(--border-radius);
+    overflow: hidden;
 }
 
 #settingsLeftPanel {
@@ -436,12 +457,15 @@ canvas {
     width: 100%;
     height: 100%;
     flex-direction: column;
+    text-align: center;
 }
 .settingsRow {
     min-height: 30px;
     display: flex;
     /*justify-content: center;*/
     align-items: center;
+    justify-content: space-between;
+
 }
 .userRow {
     height: 40px;
