@@ -5,7 +5,6 @@ import ProfilePic from "./ProfilePic.js"
 import ConversationBlock from "./ConversationBlock.js";
 import Message from "./Message.js";
 import Messages from "./Messages.js";
-import HoverButtons from "./HoverButtons.js";
 import MessageInput from "./MessageInput.js";
 import ParticipantBlock from "./ParticipantBlock.js";
 import GroupChatButtons from "./GroupChatButtons.js";
@@ -32,6 +31,7 @@ import ThemeEditor from "./ThemeEditor.js";
 import ThemeEditorRow from "./ThemeEditorRow.js";
 import ControlButton from "./ProfilePicCreator/ControlButton.js";
 import ChatInfoPanel from "./ChatInfoPanel.js";
+import PopupButton from "./PopupButton.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -44,6 +44,14 @@ const app = Vue.createApp({
                 updateTitleNotifications()
                 updateOpenConversationCookie()
 
+            }
+        },
+        'data.openModal': {
+            handler(newValue, oldValue) {
+                console.log(oldValue === data.modals.Settings, data.openSettings === data.settingsTabs.ProfilePic, data.shapesDirty)
+                if (oldValue === data.modals.Settings && data.openSettings === data.settingsTabs.ProfilePic && data.shapesDirty) {
+                    alert("oh no")
+                }
             }
         }
     },
@@ -62,7 +70,6 @@ app.component('data', data)
 app.component('conversation-block', ConversationBlock)
 app.component('message', Message)
 app.component('messages', Messages)
-app.component('hover-buttons', HoverButtons)
 app.component('message-input', MessageInput)
 app.component('participant-block', ParticipantBlock)
 app.component('group-chat-buttons', GroupChatButtons)
@@ -88,4 +95,5 @@ app.component('theme-editor', ThemeEditor)
 app.component('theme-editor-row', ThemeEditorRow)
 app.component('control-button', ControlButton)
 app.component('chat-info-panel', ChatInfoPanel)
+app.component('popup-button', PopupButton)
 export default app

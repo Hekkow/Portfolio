@@ -15,8 +15,8 @@ export default {
         inviteToGroupChat,
     },
     template: `
-      <div v-show="data.openModal !== data.modals.None || data.userID === -1" class="modalBackground" @mousedown="function(event) {
-          if (event.target.classList.contains('modalBackground')) {
+      <div v-show="data.openModal !== data.modals.None || data.userID === -1" class="modalBackground" :style="{backgroundColor: data.userID === -1 ? 'var(--loading-background-color)' : null}" @mousedown="function(event) {
+          if (event.target.classList.contains('modalBackground') && event.button === 0) {
               data.openModal = data.modals.None
           }
       }">

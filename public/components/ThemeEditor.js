@@ -11,8 +11,8 @@ export default {
     template: `
         <theme-editor-row :e="'Main color'"/>
         <theme-editor-row :e="'Accent color'"/>
-        <button @click="saveTheme()">Save</button>
-        <button @click="deleteTheme()">Delete (refresh to see)</button>
+        <button class="settingsButton" @click="saveTheme()">Save</button>
+        <button class="settingsButton" @click="deleteTheme()">Delete (refresh to see)</button>
     `,
     mounted() {
         this.root = document.querySelector(':root')

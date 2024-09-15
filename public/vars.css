@@ -1,20 +1,14 @@
 :root {
     --line-height: 23px;
     --lines: 6;
-    --accent-color: #4ab1ef;
-    --main-color: #1589e4;
+
     --reply-color: #e63066;
-    --modal-color: white;
     --popup-color: white;
-    --modal-background-color: rgba(110, 165, 239, 0.5);
+
     --message-background-color: white;
-    --button-background-color: white;
-    --button-background-hover-color: var(--main-color);
-    --button-text-hover-color: var(--button-background-color);
-    --button-background-active-color: var(--accent-color);
+
     --loading-overlay-background-color: black;
-    --text-input-background-color: white;
-    --border-radius: 10px;
+
     --border-thickness: 3px;
     --border: var(--border-thickness) solid;
     --padding-bottom: 14px;
@@ -27,8 +21,57 @@
     --max-message-width: 500px;
     --panel-title-height: 70px;
     --item-block-height: 60px;
-    --background-color: white;
+
     --main-font-size: 17px;
     --main-font: Arial, Helvetica;
     --button-border-thickness: 2px;
+
+    --accent-color: #4ab1ef;
+    --main-color: #1589e4;
+    --background-color: green;
+    --modal-overlay-background-color: red;
+    --loading-background-color: blue;
+    --app-background-color: yellow;
+    --app-text-color: black;
+    --message-bubble-background-color: blue;
+    --message-bubble-text-color: white;
+    --reply-bubble-background-color: red;
+    --reply-bubble-text-color: black;
+    --message-input-background-color: blue;
+    --message-submit-background-color: red;
+    --message-submit-border-color: black;
+    --message-input-border-color: black;
+    --item-block-background-color: black;
+    --item-block-background-hover-color: white;
+    --item-block-background-active-color: green;
+    --item-block-text-color: white;
+    --item-block-text-hover-color: black;
+    --item-block-text-active-color: blue;
+    --scrollbar-thumb: #c0c0c0;
+    --login-background-color: black;
+    --login-modal-background-color: blue;
+    --login-text-color: white;
+    --login-input-background-color: white;
+    --modal-background-color: green;
+    --modal-text-color: red;
+    --settings-text-color: white;
+    --button-background-color: white;
+    --button-background-hover-color: red;
+    --button-text-hover-color: var(--button-background-color);
+    --button-background-active-color: var(--accent-color);
+    --small-button-border-radius: 5px;
+    --shape-item-background-color: yellow;
+    --shape-item-text-color: green;
+    --user-popup-background-color: blue;
+    --user-popup-text-color: white;
+    --popup-button-background-color: black;
+    --popup-button-text-color: white;
+    --dropdown-background-color: green;
+    --dropdown-text-color: yellow;
+    --border-radius: 10px;
+    --input-border-color: blue;
+    --input-border-focus-color: red;
+    --input-background-color: white;
+    --input-border-radius: 7px;
+    --input-border-thickness: 3px;
 }

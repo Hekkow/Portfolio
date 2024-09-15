@@ -10,6 +10,7 @@ if (sessionID) {
         }
     })
 }
+let loadingAnimation
 $('#loginForm').submit(function(e) {
     let username = $('#usernameInput').val()
     let password = $('#passwordInput').val()
@@ -25,21 +26,23 @@ $('#loginForm').submit(function(e) {
     }
     startLoadingAnimation()
     $.post('attemptLogin', $(this).serialize(), (response) => {
-        if (response.sessionID) {
-            if (response.sessionID === -1) {
-                alert("Invalid username or password")
-                Cookies.remove(loginCookie)
-                return
-            }
-            Cookies.set(loginCookie, response.sessionID)
-            window.location.href = '/main'
+        clearInterval(loadingAnimation)
+        $('#loginButton').text('Login')
+        if (!response.sessionID) return
+        if (response.sessionID === -1) {
+            alert("Invalid username or password")
+            Cookies.remove(loginCookie)
+
+            return
         }
+        Cookies.set(loginCookie, response.sessionID)
+        window.location.href = '/main'
+
     })
 });
 function startLoadingAnimation() {
     let button = $('#loginButton')
-    setInterval(() => {
+    loadingAnimation = setInterval(() => {
         button.attr('Value', button.attr('Value') + ".")
     }, 1000)
-
 }

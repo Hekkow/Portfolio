@@ -16,32 +16,38 @@ export default {
         }
     },
     template: `
-        <div id="profilePicCreatorMainPanel">
-          <div id="canvasArea">
-            <div id="canvasAreaCentered">
-              <div id="canvasAreaTop" class="canvasAreaRow"><div v-if="showArrows && vertical.includes(data.mode)">+</div></div>
-
-              <div id="canvasAreaMiddle" class="canvasAreaRow">
-                <div class="canvasAreaColumn">
-                  <div v-if="showArrows && horizontal.includes(data.mode)">-</div>
-                </div>
-                <div id="canvasCircle"><canvas width="300" height="300" id="editCanvas"></canvas></div>
-                <div class="canvasAreaColumn">
-                  <div v-if="showArrows && horizontal.includes(data.mode)">+</div>
-                </div>
-              </div>
-
-              <div id="canvasAreaBottom" class="canvasAreaRow"><div  v-if="showArrows && vertical.includes(data.mode)">-</div></div>
-
+      <div id="profilePicCreatorMainPanel">
+        <div id="canvasArea">
+          <div id="canvasAreaCentered">
+            <div id="canvasAreaTop" class="canvasAreaRow">
+              <div v-if="showArrows && vertical.includes(data.mode)">+</div>
             </div>
-        </div>
-            
-          <div id="controlPanel">
-            <button id="createShapeButton" @click="createShape()">Create new shape</button>
-            <button id="saveButton" @click="saveProfilePicture()">Save profile picture</button>
-            <shapes-list></shapes-list>
+
+            <div id="canvasAreaMiddle" class="canvasAreaRow">
+              <div class="canvasAreaColumn">
+                <div v-if="showArrows && horizontal.includes(data.mode)">-</div>
+              </div>
+              <div id="canvasCircle">
+                <canvas width="300" height="300" id="editCanvas"></canvas>
+              </div>
+              <div class="canvasAreaColumn">
+                <div v-if="showArrows && horizontal.includes(data.mode)">+</div>
+              </div>
+            </div>
+
+            <div id="canvasAreaBottom" class="canvasAreaRow">
+              <div v-if="showArrows && vertical.includes(data.mode)">-</div>
+            </div>
+
           </div>
         </div>
+
+        <div id="controlPanel">
+          <button class="settingsButton" @click="createShape()">Create new shape</button>
+          <button class="settingsButton" @click="saveProfilePicture()">Save profile picture</button>
+          <shapes-list></shapes-list>
+        </div>
+      </div>
     `,
     updated() {
         if (data.openSettings !== data.settingsTabs.ProfilePic || data.userID === -1) return

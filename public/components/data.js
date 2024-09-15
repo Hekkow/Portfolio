@@ -38,7 +38,17 @@ export const data = Vue.reactive({
     popups: {
         None: 'None',
         Blocked: 'Blocked',
-        LongMessage: 'LongMessage'
+        LongMessage: 'LongMessage',
+        NotEnoughPoints: 'NotEnoughPoints',
+        TooManyPoints: 'TooManyPoints',
+        TooManyShapes: 'TooManyShapes',
+        UsernameTaken: 'UsernameTaken',
+        MissingUsername: 'MissingUsername',
+        MissingPassword: 'MissingPassword',
+        UsernameChanged: 'UsernameChanged',
+        PasswordChanged: 'PasswordChanged',
+        InvalidLoginInfo: 'InvalidLoginInfo',
+        ImagePasted: 'ImagePasted'
     },
     openPopup: 'None',
     activateCensor: -1,
@@ -54,5 +64,8 @@ export const data = Vue.reactive({
     theme: new Map(),
     shapesDirty: false,
     messagesAdded: false,
-    distanceBeforeRequest: 200
+    distanceBeforeRequest: 200,
+    maxShapes: 30,
+    maxPoints: 50,
+    minPoints: 3,
 })

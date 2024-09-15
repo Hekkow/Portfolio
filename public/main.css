@@ -5,6 +5,7 @@ html {
 * {
     font-size: var(--main-font-size);
     scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--app-background-color);
 }
 #app {
     display: flex;
@@ -17,6 +18,9 @@ html, body, #app{
     height: 100%;
     margin: 0;
     padding: 0;
+}
+body {
+    background-color: var(--background-color);
 }
 button {
     outline: 0;
@@ -33,6 +37,16 @@ button:hover {
 button:active {
     transition: 0s;
     background-color: var(--button-background-active-color);
+}
+input, select {
+    background-color: var(--input-background-color);
+    border: var(--input-border-thickness) solid var(--main-color);
+    outline: 0;
+    border-radius: var(--input-border-radius)
+}
+input:focus, select:focus {
+    /*border: var(--input-border-thickness) solid var(--accent-color);*/
+    outline: 0;
 }
 /* main panels */
 #mainContainer {
@@ -55,6 +69,7 @@ button:active {
     overflow: auto;
     position: relative;
     padding-bottom: 40px;
+    background-color: var(--app-background-color);
 }
 .typingBar {
     margin-top: auto;
@@ -102,6 +117,7 @@ button:active {
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
+    background-color: var(--app-background-color);
 }
 .itemBlock {
     display: flex;
@@ -113,6 +129,16 @@ button:active {
     height: var(--item-block-height);
     min-height: var(--item-block-height);
     padding: var(--profile-pic-margin);
+    background-color: var(--app-background-color);
+    color: var(--app-text-color);
+}
+.itemBlock:hover {
+    background-color: var(--item-block-background-hover-color);
+    color: var(--item-block-text-hover-color);
+}
+.itemBlock:active {
+    background-color: var(--item-block-background-active-color);
+    color: var(--item-block-text-active-color);
 }
 .conversationBlock {
     padding-left: 10px;
@@ -187,6 +213,7 @@ hr {
     text-align: center;
     vertical-align: middle;
     border-bottom: var(--border) var(--main-color);
+    background-color: var(--app-background-color);
 }
 .panelList {
     display: flex;
@@ -202,6 +229,7 @@ hr {
     display: flex;
     border-right: var(--border) var(--main-color);
     flex-direction: column;
+    background-color: var(--app-background-color);
     /*max-height: calc(100% - var(--panel-title-height) - var(--border-thickness))*/
 }
 .messageDiv {
@@ -213,7 +241,7 @@ hr {
     position: relative;
     flex-direction: row;
     padding-top: 7px;
-    background-color: var(--message-background-color);
+    background-color: var(--app-background-color);
     transition: background-color 1s;
 }
 .messageDiv.highlighted {
@@ -233,11 +261,14 @@ hr {
     padding: 10px;
     margin: 0;
     position: relative;
+    background-color: var(--message-bubble-background-color);
+    color: var(--message-bubble-text-color);
 }
 .replyBubble {
     position: relative;
     margin: -20px -20px 10px 0;
-    background-color: var(--message-background-color);
+    background-color: var(--reply-bubble-background-color);
+    color: var(--reply-bubble-text-color);
     border: var(--border) var(--reply-color);
     overflow-wrap: break-word;
     border-radius: var(--border-radius);
@@ -288,7 +319,7 @@ hr {
 }
 
 .modalBackground {
-    background-color: var(--modal-background-color);
+    background-color: var(--modal-overlay-background-color);
     position: absolute;
     width: 100%;
     height: 100%;
@@ -302,16 +333,39 @@ hr {
 .modal {
     width: 600px;
     height: 400px;
-    background-color: var(--modal-color);
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
 }
 .popup {
     width: 300px;
-    height: 200px;
-    background-color: var(--popup-color);
+    /*height: 100px;*/
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.popupCloseButton {
+    margin-top: auto;
+    margin-bottom: 20px;
+    display: block;
+    width: 80%;
+    border-radius: var(--border-radius);
+    background-color: var(--popup-button-background-color);
+    color: var(--popup-button-text-color);
+}
+.popupText {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    text-align: center;
+    width: 80%;
 }
 .modalTitle {
     width: 100%;
@@ -344,9 +398,8 @@ hr {
     border: var(--border) var(--main-color)
 }
 .dropdownButton {
-}
-.dropdownOpenButton {
-
+    background-color: var(--dropdown-background-color);
+    color: var(--dropdown-text-color);
 }
 #messageInput {
     box-sizing: border-box;
@@ -360,8 +413,8 @@ hr {
     outline: 0;
     overflow-x: hidden;
     overflow-y: hidden;
-    border: var(--border) var(--accent-color);
-    background-color: var(--text-input-background-color);
+    border: var(--border) var(--message-input-border-color);
+    background-color: var(--message-input-background-color);
     border-radius: var(--border-radius);
     transition: all 0.15s ease;
     margin-top: 20px;
@@ -376,6 +429,8 @@ hr {
 .userPic {
     margin: 0;
     padding: 0;
+    vertical-align: middle;
+    line-height: 0;
 }
 canvas {
     vertical-align: middle;
@@ -389,13 +444,13 @@ canvas {
     margin-left: 30px;
     border-radius: 60px;
     outline: 0;
-    border: var(--border) var(--accent-color);
-    background-color: var(--text-input-background-color);
+    border: var(--border) var(--message-submit-border-color);
+    background-color: var(--message-submit-background-color);
     transition: all 0.15s ease;
     cursor: pointer;
 }
 #messageSendButton:hover {
-    background-color: var(--accent-color);
+    background-color: var(--message-submit-border-color);
 }
 
 .hoverButtons {
@@ -421,13 +476,15 @@ canvas {
     width: 200px;
     flex-direction: column;
     border: var(--border) var(--accent-color);
-    background-color: var(--modal-color);
+    background-color: var(--user-popup-background-color);
+    color: var(--user-popup-text-color);
     z-index: 15;
     border-radius: var(--border-radius);
     overflow: hidden;
 }
 .userPopupButton {
-    background-color: var(--button-background-color);
+    background-color: var(--user-popup-background-color);
+    color: var(--user-popup-text-color);
     text-align: left;
     padding-left: 10px;
 }
@@ -437,11 +494,14 @@ canvas {
 #settings {
     min-width: 600px;
     min-height: 400px;
-    background-color: var(--modal-color);
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
+
     display: flex;
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
     overflow: hidden;
+
 }
 
 #settingsLeftPanel {
@@ -449,6 +509,11 @@ canvas {
     flex-direction: column;
     width: 100px;
     min-width: 100px;
+}
+.settingsButton {
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
+
 }
 #settingsMainPanel {
     display: flex;
@@ -492,4 +557,12 @@ canvas {
     justify-content: center;
     padding: 0;
     line-height: 0;
+}
+.bothSideRow {
+    display: flex;
+    justify-content: space-between
+}
+.smallButton {
+    background-color: var(--app-background-color);
+    border-radius: var(--small-button-border-radius);
 }

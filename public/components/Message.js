@@ -29,16 +29,16 @@ export default {
             {{shortenText(reply.message, 600)}}
           </div>
           <div class='messageTextDiv'>
-            <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'black' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
+            <p class='messageText' :style="{ color: message.messageID && message.messageID !== -1 ? 'var(--message-bubble-text-color)' : 'gray'}" v-html="getDisplayableMessage(message)"></p>
           </div>
           <div :class="{readIndicators: true, myText: myText, notMyText: !myText}" v-if="readUsers.length > 0">
             <profile-pic v-for="userID of readUsers.filter(id => !blockedUsers.includes(id))" :size="22" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
           </div>
         </div>
         <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
-          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}"  @click="deleteMessage(message.messageID)">-</button>
-          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText}" @click="startEdit(message.messageID)">🖌</button>
-          <button :class="{hoverButton: true, myText: myText}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}">>></button>
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="deleteMessage(message.messageID)">-</button>
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}" @click="startEdit(message.messageID)">🖌</button>
+          <button :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}">>></button>
         </div>
       </div>
     `,

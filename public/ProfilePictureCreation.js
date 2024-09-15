@@ -163,6 +163,9 @@ let lastMousePosition = {x: 0, y: 0}
 let latestShapeID = 2
 
 export function createShape() {
+    if (data.shapes.size > data.maxShapes) {
+        data.openPopup = data.popups.TooManyShapes
+    }
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
@@ -245,6 +248,7 @@ class Star extends Shape {
         this.radius += r
         if (this.radius <= 0) this.radius = 0
     }
+
 }
 class Heart extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
@@ -270,6 +274,14 @@ class Heart extends Shape {
             this.controlPoints[7-(this.selectedCurve*2+this.selectedPoint)].x -= x
             this.controlPoints[7-(this.selectedCurve*2+this.selectedPoint)].y += y
         }
+    }
+    selectPoint(n) {
+        this.selectedPoint = n-1
+        data.mode = data.Modes.ControlPoint
+    }
+    selectCurve(n) {
+        this.selectedCurve = n-1
+        data.mode = data.Modes.ControlPoint
     }
 }
 class Polygon extends Shape {
@@ -298,6 +310,7 @@ class Polygon extends Shape {
         if (this.radius <= 0) this.radius = 0
         this.updatePoints()
     }
+
 }
 class Points extends Shape {
     constructor(shapeID = -1, x = 0, y = 0, color = "#FF0000") {
@@ -317,14 +330,20 @@ class Points extends Shape {
         data.mode = data.Modes.ControlPoint
     }
     addPoint(point) {
-        if (this.points.length >= 100) return
+        if (this.points.length >= data.maxPoints) {
+            data.openPopup = data.popups.TooManyPoints
+            return
+        }
         let previous = this.points[point-1]
         let next = this.points[(point)%this.points.length]
         this.points.splice(point, 0, {x: (previous.x+next.x)/2, y: (previous.y+next.y)/2})
         this.selectPoint(point+1)
     }
     removePoint(point) {
-        if (this.points.length <= 3) return
+        if (this.points.length <= data.minPoints) {
+            data.openPopup = data.popups.NotEnoughPoints
+            return
+        }
         this.points.splice(point-1, 1)
         let nextSelect = point-1
         if (point-1 <= 0) nextSelect = this.points.length

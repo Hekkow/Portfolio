@@ -16,7 +16,6 @@ function connection() {
         clearInterval(connectionRepeater) // stops repeated reconnection attempts
     }
     ws.onclose = () => {
-        data.userID = -1
         connectionRepeater = setInterval(() => { // when connection broken, every 400ms, try to reconnect if possible
             if (ws.readyState === WebSocket.CLOSED || ws.readyState === WebSocket.CLOSING) {
                 console.log("Attempting to reconnect")
@@ -90,12 +89,15 @@ function connection() {
             case Type.CHANGEUSERNAME:
                 if (message.username) {
                     if (data.loadedUsers.has(message.userID)) data.loadedUsers.get(message.userID).username = message.username
-                    if (data.userID === message.userID) data.openModal = data.modals.None
+                    if (data.userID === message.userID) {
+                        data.openPopup = data.popups.UsernameChanged
+                        data.openModal = data.modals.None
+                    }
                 }
-                else alert("username taken")
+                else if (data.userID === message.userID) data.openPopup = data.popups.UsernameTaken
                 break
             case Type.CHANGEPASSWORD:
-                alert("password changed")
+                data.openPopup = data.popups.PasswordChanged
                 break
             case Type.REQUESTMOREMESSAGES:
                 data.messagesAdded = true
@@ -253,8 +255,8 @@ function addMessage(message) {
 }
 export function sendMessage() {
     let messageInput = $('#messageInput')
-    let text = messageInput.val().trim()
-    if (!text || !text.trim()) return
+    let text = messageInput.val()
+    if (inputInvalid(text)) return
     if (text.length > maxMessageLength) {
         data.openPopup = data.popups.LongMessage
         return
@@ -442,9 +444,14 @@ export function uncensor(userID) {
     ws.send(JSON.stringify({type: Type.CENSORUPDATE, userID: data.userID, censored: user.censored}))
 }
 export function changeUsername(username) {
+    if (inputInvalid(username)) return
     ws.send(JSON.stringify({type: Type.CHANGEUSERNAME, userID: data.userID, username: username}))
 }
+export function inputInvalid(text) {
+    return !text||!text.trim()
+}
 export function changePassword(password) {
+    if (inputInvalid(password)) return
     ws.send(JSON.stringify({type: Type.CHANGEPASSWORD, userID: data.userID, password: password}))
 }
 export function messageInputPasted(event) {
@@ -452,16 +459,10 @@ export function messageInputPasted(event) {
     for (let i = 0; i < items.length; i++) {
         if (items[i].kind === 'file' && items[i].type.startsWith('image/')) {
             event.preventDefault()
-            alert('thing pasted')
+            data.openPopup = data.popups.ImagePasted
         }
     }
 }
-//
-// $(window).on("beforeunload", function () {
-//     if (!data.shapesDirty) return
-//     return 'If you leave before saving, your changes will be lost.'
-// })
-
 window.rejoinGeneral = rejoinGeneral
 window.getConversationName = getConversationName
 window.logout = logout

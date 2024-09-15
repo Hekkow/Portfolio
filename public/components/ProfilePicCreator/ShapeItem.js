@@ -69,32 +69,29 @@ export default {
                     @click="shape.symmetry = !shape.symmetry">Symmetry
             </button>
             <control-button v-if="[Shapes.Heart, Shapes.Points].includes(shape.shape)" :shapeid="shape.shapeID"
-                            :mode="data.Modes.ControlPoint"/>
+                            :mode="data.Modes.ControlPoint" @click="shape.selectPoint(1)"/>
             <div v-if="[Shapes.Heart].includes(shape.shape)" class="shapeDivMainPanelSection">
-              <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"
-                   v-if="data.mode === data.Modes.ControlPoint" style="display: flex; justify-content: space-between">
-                <button @click="shape.selectedCurve = n-1">Curve {{ n }}</button>
+              <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)" v-if="data.mode === data.Modes.ControlPoint" class="bothSideRow">
+                <button @click="shape.selectCurve(n)" :class="{selectedText: shape.selectedCurve === n-1, shapeItemButton: true}">Curve {{ n }}</button>
                 <div v-if="shape.selectedCurve === n-1" style="display: flex">
-                  <button @click="shape.selectedPoint = 0" :style="{color: shape.selectedPoint === 0 ? 'red' : null}">
-                    Point 1
-                  </button>
-                  <button @click="shape.selectedPoint = 1" :style="{color: shape.selectedPoint === 1 ? 'red' : null}">
-                    Point 2
-                  </button>
+                  <button v-for="i of 2" @click="shape.selectPoint(i)" :class="{selectedText: shape.selectedPoint === i-1, shapeItemButton: true}">Point {{i}}</button>
                 </div>
               </div>
             </div>
             <div v-if="[Shapes.Points].includes(shape.shape) && data.mode === data.Modes.ControlPoint" class="shapeDivMainPanelSection">
-              <div v-for="n of shape.points.length" style="display: flex; justify-content: space-between">
-                <button @click="shape.selectPoint(n)" :style="{color: shape.selectedPoint === n ? 'red' : null}">{{n}}</button>
-                <button @click="shape.addPoint(n)">Add point</button>
-                <button @click="shape.removePoint(n)">Remove point</button>
+              <div v-for="n of shape.points.length" class="bothSideRow">
+                <button @click="shape.selectPoint(n)" :class="{selectedText: shape.selectedPoint === n, shapeItemButton: true}">{{n}}</button>
+                <div>
+                  <button @click="shape.addPoint(n)" class="shapeItemButton">Add point</button>
+                  <button @click="shape.removePoint(n)" class="shapeItemButton">Remove point</button>
+                </div>
+                
               </div>
             </div>
             <div class="sliderRow">
               <label>Color</label>
               <input type="color" class="pfpInput" :value="shape.color"
-                     @input="function(event) { data.shapes.get(shape.shapeID).setColor(event.target.value) }">
+                     @input="function(event) { shape.setColor(event.target.value) }">
             </div>
             <div class="sliderRow">
               <label>Shape</label>
@@ -115,14 +112,13 @@ export default {
         }
     },
     watch: {
-        watchingShape: {
+        shape: {
             deep: true,
+            immediate: true,
             handler() {
-                // not entire sure why i dont have to set shape to data.shapes.get(shape.shapeID)
                 drawShapes()
                 this.drawPreview()
-                if (!this.fixing) data.shapesDirty = true
-                this.fixing = false
+                data.shapesDirty = true
             }
         },
     },

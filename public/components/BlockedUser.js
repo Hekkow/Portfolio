@@ -8,11 +8,11 @@ export default {
         }
     },
     template: `
-        <div class="userRow">
-          <profile-pic :size="30" :userid="$props.user.userID" class="userRowProfilePic"/>
-          {{$props.user.username}}
-          <button @click="unblockUser($props.user.userID)" class="userRowButton">Unblock</button>
-        </div>
+      <div class="userRow">
+        <profile-pic :size="30" :userid="$props.user.userID" class="userRowProfilePic"/>
+        {{ $props.user.username }}
+        <button @click="unblockUser($props.user.userID)" class="userRowButton settingsButton">Unblock</button>
+      </div>
     `,
     props: {
         user: {
