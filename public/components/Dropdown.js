@@ -7,14 +7,14 @@ export default {
     },
     template: `
         <div class="dropdown">
-          <button class="dropdownOpenButton squareButton smallButton" @click.stop="$refs.dropdownContent.classList.toggle('dropdownOpened')">{{$props.label}}</button>
+          <button class="dropdownOpenButton squareButton smallButton" @click.stop="$refs.dropdownContent.classList.toggle('dropdownOpened')"><icon :icon="$props.icon" :fit="true"/></button>
           <div class="dropdownContent" ref="dropdownContent">
             <slot/>
           </div>
         </div>
     `,
     props: {
-        label: {
+        icon: {
             type: String
         }
     },

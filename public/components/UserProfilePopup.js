@@ -13,11 +13,11 @@ export default {
         <profile-pic :size="50" :userid="user.userID" style="margin: var(--profile-pic-margin)"></profile-pic>
         <span style="margin-left: 10px; margin-bottom: 10px;">{{user.username}}</span>
         <template v-if="user.userID !== data.userID">
-          <button class="userPopupButton" @click="startConversation(user.userID)">Start conversation</button>
-          <button class="userPopupButton" v-if="!userBlocked" @click="blockUser(user.userID)">Block</button>
-          <button class="userPopupButton" v-if="userBlocked" @click="unblockUser(user.userID)">Unblock</button>
-          <button class="userPopupButton" v-if="!userCensored" @click="censor(user.userID)">Censor</button>
-          <button class="userPopupButton" v-if="userCensored" @click="uncensor(user.userID)">Uncensor</button>
+          <button class="userPopupButton" @click="startConversation(user.userID)"><icon icon="Chat"/> Start conversation</button>
+          <button class="userPopupButton" v-if="!userBlocked" @click="blockUser(user.userID)"><icon icon="Block"/> Block</button>
+          <button class="userPopupButton" v-if="userBlocked" @click="unblockUser(user.userID)"><icon icon="Unblock"/> Unblock</button>
+          <button class="userPopupButton" v-if="!userCensored" @click="censor(user.userID)"><icon icon="Censor"/> Censor</button>
+          <button class="userPopupButton" v-if="userCensored" @click="uncensor(user.userID)"><icon icon="Uncensor"/> Uncensor</button>
         </template>
         
       </div>

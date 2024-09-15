@@ -23,17 +23,17 @@ export const data = Vue.reactive({
     typingConversations: new Map(),
     read: new Map(),
     Modes: {
-        Location: "Location",
+        Move: "Move",
         Width: "Width",
         Height: "Height",
         Size: "Size",
-        Rotation: "Rotation",
+        Rotate: "Rotate",
         Radius: "Radius",
-        NumberPoints: "Number of Points",
+        NumberPoints: "Points",
         Inset: "Inset",
         ControlPoint: "Control Point"
     },
-    mode: "Location",
+    mode: "Move",
     focusMessageInput: false,
     popups: {
         None: 'None',
@@ -68,4 +68,5 @@ export const data = Vue.reactive({
     maxShapes: 30,
     maxPoints: 50,
     minPoints: 3,
+    sortingShapes: false,
 })

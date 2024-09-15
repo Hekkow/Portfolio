@@ -31,14 +31,14 @@ export function setupProfilePicCreator() {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        if (data.mode === data.Modes.Location) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        if (data.mode === data.Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
         else if (data.mode === data.Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
         else if (data.mode === data.Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         else if (data.mode === data.Modes.Size) {
             data.shapes.get(currentShapeID).addW(deltaMouse.x)
             data.shapes.get(currentShapeID).addH(-deltaMouse.y)
         }
-        else if (data.mode === data.Modes.Rotation) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
+        else if (data.mode === data.Modes.Rotate) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
         else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
         else if (data.mode === data.Modes.NumberPoints) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
         else if (data.mode === data.Modes.Inset) data.shapes.get(currentShapeID).addInset(deltaMouse.x/50)

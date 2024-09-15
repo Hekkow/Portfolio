@@ -36,9 +36,9 @@ export default {
           </div>
         </div>
         <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
-          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="deleteMessage(message.messageID)">-</button>
-          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}" @click="startEdit(message.messageID)">🖌</button>
-          <button :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}">>></button>
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="deleteMessage(message.messageID)"><icon icon="Delete" :fit="true"/></button>
+          <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}" @click="startEdit(message.messageID)"><icon icon="Edit" :fit="true"/></button>
+          <button :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}"><icon icon="Reply" :fit="true"/></button>
         </div>
       </div>
     `,

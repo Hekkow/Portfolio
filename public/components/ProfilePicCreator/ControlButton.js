@@ -13,7 +13,7 @@ export default {
         }
     },
     template: `
-        <button class="controlButton" @click="setMode(mode, shapeid)">{{ mode }}</button>
+        <button class="controlButton" @click="setMode(mode, shapeid)"><icon :icon="mode"/> {{ mode }}</button>
     `,
     props: {
         shapeid: {

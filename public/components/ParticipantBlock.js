@@ -18,7 +18,7 @@ export default {
         <profile-pic :size=50 :userid="user.userID" style="margin-right: var(--profile-pic-margin)"></profile-pic>
         <div class="onlineUserListButtonText">{{ user.username }}</div>
         <button class="closeButton" v-if="messageHovered && leader && data.userID !== user.userID"
-                @click.stop="leaveConversation(data.openConversationID, user.userID)">x
+                @click.stop="leaveConversation(data.openConversationID, user.userID)"><icon icon="Close" :fit="true"/>
         </button>
       </button>
     `,

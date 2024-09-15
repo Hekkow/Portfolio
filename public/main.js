@@ -208,7 +208,6 @@ function read(conversationID) {
     if (lastText.userID === data.userID) return
     let messageID = lastText.messageID
     if (data.read.get(conversationID)?.find(read => read.userID === data.userID)?.messageID === messageID) return
-
     ws.send(JSON.stringify({type: Type.READMESSAGE, conversationID: conversationID, messageID: messageID, userID: data.userID}))
 }
 export function openConversation(conversationID) {

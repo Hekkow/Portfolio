@@ -32,6 +32,7 @@ import ThemeEditorRow from "./ThemeEditorRow.js";
 import ControlButton from "./ProfilePicCreator/ControlButton.js";
 import ChatInfoPanel from "./ChatInfoPanel.js";
 import PopupButton from "./PopupButton.js";
+import Icon from "./Icon.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -96,4 +97,5 @@ app.component('theme-editor-row', ThemeEditorRow)
 app.component('control-button', ControlButton)
 app.component('chat-info-panel', ChatInfoPanel)
 app.component('popup-button', PopupButton)
+app.component('icon', Icon)
 export default app

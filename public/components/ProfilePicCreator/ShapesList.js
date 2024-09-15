@@ -22,21 +22,16 @@ export default {
     methods: {
         sortable() {
             $('#shapesList').sortable({
+                scroll: true,
+                scrollSensitivity: 40,
                 handle: '.shapeItemHandle',
-                start: function(event, ui) {
-                    $(ui.item).css('pointer-events', 'none')
-                },
                 stop: function(event, ui) {
                     event.preventDefault()
                     let sorted = $(this).sortable('toArray', { attribute: 'data-shapeID' })
                     for (let i = 0; i < sorted.length; i++) {
                         data.shapes.get(parseInt(sorted[i])).z = i + 2
                     }
-
-
-                    $(ui.item).css('pointer-events', 'auto')
-
-                }
+                },
             })
         },
         sortedShapes

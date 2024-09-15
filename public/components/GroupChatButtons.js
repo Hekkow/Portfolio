@@ -7,7 +7,7 @@ export default {
     },
     template: `
       <div class="groupChatButtonsDiv" v-if="data.openConversationID !== -1">
-        <dropdown label="X">
+        <dropdown icon="Down">
           <button class="dropdownButton" @click="data.openModal = data.modals.InviteToGroupChat">Invite</button>
           <button class="dropdownButton" @click="data.openModal = data.modals.RenameGroupChat" v-if="groupChat && leader">Rename</button>
           <button class="dropdownButton" @click="data.openModal = data.modals.TransferGroupChat" v-if="groupChat && leader">Transfer leadership</button>

@@ -6,13 +6,13 @@ import {
 } from "../../ProfilePictureCreation.js";
 import {saveProfilePicture} from "../../main.js";
 export default {
-    methods: {saveProfilePicture, createShape, drawShapes, },
+    methods: {saveProfilePicture, createShape, drawShapes},
     data() {
         return {
             data: data,
             Shapes: Shapes,
-            vertical: [data.Modes.Height, data.Modes.Size, data.Modes.Location, data.Modes.ControlPoint],
-            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Location, data.Modes.ControlPoint, data.Modes.Rotation, data.Modes.Radius, data.Modes.NumberPoints, data.Modes.Inset],
+            vertical: [data.Modes.Height, data.Modes.Size, data.Modes.Move, data.Modes.ControlPoint],
+            horizontal: [data.Modes.Width, data.Modes.Size, data.Modes.Move, data.Modes.ControlPoint, data.Modes.Rotate, data.Modes.Radius, data.Modes.NumberPoints, data.Modes.Inset],
         }
     },
     template: `
@@ -20,32 +20,32 @@ export default {
         <div id="canvasArea">
           <div id="canvasAreaCentered">
             <div id="canvasAreaTop" class="canvasAreaRow">
-              <div v-if="showArrows && vertical.includes(data.mode)">+</div>
+              <div v-if="showArrows && vertical.includes(data.mode)"><icon :icon="'Up'"/></div>
             </div>
 
             <div id="canvasAreaMiddle" class="canvasAreaRow">
               <div class="canvasAreaColumn">
-                <div v-if="showArrows && horizontal.includes(data.mode)">-</div>
+                <div v-if="showArrows && horizontal.includes(data.mode)"><icon :icon="'Left'"/></div>
               </div>
               <div id="canvasCircle">
                 <canvas width="300" height="300" id="editCanvas"></canvas>
               </div>
               <div class="canvasAreaColumn">
-                <div v-if="showArrows && horizontal.includes(data.mode)">+</div>
+                <div v-if="showArrows && horizontal.includes(data.mode)"><icon :icon="'Right'"/></div>
               </div>
             </div>
 
             <div id="canvasAreaBottom" class="canvasAreaRow">
-              <div v-if="showArrows && vertical.includes(data.mode)">-</div>
+              <div v-if="showArrows && vertical.includes(data.mode)"><icon :icon="'Down'"/></div>
             </div>
 
           </div>
         </div>
 
         <div id="controlPanel">
-          <button class="settingsButton" @click="createShape()">Create new shape</button>
-          <button class="settingsButton" @click="saveProfilePicture()">Save profile picture</button>
-          <shapes-list></shapes-list>
+          <button class="settingsButton" @click="createShape()"><icon icon="Add"/> Create new shape</button>
+          <button class="settingsButton" @click="saveProfilePicture()"><icon icon="Save"/> Save profile picture</button>
+          <shapes-list/>
         </div>
       </div>
     `,

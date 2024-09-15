@@ -5,7 +5,9 @@
 }
 #shapesList {
     width: 400px;
+    height: 100%;
     overflow-y: scroll;
+    overflow-x: hidden;
     display: flex;
     flex-direction: column;
     position: relative;
@@ -58,7 +60,7 @@
     clip-path: circle(150px at center);
 }
 #controlPanel {
-    overflow: auto;
+    /*overflow: auto;*/
     display: flex;
     flex-direction: column;
     padding-top: 10px;
@@ -80,12 +82,13 @@
     position: relative;
     border-radius: var(--border-radius);
     border: var(--border-thickness) solid var(--main-color);
-    overflow: hidden;
+    /*overflow: hidden;*/
     background-color: var(--shape-item-background-color);
     color: var(--shape-item-text-color);
     flex-shrink: 0;
     margin: 10px;
     padding: 10px 0 10px 0;
+    z-index: 100;
 }
 .shapeDivLeftPanel {
     width: 50px;
