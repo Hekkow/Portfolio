@@ -74,8 +74,8 @@ export default {
                             :mode="data.Modes.NumberPoints"/>
             <control-button v-if="[Shapes.Star].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.Inset"/>
-            <button v-if="[Shapes.Heart].includes(shape.shape)" class="controlButton"
-                    @click="shape.symmetry = !shape.symmetry"><icon icon="Symmetry"/>&nbsp;Symmetry
+            <button v-if="[Shapes.Heart].includes(shape.shape)" :class="{controlButton: true, selectedButton: shape.symmetry}"
+                    @click="shape.symmetry = !shape.symmetry"><icon icon="Symmetry" :space="true"/>Symmetry
             </button>
             <control-button v-if="[Shapes.Heart, Shapes.Points].includes(shape.shape)" :shapeid="shape.shapeID"
                             :mode="data.Modes.ControlPoint" @click="shape.selectPoint(1)"/>
@@ -83,11 +83,11 @@ export default {
               <div v-for="n of shape.controlPoints.length/2/(shape.symmetry+1)"
                    v-if="data.mode === data.Modes.ControlPoint" class="bothSideRow">
                 <button @click="shape.selectCurve(n)"
-                        :class="{selectedText: shape.selectedCurve === n-1, shapeItemButton: true}">Curve {{ n }}
+                        :class="{selectedButton: shape.selectedCurve === n-1, shapeItemButton: true}">Curve {{ n }}
                 </button>
                 <div v-if="shape.selectedCurve === n-1" style="display: flex">
                   <button v-for="i of 2" @click="shape.selectPoint(i)"
-                          :class="{selectedText: shape.selectedPoint === i-1, shapeItemButton: true}">Point {{ i }}
+                          :class="{selectedButton: shape.selectedPoint === i-1, shapeItemButton: true}">Point {{ i }}
                   </button>
                 </div>
               </div>
@@ -96,22 +96,22 @@ export default {
                  class="shapeDivMainPanelSection">
               <div v-for="n of shape.points.length" class="bothSideRow">
                 <button @click="shape.selectPoint(n)"
-                        :class="{selectedText: shape.selectedPoint === n, shapeItemButton: true}">Point {{ n }}
+                        :class="{selectedButton: shape.selectedPoint === n, shapeItemButton: true}">Point {{ n }}
                 </button>
                 <div>
-                  <button @click="shape.addPoint(n)" class="shapeItemButton"><icon icon="Add"/>&nbsp;Add</button>
-                  <button @click="shape.removePoint(n)" class="shapeItemButton"><icon icon="Delete"/>&nbsp;Remove</button>
+                  <button @click="shape.addPoint(n)" class="shapeItemButton"><icon icon="Add" :space="true"/>Add</button>
+                  <button @click="shape.removePoint(n)" class="shapeItemButton"><icon icon="Delete" :space="true"/>Remove</button>
                 </div>
 
               </div>
             </div>
             <div class="sliderRow">
-              <icon icon="Color"/><label>&nbsp;Color</label>
+              <icon icon="Color" :space="true"/><label>Color</label>
               <input type="color" class="pfpInput" :value="shape.color"
                      @input="function(event) { shape.setColor(event.target.value) }">
             </div>
             <div class="sliderRow">
-              <icon icon="Shape"/><label>&nbsp;Shape</label>
+              <icon icon="Shape" :space="true"/><label>Shape</label>
               <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
                 data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
                 setMode(data.Modes.Move, shape.shapeID)

@@ -7,7 +7,9 @@ export default {
     },
     template: `
       <div v-if="data.openPopup !== data.popups.None" class="modalBackground" @click="function(event) {
-          if (event.target.classList.contains('modalBackground')) data.openPopup = data.popups.None
+          if (event.target.classList.contains('modalBackground')) {
+              data.openPopup = data.popups.None
+          }
       }">
           <div class="popup" v-if="data.openPopup === data.popups.Blocked">
             <p class="popupText">This user has blocked you</p>
@@ -56,6 +58,13 @@ export default {
         <div class="popup" v-if="data.openPopup === data.popups.InvalidLoginInfo">
           <p class="popupText">Wrong username or password</p>
           <popup-button>Oh no! Anyways</popup-button>
+        </div>
+        <div class="popup" v-if="data.openPopup === data.popups.UnsavedProgress">
+          <p class="popupText">Your progress might not be saved. Are you sure you want to continue?</p>
+          <div>
+            <button @click="data.openPopup = data.popups.None; data.openModal = data.modals.None">Close</button>
+            <button @click="data.openPopup = data.popups.None">Go back</button>
+          </div>
         </div>
       </div>
     `,

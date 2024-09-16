@@ -4,7 +4,8 @@ export default {
         return {
             data: data,
             root: null,
-            computedStyle: null
+            computedStyle: null,
+            modalBackground: null,
         }
     },
     template: `
@@ -23,11 +24,12 @@ export default {
     },
     computed: {
         propName() {
-            return '--' + this.e.toLowerCase().replace(' ', '-')
+            return '--' + this.e.toLowerCase().replace(/ /g, '-')
         }
     },
     beforeMount() {
         this.root = document.querySelector(':root')
+        this.modalBackground = document.querySelector('.modalBackground')
         this.computedStyle = getComputedStyle(this.root)
     }
 }

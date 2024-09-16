@@ -8,9 +8,9 @@ export default {
     template: `
       <div class="groupChatButtonsDiv" v-if="data.openConversationID !== -1">
         <dropdown icon="Down">
-          <button class="dropdownButton" @click="data.openModal = data.modals.InviteToGroupChat">Invite</button>
-          <button class="dropdownButton" @click="data.openModal = data.modals.RenameGroupChat" v-if="groupChat && leader">Rename</button>
-          <button class="dropdownButton" @click="data.openModal = data.modals.TransferGroupChat" v-if="groupChat && leader">Transfer leadership</button>
+          <button class="dropdownButton" @click="data.openModal = data.modals.InviteToGroupChat"><icon icon="Invite" :space="true"/>Invite</button>
+          <button class="dropdownButton" @click="data.openModal = data.modals.RenameGroupChat" v-if="groupChat && leader"><icon icon="Edit" :space="true"/>Rename</button>
+          <button class="dropdownButton" @click="data.openModal = data.modals.TransferGroupChat" v-if="groupChat && leader"><icon icon="Transfer" :space="true"/>Transfer leadership</button>
         </dropdown>
 
       </div>

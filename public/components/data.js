@@ -48,7 +48,8 @@ export const data = Vue.reactive({
         UsernameChanged: 'UsernameChanged',
         PasswordChanged: 'PasswordChanged',
         InvalidLoginInfo: 'InvalidLoginInfo',
-        ImagePasted: 'ImagePasted'
+        ImagePasted: 'ImagePasted',
+        UnsavedProgress: 'UnsavedProgress'
     },
     openPopup: 'None',
     activateCensor: -1,
@@ -69,4 +70,6 @@ export const data = Vue.reactive({
     maxPoints: 50,
     minPoints: 3,
     sortingShapes: false,
+    currentShapeID: 2,
+    themeDirty: true,
 })

@@ -11,7 +11,7 @@ export default {
       <div class="userRow">
         <profile-pic :size="30" :userid="$props.user.userID" class="userRowProfilePic"/>
         {{ $props.user.username }}
-        <button @click="unblockUser($props.user.userID)" class="userRowButton settingsButton">Unblock</button>
+        <button @click="unblockUser($props.user.userID)" class="userRowButton settingsButton"><icon icon="Unblock" :space="true"/>Unblock</button>
       </div>
     `,
     props: {

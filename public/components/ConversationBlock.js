@@ -25,7 +25,7 @@ export default {
           </div>
         </div>
 
-        <button class="closeButton squareButton" v-if="blockHovered"
+        <button class="closeButton squareButton itemBlockCloseButton" v-if="blockHovered"
                 @click.stop="leaveConversation(conversation.conversationID, data.userID)"><icon icon="Close" :fit="true"/>
         </button>
       </button>

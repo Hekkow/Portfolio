@@ -18,10 +18,8 @@ import UserProfilePopup from "./UserProfilePopup.js";
 import TypingBar from "./TypingBar.js";
 import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
-import ModalTitle from "./ModalTitle.js";
 import Dropdown from "./Dropdown.js";
 import {loadTheme, updateOpenConversationCookie, updateTitleNotifications} from "../main.js";
-import UserRadio from "./UserRadio.js";
 import Popup from "./Popup.js";
 import Settings from "./Settings.js";
 import BlockedUser from "./BlockedUser.js";
@@ -33,6 +31,7 @@ import ControlButton from "./ProfilePicCreator/ControlButton.js";
 import ChatInfoPanel from "./ChatInfoPanel.js";
 import PopupButton from "./PopupButton.js";
 import Icon from "./Icon.js";
+import TransferLeaderRow from "./TransferLeaderRow.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -47,14 +46,6 @@ const app = Vue.createApp({
 
             }
         },
-        'data.openModal': {
-            handler(newValue, oldValue) {
-                console.log(oldValue === data.modals.Settings, data.openSettings === data.settingsTabs.ProfilePic, data.shapesDirty)
-                if (oldValue === data.modals.Settings && data.openSettings === data.settingsTabs.ProfilePic && data.shapesDirty) {
-                    alert("oh no")
-                }
-            }
-        }
     },
     mounted() {
         loadTheme()
@@ -84,9 +75,7 @@ app.component('user-profile-popup', UserProfilePopup)
 app.component('typing-bar', TypingBar)
 app.component('reply-bar', ReplyBar)
 app.component('user-info-panel', UserInfoPanel)
-app.component('modal-title', ModalTitle)
 app.component('dropdown', Dropdown)
-app.component('user-radio', UserRadio)
 app.component('popup', Popup)
 app.component('settings', Settings)
 app.component('blocked-user', BlockedUser)
@@ -98,4 +87,5 @@ app.component('control-button', ControlButton)
 app.component('chat-info-panel', ChatInfoPanel)
 app.component('popup-button', PopupButton)
 app.component('icon', Icon)
+app.component('transfer-leader-row', TransferLeaderRow)
 export default app

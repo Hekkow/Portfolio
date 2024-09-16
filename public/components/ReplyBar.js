@@ -11,13 +11,13 @@ export default {
         <div v-if="replyBarOpen"  class="replyBar">
           <div class="replyBarText">
             Replying to 
-            <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative; top: -3px"></profile-pic>
+            <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative"></profile-pic>
             | {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
           <button @click="function() {
               data.replyingTo = -1
               data.editing = -1
-          }" class="closeButton squareButton">x</button>
+          }" class="closeButton squareButton"><icon icon="Close" :fit="true"/></button>
         </div>
     `,
     computed: {

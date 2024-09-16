@@ -17,7 +17,6 @@ export function drawShapes() {
 export function sortedShapes() {
     return Array.from(data.shapes.values()).sort((a, b) => a.z - b.z)
 }
-let currentShapeID = 2
 export function setupProfilePicCreator() {
     canvas = $('#editCanvas')[0]
     ctx = canvas.getContext("2d")
@@ -31,21 +30,21 @@ export function setupProfilePicCreator() {
         let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
         lastMousePosition = {x: event.clientX, y: event.clientY}
         if (!dragging) return
-        if (data.mode === data.Modes.Move) data.shapes.get(currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
-        else if (data.mode === data.Modes.Width) data.shapes.get(currentShapeID).addW(deltaMouse.x)
-        else if (data.mode === data.Modes.Height) data.shapes.get(currentShapeID).addH(-deltaMouse.y)
+        if (data.mode === data.Modes.Move) data.shapes.get(data.currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
+        else if (data.mode === data.Modes.Width) data.shapes.get(data.currentShapeID).addW(deltaMouse.x)
+        else if (data.mode === data.Modes.Height) data.shapes.get(data.currentShapeID).addH(-deltaMouse.y)
         else if (data.mode === data.Modes.Size) {
-            data.shapes.get(currentShapeID).addW(deltaMouse.x)
-            data.shapes.get(currentShapeID).addH(-deltaMouse.y)
+            data.shapes.get(data.currentShapeID).addW(deltaMouse.x)
+            data.shapes.get(data.currentShapeID).addH(-deltaMouse.y)
         }
-        else if (data.mode === data.Modes.Rotate) data.shapes.get(currentShapeID).addRotation(deltaMouse.x)
-        else if (data.mode === data.Modes.Radius) data.shapes.get(currentShapeID).addR(deltaMouse.x)
-        else if (data.mode === data.Modes.NumberPoints) data.shapes.get(currentShapeID).addPoint(deltaMouse.x/50)
-        else if (data.mode === data.Modes.Inset) data.shapes.get(currentShapeID).addInset(deltaMouse.x/50)
-        else if (data.mode === data.Modes.ControlPoint) data.shapes.get(currentShapeID).addControlPoint(deltaMouse.x, deltaMouse.y)
+        else if (data.mode === data.Modes.Rotate) data.shapes.get(data.currentShapeID).addRotation(deltaMouse.x)
+        else if (data.mode === data.Modes.Radius) data.shapes.get(data.currentShapeID).addR(deltaMouse.x)
+        else if (data.mode === data.Modes.NumberPoints) data.shapes.get(data.currentShapeID).addPoint(deltaMouse.x/50)
+        else if (data.mode === data.Modes.Inset) data.shapes.get(data.currentShapeID).addInset(deltaMouse.x/50)
+        else if (data.mode === data.Modes.ControlPoint) data.shapes.get(data.currentShapeID).addControlPoint(deltaMouse.x, deltaMouse.y)
     })
 
-    currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0])) // this should probably be .shapeID instead of [0]
+    data.currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0])) // this should probably be .shapeID instead of [0]
     latestShapeID = data.shapes.size === 0 ? 2 : Math.max(...Array.from(data.shapes).map(shape => shape[0])) + 1
 }
 export function fixShape(shapeID) {
@@ -55,7 +54,7 @@ export function fixShape(shapeID) {
 }
 export function deleteShape(shapeID) {
     data.shapes.delete(shapeID)
-    if (shapeID === currentShapeID) currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
+    if (shapeID === data.currentShapeID) data.currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
 }
 export function duplicateShape(shapeID) {
     let newShapeID = Math.max(...data.shapes.keys()) + 1
@@ -63,7 +62,7 @@ export function duplicateShape(shapeID) {
     newShape.shapeID = newShapeID
     newShape.z = newShapeID
     data.shapes.set(newShapeID, newShape)
-    currentShapeID = newShapeID
+    data.currentShapeID = newShapeID
 }
 export function drawShape(ctx, shape, scale, reset) {
     if (reset) {
@@ -127,7 +126,7 @@ export function drawShape(ctx, shape, scale, reset) {
             }
             ctx.closePath()
             ctx.fill()
-            if ($(ctx.canvas).is('#editCanvas')) {
+            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint) {
                 for (let i = 0; i < shape.points.length; i++) {
                     let point = shape.points[i]
                     ctx.fillStyle = "blue"
@@ -169,12 +168,12 @@ export function createShape() {
     let shape = new Rectangle()
     let shapeID = shape.shapeID
     data.shapes.set(shapeID, shape)
-    currentShapeID = shapeID
+    data.currentShapeID = shapeID
     drawShapes() // shouldn't be needed but isn't updating properly without it
 }
 export function setMode(newMode, shapeID) {
     data.mode = newMode
-    currentShapeID = shapeID
+    data.currentShapeID = shapeID
 }
 function rad(deg) {
     return deg * Math.PI/180

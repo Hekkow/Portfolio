@@ -10,8 +10,8 @@ export default {
     },
     template: `
       <div v-if="data.userPopupID !== -1" class="userPopup" :style="'left: ' + data.userPopupLocation.x + 'px; top: ' + data.userPopupLocation.y + 'px;'">
-        <profile-pic :size="50" :userid="user.userID" style="margin: var(--profile-pic-margin)"></profile-pic>
-        <span style="margin-left: 10px; margin-bottom: 10px;">{{user.username}}</span>
+        <profile-pic :size="150" :userid="user.userID" style="margin: var(--profile-pic-margin); margin-top: 20px;"></profile-pic>
+        <span style="margin-bottom: 10px;">{{user.username}}</span>
         <template v-if="user.userID !== data.userID">
           <button class="userPopupButton" @click="startConversation(user.userID)"><icon icon="Chat"/> Start conversation</button>
           <button class="userPopupButton" v-if="!userBlocked" @click="blockUser(user.userID)"><icon icon="Block"/> Block</button>

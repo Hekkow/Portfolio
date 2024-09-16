@@ -335,8 +335,8 @@ export function inviteToGroupChat() {
 export function renameGroupChat(newName) {
     ws.send(JSON.stringify({type: Type.RENAMEGROUPCHAT, conversationID: data.openConversationID, newName: newName}))
 }
-export function transferLeader() {
-    ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: data.usersRadio, originalLeader: data.userID }))
+export function transferLeader(userID) {
+    ws.send(JSON.stringify({ type: Type.TRANSFERLEADER, conversationID: data.openConversationID, newLeader: userID, originalLeader: data.userID }))
 }
 export function scrollToBottom(dontScroll, amount) { // should be named something other than dontscroll
     let messages = $('#messages')
@@ -423,12 +423,8 @@ export function rejoinGeneral() {
 }
 export function toggleCensor(userID) {
     let user = data.loadedUsers.get(data.userID)
-    if (user.censored.includes(userID)) {
-        uncensor(userID)
-    }
-    else {
-        censor(userID)
-    }
+    if (user.censored.includes(userID)) uncensor(userID)
+    else censor(userID)
 }
 export function censor(userID) {
     let user = data.loadedUsers.get(data.userID)

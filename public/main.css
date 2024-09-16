@@ -22,6 +22,17 @@ html, body, #app{
 body {
     background-color: var(--background-color);
 }
+a:link, a:visited {
+    color: var(--link-color);
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
 button {
     outline: 0;
     border: 0;
@@ -71,19 +82,15 @@ input:focus, select:focus {
     padding-bottom: 40px;
     background-color: var(--app-background-color);
 }
-.typingBar {
-    margin-top: auto;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    height: 100px;
-    background-color: red;
-}
 .replyBar {
     margin-top: auto;
     padding-bottom: 5px;
     display: flex;
     align-items: center;
     max-width: 100%;
+    border-top: var(--border) var(--accent-color);
+    padding-left: var(--bar-padding-left);
+    background-color: var(--app-background-color);
 }
 .replyBarText, .messageText {
     overflow-wrap: break-word;
@@ -118,6 +125,10 @@ input:focus, select:focus {
     display: flex;
     flex-direction: column;
     background-color: var(--app-background-color);
+    position: relative;
+}
+#activeConversationList {
+    max-height: calc(100% - var(--bottom-height));
 }
 .itemBlock {
     display: flex;
@@ -133,13 +144,28 @@ input:focus, select:focus {
     color: var(--app-text-color);
 }
 .itemBlock:hover {
-    background-color: var(--item-block-background-hover-color);
-    color: var(--item-block-text-hover-color);
+    background-color: var(--big-button-background-hover-color);
+    color: var(--big-button-text-hover-color);
 }
 .itemBlock:active {
-    background-color: var(--item-block-background-active-color);
-    color: var(--item-block-text-active-color);
+    background-color: var(--big-button-background-active-color);
+    color: var(--big-button-text-active-color);
 }
+.itemBlockCloseButton {
+    background-color: var(--app-background-color);
+    color: var(--app-text-color);
+}
+.itemBlock:hover .itemBlockCloseButton {
+    background-color: var(--big-button-background-hover-color);
+}
+.itemBlock:hover .itemBlockCloseButton:hover {
+    background-color: var(--app-background-color);
+    color: var(--big-button-background-hover-color);
+}
+/*.itemBlockCloseButton:active {*/
+/*    background-color: var(--app-background-color);*/
+/*    color: var(--app-text-color);*/
+/*}*/
 .conversationBlock {
     padding-left: 10px;
     padding-bottom: 10px;
@@ -182,13 +208,16 @@ hr {
     /*padding: 0;*/
     /*line-height: 12px;*/
 }
+
 #userInfoPanel {
     height: var(--bottom-height);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     margin-top: auto;
+    border-top: var(--border) var(--main-color);
 }
+
 
 #messageInputDiv {
     min-height: var(--bottom-height);
@@ -197,7 +226,8 @@ hr {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-top: var(--border) var(--main-color)
+    border-top: var(--border) var(--main-color);
+    /*padding: 10px;*/
 }
 
 .groupChatButtonsDiv {
@@ -239,7 +269,7 @@ hr {
     border-right: var(--border) var(--main-color);
     flex-direction: column;
     background-color: var(--app-background-color);
-    /*max-height: calc(100% - var(--panel-title-height) - var(--border-thickness))*/
+    max-height: 100%
 }
 .messageDiv {
     width: 100%;
@@ -278,7 +308,7 @@ hr {
     margin: -20px -20px 10px 0;
     background-color: var(--reply-bubble-background-color);
     color: var(--reply-bubble-text-color);
-    border: var(--border) var(--reply-color);
+    border: var(--border) var(--accent-color);
     overflow-wrap: break-word;
     border-radius: var(--border-radius);
     overflow-x: visible;
@@ -310,7 +340,7 @@ hr {
     position: absolute;
     bottom: -12px;
     display: flex;
-    z-index: 10;
+    z-index: var(--read-indicators-z);
     max-width: var(--max-message-width)
 }
 .readIndicators.myText {
@@ -334,18 +364,20 @@ hr {
     height: 100%;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: var(--overlay-z);
     display: flex;
     align-items: center;
     justify-content: center;
 }
 .modal {
     width: 600px;
-    height: 400px;
+    max-height: 400px;
     background-color: var(--modal-background-color);
     color: var(--modal-text-color);
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
 }
 .popup {
     width: 300px;
@@ -364,7 +396,7 @@ hr {
     margin-bottom: 20px;
     display: block;
     width: 80%;
-    border-radius: var(--border-radius);
+    border-radius: var(--small-button-border-radius);
     background-color: var(--popup-button-background-color);
     color: var(--popup-button-text-color);
 }
@@ -400,15 +432,20 @@ hr {
     display: none;
     position: absolute;
     background-color: black;
-    z-index: 1;
-    min-width: 160px;
+    z-index: var(--dropdown-content-z);
+    min-width: 200px;
+
     flex-direction: column;
     right: 0;
-    border: var(--border) var(--main-color)
+    border: var(--border) var(--main-color);
+
 }
 .dropdownButton {
     background-color: var(--dropdown-background-color);
     color: var(--dropdown-text-color);
+    height: var(--row-height);
+    text-align: left;
+    padding-left: var(--bar-padding-left);
 }
 #messageInput {
     box-sizing: border-box;
@@ -422,12 +459,13 @@ hr {
     outline: 0;
     overflow-x: hidden;
     overflow-y: hidden;
-    border: var(--border) var(--message-input-border-color);
-    background-color: var(--message-input-background-color);
+    border: var(--border) var(--main-color);
+    color: var(--message-bar-text-color);
+    background-color: var(--message-bar-background-color);
     border-radius: var(--border-radius);
     transition: all 0.15s ease;
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     resize: none;
 }
 #messageInput.scroll {
@@ -453,13 +491,13 @@ canvas {
     margin-left: 30px;
     border-radius: 60px;
     outline: 0;
-    border: var(--border) var(--message-submit-border-color);
-    background-color: var(--message-submit-background-color);
+    border: var(--border) var(--main-color);
+    background-color: var(--app-background-color);
     transition: all 0.15s ease;
     cursor: pointer;
 }
 #messageSendButton:hover {
-    background-color: var(--message-submit-border-color);
+    background-color: var(--main-color);
 }
 
 .hoverButtons {
@@ -472,7 +510,8 @@ canvas {
     position: relative;
     margin-left: 10px;
     margin-right: 0;
-    font-size: 13px;
+    /*font-size: 13px;*/
+    color: var(--app-text-color)
 }
 .hoverButton.myText {
     margin-left: 0;
@@ -487,8 +526,9 @@ canvas {
     border: var(--border) var(--accent-color);
     background-color: var(--user-popup-background-color);
     color: var(--user-popup-text-color);
-    z-index: 15;
+    z-index: var(--user-popup-z);
     border-radius: var(--border-radius);
+    align-items: center;
     overflow: hidden;
 }
 .userPopupButton {
@@ -496,7 +536,8 @@ canvas {
     color: var(--user-popup-text-color);
     text-align: left;
     padding-left: 10px;
-    height: var(--user-popup-button-height);
+    height: var(--button-height);
+    width: 100%;
 }
 .userPopupButton:hover {
     background-color: var(--button-background-hover-color);
@@ -511,41 +552,70 @@ canvas {
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
     overflow: hidden;
+    position: relative;
+
 
 }
 
 #settingsLeftPanel {
     display: flex;
     flex-direction: column;
-    width: 100px;
+    width: 130px;
     min-width: 100px;
+    border-right: var(--border) var(--main-color);
+    padding-top: var(--settings-padding);
+
 }
 .settingsButton {
     background-color: var(--modal-background-color);
     color: var(--modal-text-color);
-
+    height: var(--row-height);
+    border-radius: var(--border-radius);
+    padding: 0 10px;
+}
+.selectedSettingsTab {
+    background-color: var(--main-color) !important;
+    color: white !important;
+}
+.settingsTabButton {
+    background-color: var(--modal-background-color);
+    color: var(--modal-text-color);
+    height: var(--row-height);
+}
+.biggerButton {
+    min-width: 80px;
 }
 #settingsMainPanel {
     display: flex;
     flex-grow: 1;
+    overflow-y: auto;
+    max-height: 600px;
+    position: relative;
+    scrollbar-color: var(--scrollbar-thumb) var(--modal-background-color);
 }
 .settingsTab {
     display: flex;
     width: 100%;
-    height: 100%;
+    /*height: 100%;*/
     flex-direction: column;
     text-align: center;
+    position: relative;
+    padding: var(--settings-padding);
+
 }
 .settingsRow {
-    min-height: 30px;
+    height: var(--row-height);
     display: flex;
     /*justify-content: center;*/
     align-items: center;
     justify-content: space-between;
-
+}
+.regularRow {
+    height: var(--row-height);
+    display: flex;
 }
 .userRow {
-    height: 40px;
+    height: var(--row-height);
     align-items: center;
     display: flex;
     /*background-color: red;*/
@@ -562,6 +632,8 @@ canvas {
 .squareButton {
     width: 25px;
     height: 25px;
+    min-height: 25px;
+    min-width: 25px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -586,6 +658,25 @@ canvas {
     /*color: black;*/
     transition: 0.15s
 }
+.row {
+    height: var(--row-height);
+}
+.spreadRowButton {
+    flex-basis: 50%;
+}
+.scrollable {
+    overflow-y: auto;
+    padding-right: var(--settings-padding);
+    scrollbar-color: var(--scrollbar-thumb) var(--modal-background-color);
+}
+input[type=checkbox], input[type=radio] {
+    height: var(--checkbox-size);
+    width: var(--checkbox-size);
+    /*background-color: var(--modal-background-color);*/
+    accent-color: var(--modal-text-color);
+}
+
+
 /*button:hover .icon {*/
 /*    color: white;*/
 /*}*/

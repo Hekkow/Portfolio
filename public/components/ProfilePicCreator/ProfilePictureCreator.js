@@ -43,8 +43,11 @@ export default {
         </div>
 
         <div id="controlPanel">
-          <button class="settingsButton" @click="createShape()"><icon icon="Add"/> Create new shape</button>
-          <button class="settingsButton" @click="saveProfilePicture()"><icon icon="Save"/> Save profile picture</button>
+          <div class="bothSideRow" style="border-bottom: var(--border) var(--main-color)">
+            <button class="settingsButton spreadRowButton" @click="createShape()"><icon icon="Add"/> Create new shape</button>
+            <button class="settingsButton spreadRowButton" @click="saveProfilePicture()"><icon icon="Save"/> Save profile picture</button>
+          </div>
+          
           <shapes-list/>
         </div>
       </div>

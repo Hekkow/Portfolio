@@ -17,7 +17,7 @@
     --active-conversations-width: 250px;
     --chat-info-width: 250px;
     --online-users-width: calc(60px + var(--border-thickness));
-    --bottom-height: 100px;
+    --bottom-height: 80px;
     --max-message-width: 500px;
     --panel-title-height: 70px;
     --item-block-height: 60px;
@@ -25,54 +25,82 @@
     --main-font-size: 17px;
     --main-font: Arial, Helvetica;
     --button-border-thickness: 2px;
+    --border-radius: 10px;
+    --small-button-border-radius: 5px;
+    --input-border-radius: 7px;
+    --input-border-thickness: 3px;
+    --row-height: 40px;
+    --button-height: 30px;
+    --checkbox-size: 30px;
+    --settings-padding: 20px;
+    --bar-padding-left: 10px;
 
-    --accent-color: #4ab1ef;
-    --main-color: #1589e4;
-    --background-color: green;
-    --modal-overlay-background-color: red;
-    --loading-background-color: blue;
-    --app-background-color: yellow;
-    --app-text-color: black;
-    --message-bubble-background-color: blue;
-    --message-bubble-text-color: white;
-    --reply-bubble-background-color: red;
-    --reply-bubble-text-color: black;
-    --message-input-background-color: blue;
-    --message-submit-background-color: red;
-    --message-submit-border-color: black;
-    --message-input-border-color: black;
-    --item-block-background-color: black;
-    --item-block-background-hover-color: white;
-    --item-block-background-active-color: green;
-    --item-block-text-color: white;
-    --item-block-text-hover-color: black;
-    --item-block-text-active-color: blue;
+    --user-popup-z: 150;
+    --overlay-z: 100;
+    --read-indicators-z: 10;
+    --dropdown-content-z: 1;
+
+
+    --main-color: #1ca1f4;
+    --accent-color: #f41286;
+    --background-color: #333333;
+    --app-background-color: #ffffff;
+    --app-text-color: #000000;
     --scrollbar-thumb: #c0c0c0;
+    --link-color: #0c1629;
+
+    --modal-overlay-background-color: #333333;
+    --modal-background-color: #ffffff;
+    --modal-text-color: #000000;
+    --popup-button-background-color: #000000;
+    --popup-button-text-color: #ffffff;
+
+    --message-bubble-background-color: #ffffff;
+    --message-bubble-text-color: #000000;
+    --reply-bubble-background-color: #ffffff;
+    --reply-bubble-text-color: #000000;
+
+    --message-bar-background-color: #ffffff;
+    --message-bar-text-color: #000000;
+
+    --big-button-background-hover-color: var(--main-color);
+    --big-button-background-active-color: var(--accent-color);
+    --big-button-text-hover-color: #000000;
+    --big-button-text-active-color: #000000;
+
+    --button-background-color: #ffffff;
+    --button-background-hover-color: var(--main-color);
+    --button-background-active-color: var(--accent-color);
+    --button-text-color: var(--button-background-color);
+    --button-text-hover-color: var(--button-background-color);
+    --button-text-active-color: var(--button-background-color);
+
+    --user-popup-background-color: #ffffff;
+    --user-popup-text-color: #000000;
+
+    --shape-background-color: #ffffff;
+    --shape-text-color: #000000;
+    --shape-selected-color: #ff0000;
+
+    --input-background-color: white;
+
+    --dropdown-background-color: #ffffff;
+    --dropdown-text-color: #000000;
+
+    --loading-background-color: #0000ff;
     --login-background-color: black;
     --login-modal-background-color: blue;
     --login-text-color: white;
     --login-input-background-color: white;
-    --modal-background-color: green;
-    --modal-text-color: red;
-    --settings-text-color: white;
-    --button-background-color: white;
-    --button-background-hover-color: red;
-    --button-text-hover-color: var(--button-background-color);
-    --button-background-active-color: var(--accent-color);
-    --small-button-border-radius: 5px;
-    --shape-item-background-color: yellow;
-    --shape-item-text-color: green;
-    --user-popup-background-color: blue;
-    --user-popup-text-color: white;
-    --popup-button-background-color: black;
-    --popup-button-text-color: white;
-    --dropdown-background-color: green;
-    --dropdown-text-color: yellow;
-    --border-radius: 10px;
-    --input-border-color: blue;
-    --input-border-focus-color: red;
-    --input-background-color: white;
-    --input-border-radius: 7px;
-    --input-border-thickness: 3px;
-    --user-popup-button-height: 30px;
+
+
+
+
+
+
+
+
+
+
+
 }

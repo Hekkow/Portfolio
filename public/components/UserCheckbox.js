@@ -6,10 +6,10 @@ export default {
         }
     },
     template: `
-      <label style="user-select: none">
-        {{user.username}}
-        <input type="checkbox" :value="user.userID" name="groupChatPopup" v-model="data.usersCheckbox">
-      </label>
+      <div class="userRow ">
+        <profile-pic :size="30" :userid="user.userID" class="userRowProfilePic"/>{{user.username}}
+        <input type="checkbox" :value="user.userID" name="groupChatPopup" v-model="data.usersCheckbox" class="userRowButton">
+      </div>
     `,
     props: {
         user: {

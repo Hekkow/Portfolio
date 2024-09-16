@@ -96,14 +96,17 @@ export default {
                 let extension = url.split('.').pop().toLowerCase()
                 let start = indices[i].index
                 let end = start + indices[i].match.length
-                // add a tags from start to end to not shift start/end
-                text = text.slice(0, end) + '</a>' + text.slice(end)
-                text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start)
+
                 // adds video/image
                 if (['mp4', 'flv', 'mov', 'avi', 'webm', 'mkv'].includes(extension)) {
-                    text += `<video controls><source src=${url} type="video/${extension}"></video>`
+                    text = text.slice(0, start) + `<video controls><source src=${url} type="video/${extension}"></video>` + text.slice(end)
                 } else if (['jpeg', 'jpg', 'gif', 'png', 'avif', 'svg'].includes(extension)) {
-                    text += `<img alt="" src="${url}">`
+                    text = text.slice(0, start) + `<img alt="" src="${url}">` + text.slice(end)
+                }
+                else {
+                    // add a tags from start to end to not shift start/end
+                    text = text.slice(0, end) + '</a>' + text.slice(end)
+                    text = text.slice(0, start) + `<a target='_blank' href='${url}'>` + text.slice(start)
                 }
             }
             return text;

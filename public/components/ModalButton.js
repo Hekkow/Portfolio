@@ -6,6 +6,8 @@ export default {
         }
     },
     template: `
-      <button @click="data.openModal = data.modals.None"><slot/></button>
+      <button @click="data.openModal = data.modals.None" class="settingsButton biggerButton" style="margin: auto auto 10px;">
+        <slot/>
+      </button>
     `,
 }

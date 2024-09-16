@@ -70,12 +70,13 @@
     text-align: left;
     padding-left: 10px;
     height: 35px;
-    background-color: var(--shape-item-background-color);
-    color: var(--shape-item-text-color);
+    background-color: var(--shape-background-color);
+    color: var(--shape-text-color);
 }
 .shapeItemButton {
-    background-color: var(--shape-item-background-color);
-    color: var(--shape-item-text-color);
+    background-color: var(--shape-background-color);
+    color: var(--shape-text-color);
+    height: var(--row-height);
 }
 .shapeDiv {
     display: flex;
@@ -83,12 +84,11 @@
     border-radius: var(--border-radius);
     border: var(--border-thickness) solid var(--main-color);
     /*overflow: hidden;*/
-    background-color: var(--shape-item-background-color);
-    color: var(--shape-item-text-color);
+    background-color: var(--shape-background-color);
+    color: var(--shape-text-color);
     flex-shrink: 0;
     margin: 10px;
     padding: 10px 0 10px 0;
-    z-index: 100;
 }
 .shapeDivLeftPanel {
     width: 50px;
@@ -107,8 +107,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: var(--shape-item-background-color);
-    color: var(--shape-item-text-color);
+    background-color: var(--shape-background-color);
+    color: var(--shape-text-color);
 }
 
 .shapeDivMainPanel {
@@ -122,6 +122,7 @@
 .shapeItemHandle {
     cursor: pointer;
 }
-.selectedText {
-    color: red;
+.selectedButton {
+    border: var(--border) var(--shape-selected-color);
+    color: var(--shape-selected-color);
 }
