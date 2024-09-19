@@ -86,4 +86,5 @@ export const data = Vue.reactive({
     conversationBlockLongPressed: false,
     messagePopupID: -1,
     messageLongPressed: false,
+    loadingPage: true,
 })

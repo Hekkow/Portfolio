@@ -23,4 +23,8 @@ export default {
         <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>
       </div>
     `,
+    mounted() {
+        console.log('here')
+        data.loadingPage = false
+    }
 }

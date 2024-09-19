@@ -27,6 +27,9 @@ export default {
               data.conversationPopupID = -1
           }
       }">
+        <div class="loadingAnimation" v-if="data.userID === -1 || data.loadingPage">
+          <icon icon="Load"/>
+        </div>
         <div class="modal" v-if="data.userID !== -1 && data.openModal === data.modals.CreateGroupChat">
             <p class="modalTitle">Create</p>
             <user-checkbox v-for="user in createGroupChatUsers" :user="user"></user-checkbox>

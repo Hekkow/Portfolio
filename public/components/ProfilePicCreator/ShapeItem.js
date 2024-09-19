@@ -3,7 +3,7 @@ import {
     canvasWidth,
     deleteShape,
     drawShape,
-    drawShapes, duplicateShape, fixShape,
+    drawShapes, duplicateShape, fixShape, moveShapeDown, moveShapeUp,
     setMode,
     shapeFactory,
     Shapes
@@ -11,6 +11,8 @@ import {
 
 export default {
     methods: {
+        moveShapeDown,
+        moveShapeUp,
         duplicateShape,
         deleteShape, drawShapes, shapeFactory, setMode,
         drawPreview() {
@@ -41,10 +43,8 @@ export default {
               <canvas :width="previewSize" :height="previewSize" ref="shapePreview"></canvas>
             </div>
           </div>
-
-          <div class="shapeItemHandle shapeDivLeftPanelButton">
-            <icon :icon="'Drag'"/>
-          </div>
+          <button class="shapeDivLeftPanelButton" @click="moveShapeUp(shape.shapeID)"><icon :icon="'Up'"/></button>
+          <button class="shapeDivLeftPanelButton" @click="moveShapeDown(shape.shapeID)"><icon :icon="'Down'"/></button>
         </div>
 
         <div class="shapeDivMainPanel">

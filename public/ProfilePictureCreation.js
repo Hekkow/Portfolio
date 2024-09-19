@@ -17,19 +17,45 @@ export function drawShapes() {
 export function sortedShapes() {
     return Array.from(data.shapes.values()).sort((a, b) => a.z - b.z)
 }
+export function moveShapeUp(shapeID) {
+    let sorted = sortedShapes()
+    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
+    if (index === 0) return
+    let z = sorted[index].z
+    sorted[index].z = sorted[index-1].z
+    sorted[index-1].z = z
+}
+export function moveShapeDown(shapeID) {
+    let sorted = sortedShapes()
+    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
+    if (index === sorted.length - 1) return
+    let z = sorted[index].z
+    sorted[index].z = sorted[index+1].z
+    sorted[index+1].z = z
+}
+function getMousePosition(event) {
+    if (event.touches && event.touches.length > 0) return {x: event.touches[0].clientX, y: event.touches[0].clientY}
+    else return {x: event.clientX, y: event.clientY}
+}
 export function setupProfilePicCreator() {
     canvas = $('#editCanvas')[0]
     ctx = canvas.getContext("2d")
-    $(`#editCanvas`).mousedown(function() {
+    $(`#editCanvas`).on('mousedown touchstart', function(event) {
+        event.preventDefault()
         dragging = true
+        lastMousePosition = getMousePosition(event)
     })
-    $(document).mouseup(function() {
+    $(document).on('mouseup touchend', function() {
         dragging = false
     })
-    $(document).mousemove(function(event) {
-        let deltaMouse = {x: event.clientX - lastMousePosition.x, y: event.clientY - lastMousePosition.y}
-        lastMousePosition = {x: event.clientX, y: event.clientY}
+    $(document).on('mousemove touchmove', function(event) {
+
         if (!dragging) return
+        event.preventDefault()
+        let currentPosition = getMousePosition(event)
+        let deltaMouse = {x: currentPosition.x - lastMousePosition.x, y: currentPosition.y - lastMousePosition.y}
+        lastMousePosition = currentPosition
+
         if (data.mode === data.Modes.Move) data.shapes.get(data.currentShapeID).addXY(deltaMouse.x, deltaMouse.y)
         else if (data.mode === data.Modes.Width) data.shapes.get(data.currentShapeID).addW(deltaMouse.x)
         else if (data.mode === data.Modes.Height) data.shapes.get(data.currentShapeID).addH(-deltaMouse.y)

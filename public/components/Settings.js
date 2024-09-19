@@ -17,9 +17,8 @@ export default {
           </button>
 
         </div>
-        <div class="mobileSettingsBack" style="position: relative; z-index: 2000;" v-if="data.mobile && data.openSettings !== data.settingsTabs.None">
-          <button class="panelTopButton" style="" @click="data.openSettings = data.settingsTabs.None"><icon icon="Reply"/></button>
-        </div>
+      <button class="panelTopButton" style="position: relative; z-index: 2000; background-color: rgba(0, 0, 0, 0)" v-if="data.mobile && data.openSettings !== data.settingsTabs.None" @click="data.openSettings = data.settingsTabs.None"><icon icon="Reply"/></button>
+
         <div id="settingsMainPanel" v-if="!data.mobile || data.openSettings !== data.settingsTabs.None" :class="{profilePicSettingsMainPanelMobile: data.mobile}">
           
           <div v-if="data.openSettings === data.settingsTabs.User" class="settingsTab">

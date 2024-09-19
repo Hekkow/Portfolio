@@ -401,6 +401,7 @@ hr {
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
 }
 .modal {
     width: 600px;
@@ -733,7 +734,13 @@ input[type=checkbox], input[type=radio] {
     height: var(--online-users-size);
     width: var(--online-users-size);
 }
-
+.loadingAnimation {
+    animation: rotate 2s linear infinite;
+}
+@keyframes rotate {
+    from {transform: rotate(0deg)}
+    to {transform: rotate(360deg)}
+}
 /*button:hover .icon {*/
 /*    color: white;*/
 /*}*/
