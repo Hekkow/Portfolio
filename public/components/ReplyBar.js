@@ -10,9 +10,9 @@ export default {
     template: `
         <div v-if="replyBarOpen"  class="replyBar">
           <div class="replyBarText">
-            Replying to 
+            <template v-if="data.replyingTo !== -1">Replying to </template>
             <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative"></profile-pic>
-            | {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
+            <template v-if="data.replyingTo !== -1">|</template> {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
           <button @click="function() {
               data.replyingTo = -1

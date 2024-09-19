@@ -12,7 +12,7 @@ export default {
         sendMessage,
         focusTextArea() {
             this.$nextTick(() => {
-                this.$refs.messageInput.focus()
+                if (this.$refs.messageInput) this.$refs.messageInput.focus()
             })
         },
         emptyText() {
@@ -62,5 +62,6 @@ export default {
         let paddingTop = parseFloat(style.getPropertyValue('padding-top'))
         let paddingBottom = parseFloat(style.getPropertyValue('padding-bottom'))
         textArea.setAttribute("style", "height: " + (lineHeight + paddingTop + paddingBottom) + "px;")
+        this.focusTextArea()
     },
 }

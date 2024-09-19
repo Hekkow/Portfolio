@@ -20,6 +20,13 @@ body {
     align-items: center;
     justify-content: center;
 }
+.mobile {
+
+}
+.mobile #loginFormContainerOuter {
+    width: 90%;
+    height: 70%;
+}
 #loginFormContainerOuter {
     width: 600px;
     /*height: 400px;*/
@@ -33,6 +40,8 @@ body {
     padding: 50px 0 50px 0;
     /*box-shadow: 0 10px 20px 5px #9ad2ff; !* horizontal vertical blur spread *!*/
 }
+
+
 #loginFormContainerInner {
     width: 80%;
     height: 60%;
@@ -87,4 +96,10 @@ body {
 #loginButton:focus {
     border: 10px;
     outline: 0;
+}
+#loginTitle {
+    font-size: 72px;
+    line-height: 10px;
+    padding: 0;
+    margin: 30px;
 }

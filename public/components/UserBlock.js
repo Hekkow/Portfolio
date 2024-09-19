@@ -7,7 +7,8 @@ export default {
     },
     template: `
       <button v-if="blocked" class="itemBlock">
-          <profile-pic :size=50 :userid="user.userID"></profile-pic>
+        <profile-pic :size=50 :userid="user.userID"/> <span v-if="data.activePanel === data.panels.OnlineUsers">&nbsp;{{user.username}}</span>
+            
       </button>
     `,
     props: {

@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {onMessagesScroll, scrollToBottom} from "../main.js";
+import {getConversationName, onMessagesScroll, scrollToBottom} from "../main.js";
 
 export default {
     data() {
@@ -8,6 +8,11 @@ export default {
         }
     },
     template: `
+      <div class="panelTitle">
+        <mobile-navigation-button icon="Chats" :panel="data.panels.ActiveConversations"/>
+        <p style="font-weight: bold; margin: 0; padding: 0;">{{data.openConversationID !== -1 ? getConversationName(data.openConversationID) : ""}}</p>
+        <mobile-navigation-button icon="Chat Info" :panel="data.panels.ChatInfo"/>
+      </div>
       <div class="panelArea" style="overflow: auto;">
           <div id="messages" @scroll="onMessagesScroll($event.target.scrollTop)" ref="messages">
             <message v-if="data.openConversationID !== -1" v-for="(message, index) in texts" :message="message" :showProfilePic="showProfilePic(message, index)" @reply-clicked="replyClicked" :ref="'message'"/>
@@ -18,6 +23,7 @@ export default {
       </div>
     `,
     methods: {
+        getConversationName,
         onMessagesScroll,
         replyClicked(messageID) {
             data.focusMessageInput = true
@@ -58,6 +64,11 @@ export default {
             handler() {
                 this.$nextTick(() => scrollToBottom())
             }
-        }
+        },
     },
+    mounted() {
+        this.$nextTick(() => {
+            scrollToBottom()
+        })
+    }
 }

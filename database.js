@@ -112,7 +112,9 @@ class Database {
             {$pull: {texts: {messageID: messageID}}},
             {returnDocument: "after"}
         )
-        if (conversation.firstMessageID === messageID) await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {firstMessageID: conversation.texts[0].messageID}})
+        if (conversation.firstMessageID === messageID) {
+            if (conversation.texts.length > 0) await this.conversations.findOneAndUpdate({conversationID: conversationID}, {$set: {firstMessageID: conversation.texts[0].messageID}})
+        }
         return conversation
     }
     async editMessage(conversationID, messageID, message) {

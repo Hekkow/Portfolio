@@ -16,11 +16,17 @@
     --profile-pic-margin: 5px;
     --active-conversations-width: 250px;
     --chat-info-width: 250px;
-    --online-users-width: calc(60px + var(--border-thickness));
+    --online-users-size: 60px;
+    --online-users-width: calc(var(--online-users-size) + var(--border-thickness));
     --bottom-height: 80px;
     --max-message-width: 500px;
-    --panel-title-height: 70px;
+    --panel-title-height: 60px;
     --item-block-height: 60px;
+    --profile-pic-holder-margins: 10px;
+    --profile-pic-holder-width: 50px;
+    --mobile-message-margin: 50px;
+    --mobile-modal-width: 90%;
+    --mobile-modal-height: 70%;
 
     --main-font-size: 17px;
     --main-font: Arial, Helvetica;
@@ -87,20 +93,11 @@
     --dropdown-background-color: #ffffff;
     --dropdown-text-color: #000000;
 
-    --loading-background-color: #0000ff;
-    --login-background-color: black;
-    --login-modal-background-color: blue;
-    --login-text-color: white;
+    --loading-background-color: #333333;
+    --login-background-color: #333333;
+    --login-modal-background-color: #ffffff;
+    --login-text-color: #000000;
     --login-input-background-color: white;
-
-
-
-
-
-
-
-
-
 
 
 }

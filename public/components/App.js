@@ -32,6 +32,9 @@ import ChatInfoPanel from "./ChatInfoPanel.js";
 import PopupButton from "./PopupButton.js";
 import Icon from "./Icon.js";
 import TransferLeaderRow from "./TransferLeaderRow.js";
+import MobileNavigationButton from "./MobileNavigationButton.js";
+import ConversationPopup from "./ConversationPopup.js";
+import MessagePopup from "./MessagePopup.js";
 const app = Vue.createApp({
     data() {
         return {
@@ -88,4 +91,7 @@ app.component('chat-info-panel', ChatInfoPanel)
 app.component('popup-button', PopupButton)
 app.component('icon', Icon)
 app.component('transfer-leader-row', TransferLeaderRow)
+app.component('mobile-navigation-button', MobileNavigationButton)
+app.component('conversation-popup', ConversationPopup)
+app.component('message-popup', MessagePopup)
 export default app

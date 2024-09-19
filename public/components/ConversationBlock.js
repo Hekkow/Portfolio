@@ -1,20 +1,50 @@
-import {openConversation, leaveConversation, getConversationName, updateTitleNotifications} from "../main.js";
+import {
+    openConversation,
+    leaveConversation,
+    getConversationName,
+    updateTitleNotifications,
+    showConversationPopup
+} from "../main.js";
 import {data} from "./data.js";
 export default {
     data() {
         return {
             data: data,
             blockHovered: false,
-            direct: 0
+            direct: 0,
+            mouseDownInterval: null
         }
+    },
+    methods: {
+        openConversation,
+        leaveConversation,
+        getConversationName,
+        onMouseDown(event) {
+            data.conversationPopupID = -1
+            this.mouseDownInterval = setTimeout(() => {
+                data.conversationBlockLongPressed = true
+                showConversationPopup(this.conversation.conversationID, event)
+            }, 600)
+        },
+        onMouseUp() {
+            if (!data.conversationBlockLongPressed) {
+                openConversation(this.conversation.conversationID);
+                data.activePanel = data.panels.Messages
+            }
+            data.conversationBlockLongPressed = false
+            clearTimeout(this.mouseDownInterval)
+        },
+
     },
     template: `
       <button
           v-if="!(conversation.conversationType === direct && data.loadedUsers.get(data.userID).blocked.some(userID => conversation.users.includes(userID)))"
           class="conversationBlock itemBlock"
-          @click="openConversation(conversation.conversationID)"
+          @mousedown="onMouseDown($event)" @touchstart="onMouseDown($event)"
+          @mouseup="onMouseUp" @touchend="onMouseUp"
           @mouseenter="blockHovered = true"
           @mouseleave="blockHovered = false"
+          
           :style="{ fontWeight: notification ? 'bold' : 'normal'}"
       >
         <div class="conversationBlockText">
@@ -36,11 +66,7 @@ export default {
             type: Object
         },
     },
-    methods: {
-        openConversation,
-        leaveConversation,
-        getConversationName
-    },
+
     watch: {
         notification: {
             handler() {

@@ -1,11 +1,19 @@
 import {data} from "./data.js";
-import {deleteMessage, shortenText, startEdit} from "../main.js";
+import {
+    deleteMessage,
+    openConversation,
+    shortenText,
+    showConversationPopup,
+    showMessagePopup,
+    startEdit
+} from "../main.js";
 export default {
     data() {
         return {
             data: data,
             messageHovered: false,
             highlighted: false,
+            mouseDownInterval: null,
         }
     },
     template: `
@@ -19,7 +27,10 @@ export default {
           <profile-pic v-if="showProfilePic" :size=50 :userid="message.userID"/>
         </div>
         
-        <div class='messageBubble' ref='messageBubble'>
+        <div class='messageBubble' ref='messageBubble'
+             @mousedown="onMouseDown($event)" @touchstart="onMouseDown($event)"
+             @mouseup="onMouseUp" @touchend="onMouseUp"
+        >
           <div 
               :class="{myText: myText, replyBubble: true}" 
               v-if="message.replyingTo !== -1"
@@ -35,7 +46,7 @@ export default {
             <profile-pic v-for="userID of readUsers.filter(id => !blockedUsers.includes(id))" :size="22" :userid="userID" :class="{readIndicatorsProfilePic: true, myText: myText, notMyText: !myText}"></profile-pic>
           </div>
         </div>
-        <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered">
+        <div class="hoverButtons" ref="hoverButtons" v-show="messageHovered && !data.mobile">
           <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="deleteMessage(message.messageID)"><icon icon="Delete" :fit="true"/></button>
           <button v-show="data.userID === message.userID" :class="{hoverButton: true, myText: myText, smallButton: true}" @click="startEdit(message.messageID)"><icon icon="Edit" :fit="true"/></button>
           <button :class="{hoverButton: true, myText: myText, smallButton: true}"  @click="function() {data.replyingTo = message.messageID; data.editing = -1}"><icon icon="Reply" :fit="true"/></button>
@@ -65,6 +76,17 @@ export default {
     },
 // turn getDisplayableMessage into computed later
     methods: {
+        onMouseDown(event) {
+            data.messagePopupID = -1
+            this.mouseDownInterval = setTimeout(() => {
+                if (!this.message) return
+                data.messageLongPressed = true
+                showMessagePopup(this.message.messageID, event)
+            }, 600)
+        },
+        onMouseUp() {
+            clearTimeout(this.mouseDownInterval)
+        },
         shortenText,
         startEdit,
         deleteMessage,

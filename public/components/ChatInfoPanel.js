@@ -12,8 +12,12 @@ export default {
     },
     template: `
       <div class="panelTitle">
-        <p>{{data.openConversationID !== -1 ? getConversationName(data.openConversationID) : ""}}</p>
-        <group-chat-buttons style="margin-left: 3px;"/>
+        <mobile-navigation-button icon="Chats" :panel="data.panels.Messages" style="left: 0"/>
+        <div style="display: flex; height: 20px;">
+          <p style="margin: 0; padding: 0;">Chat settings</p>
+          <group-chat-buttons/>
+        </div>
+        <div v-if="data.mobile" class="panelTopButton"/>
       </div>
       <div class="panelArea" style="border: 0">
         <user-list type="participant-block" v-if="data.openConversationID !== -1"></user-list>

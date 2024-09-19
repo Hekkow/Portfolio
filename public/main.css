@@ -7,6 +7,9 @@ html {
     scrollbar-width: thin;
     scrollbar-color: var(--scrollbar-thumb) var(--app-background-color);
 }
+.mobile {
+
+}
 #app {
     display: flex;
     justify-content: center;
@@ -59,7 +62,7 @@ input:focus, select:focus {
     /*border: var(--input-border-thickness) solid var(--accent-color);*/
     outline: 0;
 }
-/* main panels */
+
 #mainContainer {
     width: 80%;
     height: 80%;
@@ -68,12 +71,24 @@ input:focus, select:focus {
     border-radius: var(--border-radius);
     overflow: hidden;
 }
+
+.mobile #mainContainer {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+}
+
 #currentConversation {
     display: flex;
     flex-direction: column;
     position: relative;
     flex-grow: 1;
     max-width: calc(100% - var(--online-users-width) - var(--active-conversations-width) - var(--chat-info-width));
+}
+.mobile #currentConversation {
+    width: 100%;
+    max-width: 100%;
 }
 #messages {
     flex-grow: 1;
@@ -114,9 +129,21 @@ input:focus, select:focus {
     min-width: var(--chat-info-width);
 }
 
+.mobile #chatInfoPanel {
+    width: 100%;
+}
+
 #activeConversationsPanel {
     width: var(--active-conversations-width);
     min-width: var(--active-conversations-width);
+}
+.mobile #activeConversationsPanel {
+    width: 100%;
+
+    /*min-width: var(--active-conversations-width);*/
+}
+.mobile #activeConversationsPanelArea {
+    border-right: 0;
 }
 #activeConversationsMain {
     flex-grow: 1;
@@ -235,6 +262,7 @@ hr {
     display: inline-flex;
     justify-content: space-evenly;
     line-height: 0;
+    margin-left: 3px;
 }
 .groupChatButton {
     width: 30px;
@@ -243,21 +271,23 @@ hr {
 }
 
 .panelTitle {
-    height: var(--panel-title-height);
-    /*line-height: var(--panel-title-height);*/
-    /*text-align: center;*/
-    /*vertical-align: middle;*/
     border-bottom: var(--border) var(--main-color);
     background-color: var(--app-background-color);
     display: flex;
     justify-content: center;
     align-items: center;
-
+    min-height: var(--panel-title-height);
+}
+.mobile .panelTitle {
+    justify-content: space-between;
 }
 .panelList {
     display: flex;
     flex-direction: column;
     overflow: auto;
+}
+.fullSize {
+    width: 100% !important;
 }
 .panel {
     display: flex;
@@ -303,6 +333,9 @@ hr {
     background-color: var(--message-bubble-background-color);
     color: var(--message-bubble-text-color);
 }
+.mobile .messageBubble {
+    max-width: calc(100% - (var(--profile-pic-holder-margins) * 2 + var(--profile-pic-holder-width) + var(--mobile-message-margin)));
+}
 .replyBubble {
     position: relative;
     margin: -20px -20px 10px 0;
@@ -333,8 +366,8 @@ hr {
     left: -27px;
 }
 .messageProfilePicHolder {
-    margin: 0 10px 0 10px;
-    width: 50px;
+    margin: 0 var(--profile-pic-holder-margins);
+    width: var(--profile-pic-holder-width);
 }
 .readIndicators {
     position: absolute;
@@ -473,6 +506,9 @@ hr {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0;
 }
+.mobile #messageInput {
+    width: 70%;
+}
 .userPic {
     margin: 0;
     padding: 0;
@@ -536,8 +572,20 @@ canvas {
     color: var(--user-popup-text-color);
     text-align: left;
     padding-left: 10px;
+    padding-right: 10px;
     height: var(--button-height);
     width: 100%;
+}
+.conversationPopup {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    border: var(--border) var(--accent-color);
+    background-color: var(--user-popup-background-color);
+    color: var(--user-popup-text-color);
+    z-index: var(--user-popup-z);
+    border-radius: var(--border-radius);
+    overflow: hidden;
 }
 .userPopupButton:hover {
     background-color: var(--button-background-hover-color);
@@ -547,24 +595,30 @@ canvas {
     min-height: 400px;
     background-color: var(--modal-background-color);
     color: var(--modal-text-color);
-
     display: flex;
     border: var(--border) var(--main-color);
     border-radius: var(--border-radius);
     overflow: hidden;
     position: relative;
-
-
+}
+.mobile #settings {
+    min-width: 0;
+    min-height: 0;
+    width: var(--mobile-modal-width);
+    height: var(--mobile-modal-height);
+    flex-direction: column;
 }
 
 #settingsLeftPanel {
     display: flex;
     flex-direction: column;
     width: 130px;
-    min-width: 100px;
     border-right: var(--border) var(--main-color);
     padding-top: var(--settings-padding);
-
+}
+.mobile #settingsLeftPanel {
+    width: 100%;
+    /*flex-direction: row;*/
 }
 .settingsButton {
     background-color: var(--modal-background-color);
@@ -601,7 +655,6 @@ canvas {
     text-align: center;
     position: relative;
     padding: var(--settings-padding);
-
 }
 .settingsRow {
     height: var(--row-height);
@@ -676,6 +729,10 @@ input[type=checkbox], input[type=radio] {
     accent-color: var(--modal-text-color);
 }
 
+.panelTopButton {
+    height: var(--online-users-size);
+    width: var(--online-users-size);
+}
 
 /*button:hover .icon {*/
 /*    color: white;*/

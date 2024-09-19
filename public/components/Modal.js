@@ -24,6 +24,7 @@ export default {
               data.openModal = data.modals.None
               data.openPopup = data.popups.None
               data.userPopupID = -1
+              data.conversationPopupID = -1
           }
       }">
         <div class="modal" v-if="data.userID !== -1 && data.openModal === data.modals.CreateGroupChat">

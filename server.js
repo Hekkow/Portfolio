@@ -8,9 +8,9 @@ const Helper = require('./public/helper.js')
 let clients = []
 let typing = new Map()
 Database.initPromise.then(async () => {
-    // await Database.deleteAll()
-    // await Database.createLatestIDs()
-    // await Database.createPublicConversation()
+    await Database.deleteAll()
+    await Database.createLatestIDs()
+    await Database.createPublicConversation()
 })
 app.use(express.static('public'));
 app.use(express.json());
@@ -231,7 +231,7 @@ function closeConversation(data) {
 function editMessage(message) {
     updateTyping({conversationID: message.conversationID, userID: message.userID, typing: false})
     Database.editMessage(message.conversationID, message.messageID, message.message).then((conversation) => {
-        for (let socket of getSockets(conversation.users.filter(userID => userID !== message.userID))) {
+        for (let socket of getSockets(conversation.users)) {
             socket.send(JSON.stringify({type: Helper.Type.EDITMESSAGE, message: {conversationID: message.conversationID, userID: message.userID, messageID: message.messageID, message: message.message}}))
         }
     })
@@ -239,7 +239,7 @@ function editMessage(message) {
 function deleteMessage(data) {
     Database.deleteMessage(data.conversationID, data.messageID).then((conversation) => {
         for (let socket of getSockets(conversation.users)) {
-            socket.send(JSON.stringify({type: Helper.Type.DELETEMESSAGE, messageID: data.messageID})) // why doesn't this send conversationid? check for glitches
+            socket.send(JSON.stringify({type: Helper.Type.DELETEMESSAGE, messageID: data.messageID, conversationID: data.conversationID}))
         }
     })
 }

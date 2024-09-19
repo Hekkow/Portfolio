@@ -2,24 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Themid</title>
     <link rel="stylesheet" href="vars.css">
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="ProfilePictureCreation.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
 </head>
 <body>
 <div id="app">
     <modal></modal>
     <popup></popup>
     <div id="mainContainer">
-        <div id="currentlyOnlineUsersPanel" class="panel">
+        <div id="currentlyOnlineUsersPanel" class="panel" :class="{fullSize: data.activePanel === data.panels.OnlineUsers}" v-if="!data.mobile || data.activePanel === data.panels.OnlineUsers || data.activePanel === data.panels.ActiveConversations">
             <div class="panelArea">
+                <button v-if="data.mobile" class="panelTopButton" style="margin-right: auto;" @click="data.activePanel = data.activePanel === data.panels.OnlineUsers ? data.panels.ActiveConversations : data.panels.OnlineUsers">
+                    <icon :icon="data.activePanel === data.panels.OnlineUsers ? 'Left' : 'Right'"></icon>
+                </button>
                 <user-list type="user-block"></user-list>
             </div>
         </div>
-        <div id="activeConversationsPanel" class="panel">
-            <div class="panelArea">
+        <div id="activeConversationsPanel" class="panel" v-if="!data.mobile || data.activePanel === data.panels.ActiveConversations">
+            <div id="activeConversationsPanelArea" class="panelArea">
                 <div id="activeConversationsMain">
                     <user-list type="conversation-block" id="activeConversationList" v-if="data.userID !== -1">
                         <button id="showCreateGroupChatPopupButton" class="conversationBlock itemBlock" @click="data.openModal = data.modals.CreateGroupChat">
@@ -30,14 +33,17 @@
                 </div>
             </div>
         </div>
-        <div id="currentConversation" class="panel">
+        <div id="currentConversation" class="panel" v-if="!data.mobile || data.activePanel === data.panels.Messages">
+
             <messages></messages>
         </div>
-        <div id="chatInfoPanel" class="panel">
+        <div id="chatInfoPanel" class="panel" v-if="!data.mobile || data.activePanel === data.panels.ChatInfo">
             <chat-info-panel></chat-info-panel>
         </div>
     </div>
     <user-profile-popup></user-profile-popup>
+    <conversation-popup></conversation-popup>
+    <message-popup></message-popup>
 </div>
 <script src="https://unpkg.com/vue@3"></script>
 <script src="js.cookie.min.js"></script>
