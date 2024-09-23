@@ -1,6 +1,6 @@
 const { MongoClient } = require("mongodb")
 const { readFile } = require('fs').promises
-const Helper = require('./public/helper.js')
+const Helper = require('./public/Helper.js')
 
 class Database {
     constructor() { this.initPromise = this.init() }

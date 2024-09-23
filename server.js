@@ -3,7 +3,7 @@ const Database = require('./database.js')
 const app = express()
 const loginServer = require('./loginServer.js')
 require('express-ws')(app)
-const Helper = require('./public/helper.js')
+const Helper = require('./public/Helper.js')
 
 let clients = []
 let typing = new Map()
