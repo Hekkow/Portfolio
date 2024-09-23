@@ -299,6 +299,7 @@ app.get('/login', (req, res) => {
 })
 
 app.use('/', loginServer.router)
-app.listen(process.env.PORT, () => {
+let port = process.env.PORT || 6969
+app.listen(port, () => {
     console.log("Server started")
 })
