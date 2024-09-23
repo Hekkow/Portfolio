@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Hekkow/Portfolio#readme",
   "description": "",
   "engines": {
-    "node": "20.12.2"
+    "node": "20.12.2",
+    "npm": "9.1.3"
   }
 }

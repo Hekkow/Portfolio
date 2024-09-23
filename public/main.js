@@ -11,7 +11,7 @@ if (!sessionID) window.location.href = loginRoute
 else connection()
 function connection() {
     let connectionRepeater
-    ws = new WebSocket('ws://' + host + ':' + port + mainRoute)
+    ws = new WebSocket('ws://' + 'the-omid-ghafori-c4a57c2599a0' + mainRoute)
     ws.onopen = () => {
         ws.send(JSON.stringify({type: Type.LOGIN, sessionID: sessionID}))
         console.log("Connected")

@@ -2,7 +2,6 @@ let loginCookie = 'sessionID'
 let openConversationCookie = 'openConversation'
 let themeCookie = 'theme'
 let port = 6969
-let host = '192.168.2.17'
 let Type = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',
@@ -33,5 +32,5 @@ let Type = {
 let direct = 0
 let group = 1
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports = {loginCookie, port, host, Type, direct, group};
+    module.exports = {loginCookie, Type, direct, group};
 }
