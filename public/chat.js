@@ -1,17 +1,16 @@
 import App from '/components/App.js'
 import {data} from '/components/data.js'
-
 App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
 let maxMessageLength = 5000
 let loginRoute = '/login'
-let mainRoute = '/main'
 if (!sessionID) window.location.href = loginRoute
 else connection()
 function connection() {
     let connectionRepeater
-    ws = new WebSocket('ws://' + 'the-omid-ghafori-c4a57c2599a0' + mainRoute)
+    let host = window.location.hostname === "localhost" ? `ws://localhost:6969${chatRoute}` : `wss://${window.location.hostname}${chatRoute}`
+    ws = new WebSocket(host)
     ws.onopen = () => {
         ws.send(JSON.stringify({type: Type.LOGIN, sessionID: sessionID}))
         console.log("Connected")
@@ -49,7 +48,6 @@ function connection() {
                 editMessage(message.message)
                 break
             case Type.DELETEMESSAGE:
-                console.log(message)
                 let conversation1 = data.loadedConversations.get(message.conversationID)
                 conversation1.texts = conversation1.texts.filter(text => text.messageID !== message.messageID)
                 break

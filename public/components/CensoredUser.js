@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {uncensor} from "../main.js";
+import {uncensor} from "../chat.js";
 export default {
     methods: {uncensor},
     data() {

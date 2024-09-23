@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {scrollToBottom} from "../main.js";
+import {scrollToBottom} from "../chat.js";
 
 export default {
     data() {

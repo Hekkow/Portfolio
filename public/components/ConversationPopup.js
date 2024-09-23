@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {leaveConversation} from "../main.js";
+import {leaveConversation} from "../chat.js";
 
 export default {
     methods: {leaveConversation},

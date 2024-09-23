@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {getConversationName, onMessagesScroll, scrollToBottom} from "../main.js";
+import {getConversationName, onMessagesScroll, scrollToBottom} from "../chat.js";
 
 export default {
     data() {

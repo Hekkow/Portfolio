@@ -1,6 +1,6 @@
 import {data} from "./data.js";
 import {canvasHeight, canvasWidth, drawShape} from "../ProfilePictureCreation.js";
-import {scrollToBottom, showUserPopup, toggleCensor} from "../main.js";
+import {scrollToBottom, showUserPopup, toggleCensor} from "../chat.js";
 export default {
     methods: {toggleCensor, showUserPopup},
     data() {

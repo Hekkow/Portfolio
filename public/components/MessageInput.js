@@ -1,4 +1,4 @@
-import {messageInputPasted, sendMessage} from "../main.js";
+import {messageInputPasted, sendMessage} from "../chat.js";
 import {data} from "./data.js";
 
 export default {

@@ -1,5 +1,6 @@
 const { MongoClient } = require("mongodb")
 const Helper = require('./public/Helper.js')
+require('dotenv').config()
 
 class Database {
     constructor() { this.initPromise = this.init() }

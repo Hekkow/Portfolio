@@ -9,7 +9,7 @@ if (sessionID) {
                 Cookies.remove(loginCookie)
                 return
             }
-            window.location.href = '/main'
+            window.location.href = chatRoute
         }
     })
 }
@@ -39,7 +39,7 @@ $('#loginForm').submit(function(e) {
             return
         }
         Cookies.set(loginCookie, response.sessionID)
-        window.location.href = '/main'
+        window.location.href = chatRoute
 
     })
 });

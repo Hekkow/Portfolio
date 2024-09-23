@@ -4,7 +4,7 @@ import {
     drawShapes, setupProfilePicCreator,
     Shapes,
 } from "../../ProfilePictureCreation.js";
-import {saveProfilePicture} from "../../main.js";
+import {saveProfilePicture} from "../../chat.js";
 export default {
     methods: {saveProfilePicture, createShape, drawShapes},
     data() {

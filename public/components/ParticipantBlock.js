@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {leaveConversation, showUserPopup} from "../main.js";
+import {leaveConversation, showUserPopup} from "../chat.js";
 
 export default {
     data() {

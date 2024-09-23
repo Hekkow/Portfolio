@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {deleteMessage, startEdit} from "../main.js";
+import {deleteMessage, startEdit} from "../chat.js";
 
 export default {
     methods: {startEdit, deleteMessage},

@@ -6,7 +6,7 @@ import {
     showConversationPopup,
     showMessagePopup,
     startEdit
-} from "../main.js";
+} from "../chat.js";
 export default {
     data() {
         return {

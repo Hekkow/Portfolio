@@ -1,20 +1,20 @@
 const express = require('express')
-// const Database = require('./database.js')
+const Database = require('./database.js')
 const app = express()
 const loginServer = require('./loginServer.js')
 require('express-ws')(app)
 const Helper = require('./public/Helper.js')
-
+require('dotenv').config()
 let clients = []
 let typing = new Map()
-// Database.initPromise.then(async () => {
-//     await Database.deleteAll()
-//     await Database.createLatestIDs()
-//     await Database.createPublicConversation()
-// })
+Database.initPromise.then(async () => {
+    await Database.deleteAll()
+    await Database.createLatestIDs()
+    await Database.createPublicConversation()
+})
 app.use(express.static('public'));
 app.use(express.json());
-app.ws('/main', (ws, req) => {
+app.ws('/chat', (ws, req) => {
     ws.on('message', (msg) => {
         let data = JSON.parse(msg)
         switch (data.type) {
@@ -291,15 +291,14 @@ function updateUserLists() {
     })
 }
 
-app.get('/main', (req, res) => {
-    res.sendFile(__dirname + '/public/main.html')
+app.get('/chat', (req, res) => {
+    res.sendFile(__dirname + '/public/chat.html')
 })
 app.get('/login', (req, res) => {
     res.sendFile(__dirname + '/public/login.html')
 })
 
 app.use('/', loginServer.router)
-let port = process.env.PORT || 6969
-app.listen(port, () => {
+app.listen(process.env.PORT, () => {
     console.log("Server started")
 })

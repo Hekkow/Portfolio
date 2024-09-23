@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {deleteTheme, saveTheme} from "../main.js";
+import {deleteTheme, saveTheme} from "../chat.js";
 export default {
     methods: {deleteTheme, saveTheme},
     data() {

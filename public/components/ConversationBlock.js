@@ -4,7 +4,7 @@ import {
     getConversationName,
     updateTitleNotifications,
     showConversationPopup
-} from "../main.js";
+} from "../chat.js";
 import {data} from "./data.js";
 export default {
     data() {

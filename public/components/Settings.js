@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {changePassword, changeUsername, logout, rejoinGeneral} from "../main.js";
+import {changePassword, changeUsername, logout, rejoinGeneral} from "../chat.js";
 import {setupProfilePicCreator} from "../ProfilePictureCreation.js";
 export default {
     methods: {changePassword, changeUsername, setupProfilePicCreator, rejoinGeneral, logout},

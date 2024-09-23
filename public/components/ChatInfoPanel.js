@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {getConversationName, scrollToBottom} from "../main.js";
+import {getConversationName, scrollToBottom} from "../chat.js";
 
 export default {
     data() {
@@ -24,7 +24,6 @@ export default {
       </div>
     `,
     mounted() {
-        console.log('here')
         data.loadingPage = false
     }
 }

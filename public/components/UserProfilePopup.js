@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {blockUser, censor, startConversation, toggleCensor, unblockUser, uncensor} from "../main.js";
+import {blockUser, censor, startConversation, toggleCensor, unblockUser, uncensor} from "../chat.js";
 
 export default {
     methods: {uncensor, censor, unblockUser, toggleCensor, startConversation, blockUser},

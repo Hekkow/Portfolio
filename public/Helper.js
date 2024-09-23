@@ -1,7 +1,7 @@
 let loginCookie = 'sessionID'
 let openConversationCookie = 'openConversation'
 let themeCookie = 'theme'
-let port = 6969
+let chatRoute = '/chat'
 let Type = {
     LOGIN: 'LOGIN',
     LOGOUT: 'LOGOUT',

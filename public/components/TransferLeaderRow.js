@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {transferLeader, unblockUser} from "../main.js";
+import {transferLeader, unblockUser} from "../chat.js";
 export default {
     methods: {transferLeader},
     data() {

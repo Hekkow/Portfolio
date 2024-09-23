@@ -19,7 +19,7 @@ import TypingBar from "./TypingBar.js";
 import ReplyBar from "./ReplyBar.js";
 import UserInfoPanel from "./UserInfoPanel.js";
 import Dropdown from "./Dropdown.js";
-import {loadTheme, updateOpenConversationCookie, updateTitleNotifications} from "../main.js";
+import {loadTheme, updateOpenConversationCookie, updateTitleNotifications} from "../chat.js";
 import Popup from "./Popup.js";
 import Settings from "./Settings.js";
 import BlockedUser from "./BlockedUser.js";

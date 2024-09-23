@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {createNewGroupChat, inviteToGroupChat, renameGroupChat, transferLeader, unblockUser} from "../main.js";
+import {createNewGroupChat, inviteToGroupChat, renameGroupChat, transferLeader, unblockUser} from "../chat.js";
 export default {
     data() {
         return {

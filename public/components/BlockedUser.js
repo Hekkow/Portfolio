@@ -1,5 +1,5 @@
 import {data} from "./data.js";
-import {unblockUser} from "../main.js";
+import {unblockUser} from "../chat.js";
 export default {
     methods: {unblockUser},
     data() {
