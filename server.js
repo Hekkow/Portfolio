@@ -1,5 +1,5 @@
 const express = require('express')
-const Database = require('./database.js')
+// const Database = require('./database.js')
 const app = express()
 const loginServer = require('./loginServer.js')
 require('express-ws')(app)
@@ -7,11 +7,11 @@ const Helper = require('./public/Helper.js')
 
 let clients = []
 let typing = new Map()
-Database.initPromise.then(async () => {
-    await Database.deleteAll()
-    await Database.createLatestIDs()
-    await Database.createPublicConversation()
-})
+// Database.initPromise.then(async () => {
+//     await Database.deleteAll()
+//     await Database.createLatestIDs()
+//     await Database.createPublicConversation()
+// })
 app.use(express.static('public'));
 app.use(express.json());
 app.ws('/main', (ws, req) => {
