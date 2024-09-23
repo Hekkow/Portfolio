@@ -5,7 +5,7 @@ const Helper = require('./public/Helper.js')
 class Database {
     constructor() { this.initPromise = this.init() }
     async init() {
-        this.uri = JSON.parse(await readFile('private.json')).databaseuri
+        this.uri = process.env.MONGO_URI
         this.client = new MongoClient(this.uri)
         this.database = this.client.db('ChatApp')
         this.users = this.database.collection('Users')
