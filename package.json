@@ -3,5 +3,26 @@
     "express": "^4.19.2",
     "express-ws": "^5.0.2",
     "mongodb": "^6.5.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "portfolio",
+  "version": "1.0.0",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hekkow/Portfolio.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hekkow/Portfolio/issues"
+  },
+  "homepage": "https://github.com/Hekkow/Portfolio#readme",
+  "description": "",
+  "engines": {
+    "node": "20.12.2"
   }
 }
