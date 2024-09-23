@@ -5,11 +5,13 @@ App.mount('#app')
 let ws
 let sessionID = Cookies.get(loginCookie)
 let maxMessageLength = 5000
-if (!sessionID) window.location.href = '/'
+let loginRoute = '/login'
+let mainRoute = '/main'
+if (!sessionID) window.location.href = loginRoute
 else connection()
 function connection() {
     let connectionRepeater
-    ws = new WebSocket('ws://' + host + ':' + port + '/main')
+    ws = new WebSocket('ws://' + host + ':' + port + mainRoute)
     ws.onopen = () => {
         ws.send(JSON.stringify({type: Type.LOGIN, sessionID: sessionID}))
         console.log("Connected")
@@ -38,7 +40,7 @@ function connection() {
                 loadLocalData(message)
                 break
             case Type.BACKTOLOGIN:
-                window.location.href = '/'
+                window.location.href = loginRoute
                 break
             case Type.NEWMESSAGE:
                 receivedNewMessage(message.message)
@@ -427,7 +429,7 @@ export function unblockUser(userID) {
 export function logout() {
     ws.send(JSON.stringify({type: Type.LOGOUT, sessionID: sessionID}))
     Cookies.remove(loginCookie)
-    window.location.href = '/'
+    window.location.href = loginRoute
 }
 $(document).click(event => {
     data.userPopupID = -1

@@ -1,0 +1,168 @@
+:root {
+    --scroll-menu-width: 20px;
+    --paragraph-font-size: 18px;
+    --paragraph-line-height: 30px;
+    --title-font-size: 70px;
+    --slideshow-width: 700px;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+p {
+    margin: 0;
+}
+.centerContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.spreadContentVertical {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+.panel {
+    width: 90%;
+    height: 90%;
+    position: absolute;
+    border: 3px solid black;
+    background-color: white;
+}
+.splitPanel {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+.panelLeft {
+    background-color: red;
+    width: 40%;
+
+}
+.panelLeftArea {
+    background-color: green;
+    width: 450px;
+    /*height: 80%;*/
+
+}
+.panelSegment {
+    margin-bottom: 50px;
+}
+.panelLeftTitleDiv {
+    background-color: yellow;
+    height: 100px;
+}
+.panelLeftTitle {
+    font-size: var(--title-font-size);
+}
+.panelLeftTextDiv {
+    background-color: pink;
+
+    /*height: 100px;*/
+}
+.panelLeftText {
+    text-align: justify;
+    font-size: var(--paragraph-font-size);
+    line-height: var(--paragraph-line-height);
+}
+.panelLeftButtonDiv {
+    background-color: blue;
+    height: 100px;
+}
+.panelLeftButton {
+    width: 100%;
+    height: 100%;
+}
+.panelRight {
+    background-color: purple;
+    flex-grow: 1;
+}
+.panelRightArea {
+}
+.slideshowContainer {
+    height: 500px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+.slideshow {
+    background-color: green;
+    width: var(--slideshow-width);
+}
+.slideshowImage {
+    max-width: 100%;
+    max-height: 100%;
+}
+.slideshowSide {
+    width: 20px;
+    background-color: red;
+    margin: 0 10px;
+}
+.slideshowButtons {
+    height: var(--scroll-menu-width);
+    background-color: red;
+}
+.slideshowText {
+    height: var(--scroll-menu-width);
+    background-color: red;
+}
+.centeredPanel {
+    width: 100%;
+    height: 100%;
+    background-color: red;
+}
+#scrollMenu {
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--scroll-menu-width);
+}
+.scrollMenuButton {
+    width: var(--scroll-menu-width);
+    height: var(--scroll-menu-width);
+    border-radius: var(--scroll-menu-width);
+    border: 3px solid black;
+    background-color: rgba(0, 0, 0, 0);
+    margin: 5px 0;
+    cursor: pointer;
+}
+.selected {
+    border: 3px solid red;
+}
+.animatingPageUp {
+    animation: pageUp 1s ease-in-out forwards;
+}
+.animatingPageDown {
+    animation: pageDown 1s ease-in-out forwards;
+}
+@keyframes pageUp {
+    0% {
+        transform: translate(0, 0);
+    }
+    50% {
+        transform: translate(-50%, 10%) rotate(-20deg);
+    }
+    100% {
+        transform: translate(-100%) rotate(-80deg);
+    }
+}
+@keyframes pageDown {
+    0% {
+        transform: translate(-100%) rotate(-80deg);
+
+    }
+    50% {
+        transform: translate(-50%, 10%) rotate(-20deg);
+    }
+    100% {
+        transform: translate(0, 0);
+    }
+}
