@@ -82,10 +82,11 @@
     display: flex;
     flex-direction: column;
     padding-top: 10px;
-    height: calc(100% - 30px*2 - 300px - var(--row-height) - 10px);
+    height: 100%;
 
 }
 .mobile #controlPanel {
+    height: calc(100% - 30px*2 - 300px - var(--row-height) - 10px);
     /*max-height: 100%;*/
     flex-grow: 1;
 }
@@ -152,6 +153,7 @@
 }
 #profilePicSettingsTab {
     padding: 0;
+    overflow: hidden;
 }
 .profilePicSettingsMainPanelMobile {
     /*top: calc(var(--online-users-size) * -1);*/

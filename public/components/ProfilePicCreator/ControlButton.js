@@ -20,7 +20,6 @@ export default {
             type: Number
         },
         mode: {
-            type: Object
         }
     },
 }

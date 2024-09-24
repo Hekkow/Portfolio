@@ -3,7 +3,13 @@
     --paragraph-font-size: 18px;
     --paragraph-line-height: 30px;
     --title-font-size: 70px;
+    --segment-title-font-size: 50px;
+    --segment-button-font-size: 40px;
     --slideshow-width: 700px;
+    --slideshow-top-height: 500px;
+    --slideshow-text-height: 150px;
+    --slideshow-text-font-size: 17px;
+    --segment-section-margin-bottom: 20px;
 }
 html, body {
     margin: 0;
@@ -11,23 +17,52 @@ html, body {
     overflow: hidden;
     width: 100%;
     height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-family: Arial, sans-serif;
+}
+#App {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
 }
 p {
     margin: 0;
 }
+.segment {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    border: 3px solid red;
+}
+.panelSide {
+    border: 3px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.segmentTitle {
+    font-size: var(--segment-title-font-size);
+    text-align: center;
+    margin-bottom: var(--segment-section-margin-bottom);
+}
+.segmentText {
+    font-size: var(--paragraph-font-size);
+    line-height: var(--paragraph-line-height);
+    text-align: justify;
+    margin-bottom: var(--segment-section-margin-bottom);
+}
+.segmentButton {
+    height: 70px;
+    font-size: var(--segment-button-font-size);
+
+}
+
+
+
 .centerContent {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-.spreadContentVertical {
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
 }
 .panel {
     width: 90%;
@@ -35,89 +70,53 @@ p {
     position: absolute;
     border: 3px solid black;
     background-color: white;
-}
-.splitPanel {
-    width: 100%;
-    height: 100%;
     display: flex;
-}
-.panelLeft {
-    background-color: red;
-    width: 40%;
-
-}
-.panelLeftArea {
-    background-color: green;
-    width: 450px;
-    /*height: 80%;*/
-
 }
 .panelSegment {
     margin-bottom: 50px;
 }
-.panelLeftTitleDiv {
-    background-color: yellow;
-    height: 100px;
+.slideshowContainer {
+    display: flex;
+    /*flex-direction: column;*/
+    justify-content: space-between;
+    align-items: center;
+    width: var(--slideshow-width);
 }
-.panelLeftTitle {
-    font-size: var(--title-font-size);
-}
-.panelLeftTextDiv {
-    background-color: pink;
-
-    /*height: 100px;*/
-}
-.panelLeftText {
-    text-align: justify;
-    font-size: var(--paragraph-font-size);
-    line-height: var(--paragraph-line-height);
-}
-.panelLeftButtonDiv {
-    background-color: blue;
-    height: 100px;
-}
-.panelLeftButton {
-    width: 100%;
-    height: 100%;
-}
-.panelRight {
-    background-color: purple;
+.slideshowCenter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     flex-grow: 1;
 }
-.panelRightArea {
-}
-.slideshowContainer {
-    height: 500px;
+.slideshowSide {
+    width: 20px;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 30px;
+    justify-content: center;
+    align-items: center;
 }
-.slideshow {
-    background-color: green;
-    width: var(--slideshow-width);
+.slideshowImageContainer {
+    display: flex;
+    justify-content: center;
+    align-items: end;
+    position: relative;
+    height: var(--slideshow-top-height);
+    width: 100%;
 }
 .slideshowImage {
     max-width: 100%;
     max-height: 100%;
+    position: absolute;
+    transition: 0.3s;
 }
-.slideshowSide {
-    width: 20px;
-    background-color: red;
-    margin: 0 10px;
-}
+
 .slideshowButtons {
-    height: var(--scroll-menu-width);
-    background-color: red;
 }
 .slideshowText {
-    height: var(--scroll-menu-width);
-    background-color: red;
+    height: var(--slideshow-text-height);
+    text-align: center;
+    font-size: var(--slideshow-text-font-size);
 }
-.centeredPanel {
-    width: 100%;
-    height: 100%;
-    background-color: red;
-}
+
 #scrollMenu {
     position: fixed;
     right: 10px;
@@ -131,7 +130,7 @@ p {
     border-radius: var(--scroll-menu-width);
     border: 3px solid black;
     background-color: rgba(0, 0, 0, 0);
-    margin: 5px 0;
+    margin: 5px;
     cursor: pointer;
 }
 .selected {

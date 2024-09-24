@@ -190,8 +190,8 @@ input:focus, select:focus {
     color: var(--big-button-background-hover-color);
 }
 /*.itemBlockCloseButton:active {*/
-/*    background-color: var(--app-background-color);*/
-/*    color: var(--app-text-color);*/
+/*    background-color: var(--portfolioApp-background-color);*/
+/*    color: var(--portfolioApp-text-color);*/
 /*}*/
 .conversationBlock {
     padding-left: 10px;

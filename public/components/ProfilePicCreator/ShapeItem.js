@@ -125,7 +125,6 @@ export default {
     `,
     props: {
         shape: {
-            type: Object
         }
     },
     watch: {
