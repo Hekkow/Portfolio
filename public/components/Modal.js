@@ -11,22 +11,23 @@ export default {
         renameGroupChat,
         createNewGroupChat,
         inviteToGroupChat,
+        closeModal(event) {
+            if (event.target.classList.contains('modalBackground') && event.button === 0) {
+                if (data.openModal === data.modals.Settings &&
+                    ((data.openSettings === data.settingsTabs.ProfilePic && data.shapesDirty) ||
+                        (data.openSettings === data.settingsTabs.Theme && data.themeDirty))) {
+                    data.openPopup = data.popups.UnsavedProgress
+                    return
+                }
+                data.openModal = data.modals.None
+                data.openPopup = data.popups.None
+                data.userPopupID = -1
+                data.conversationPopupID = -1
+            }
+        }
     },
     template: `
-      <div v-if="data.openModal !== data.modals.None || data.userID === -1" class="modalBackground" :style="{backgroundColor: data.userID === -1 ? 'var(--loading-background-color)' : null}" @mousedown="function(event) {
-          if (event.target.classList.contains('modalBackground') && event.button === 0) {
-              if (data.openModal === data.modals.Settings && 
-                ((data.openSettings === data.settingsTabs.ProfilePic && data.shapesDirty) || 
-                (data.openSettings === data.settingsTabs.Theme && data.themeDirty))) {
-                  data.openPopup = data.popups.UnsavedProgress
-                  return
-              }
-              data.openModal = data.modals.None
-              data.openPopup = data.popups.None
-              data.userPopupID = -1
-              data.conversationPopupID = -1
-          }
-      }">
+      <div v-if="data.openModal !== data.modals.None || data.userID === -1" class="modalBackground" :style="{backgroundColor: data.userID === -1 ? 'var(--loading-background-color)' : null}" @mousedown="closeModal">
         <div class="loadingAnimation" v-if="data.userID === -1 || data.loadingPage">
           <icon icon="Load"/>
         </div>

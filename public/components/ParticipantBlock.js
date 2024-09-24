@@ -13,7 +13,7 @@ export default {
           class="itemBlock"
           @mouseenter="messageHovered = true"
           @mouseleave="messageHovered = false"
-          @click="function(event) {showUserPopup(user.userID, event)}"
+          @click="showUserPopup(user.userID, $event)"
       >
         <profile-pic :size=50 :userid="user.userID" style="margin-right: var(--profile-pic-margin)"></profile-pic>
         <div class="onlineUserListButtonText">{{ user.username }}</div>

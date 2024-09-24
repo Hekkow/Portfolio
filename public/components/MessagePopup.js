@@ -13,7 +13,7 @@ export default {
 <!--        need the additional ; data.messagePopupID = -1 because otherwise it's opening itself back up for some reason-->
         <button v-show="data.userID === message.userID" class="userPopupButton"  @click="deleteMessage(data.messagePopupID); data.messagePopupID = -1"><icon icon="Delete" :space="true"/>Delete</button>
         <button v-show="data.userID === message.userID" class="userPopupButton" @click="startEdit(data.messagePopupID); data.messagePopupID = -1"><icon icon="Edit" :space="true"/>Edit</button>
-        <button class="userPopupButton"  @click="function() {data.replyingTo = data.messagePopupID; data.editing = -1; data.messagePopupID = -1}"><icon icon="Reply" :space="true"/>Reply</button>
+        <button class="userPopupButton"  @click="data.replyingTo = data.messagePopupID; data.editing = -1; data.messagePopupID = -1"><icon icon="Reply" :space="true"/>Reply</button>
       </div>
     `,
     computed: {

@@ -7,6 +7,12 @@ export default {
             data: data,
         }
     },
+    methods: {
+        closeBar() {
+            data.replyingTo = -1
+            data.editing = -1
+        }
+    },
     template: `
         <div v-if="replyBarOpen"  class="replyBar">
           <div class="replyBarText">
@@ -14,10 +20,7 @@ export default {
             <profile-pic v-if="data.replyingTo !== -1" :userid="reply.userID" :size="21" style="display: inline-block; position: relative"></profile-pic>
             <template v-if="data.replyingTo !== -1">|</template> {{data.replyingTo !== -1 ? replyingToMessage : 'Editing'}}
           </div>
-          <button @click="function() {
-              data.replyingTo = -1
-              data.editing = -1
-          }" class="closeButton squareButton"><icon icon="Close" :fit="true"/></button>
+          <button @click="closeBar" class="closeButton squareButton"><icon icon="Close" :fit="true"/></button>
         </div>
     `,
     computed: {

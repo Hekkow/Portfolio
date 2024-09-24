@@ -45,7 +45,7 @@ export default {
       <div id="messageInputDiv" v-show="data.openConversationID !== -1">
         <textarea id="messageInput" ref="messageInput" rows=1 @input="() => {
             resizeInput()
-        }" @paste="function(event) {messageInputPasted(event)}"></textarea>
+        }" @paste="messageInputPasted($event)"></textarea>
         <button id="messageSendButton" @click="sendMessage()"></button>
       </div>
     `,

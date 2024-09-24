@@ -17,7 +17,13 @@ export function drawShapes() {
 export function sortedShapes() {
     return Array.from(data.shapes.values()).sort((a, b) => a.z - b.z)
 }
+function fixShapesZ() {
+    sortedShapes().forEach((shape, index) => {
+        shape.z = index + 2
+    })
+}
 export function moveShapeUp(shapeID) {
+    fixShapesZ()
     let sorted = sortedShapes()
     let index = sorted.findIndex(shape => shape.shapeID === shapeID)
     if (index === 0) return
@@ -26,6 +32,7 @@ export function moveShapeUp(shapeID) {
     sorted[index-1].z = z
 }
 export function moveShapeDown(shapeID) {
+    fixShapesZ()
     let sorted = sortedShapes()
     let index = sorted.findIndex(shape => shape.shapeID === shapeID)
     if (index === sorted.length - 1) return
@@ -83,12 +90,20 @@ export function deleteShape(shapeID) {
     if (shapeID === data.currentShapeID) data.currentShapeID = data.shapes.size === 0 ? 2 : Math.min(...Array.from(data.shapes).map(shape => shape[0]))
 }
 export function duplicateShape(shapeID) {
+    fixShapesZ()
+
     let newShapeID = Math.max(...data.shapes.keys()) + 1
     let newShape = structuredClone(Vue.toRaw(data.shapes.get(shapeID)))
     newShape.shapeID = newShapeID
-    newShape.z = newShapeID
+    let sorted = sortedShapes()
+    let index = sorted.findIndex(shape => shape.shapeID === shapeID)
+    for (let i = index + 1; i < sorted.length; i++) {
+        sorted[i].z += 1
+    }
+    newShape.z += 1
     data.shapes.set(newShapeID, newShape)
     data.currentShapeID = newShapeID
+    fixShape(newShapeID)
 }
 export function drawShape(ctx, shape, scale, reset) {
     if (reset) {
@@ -131,7 +146,7 @@ export function drawShape(ctx, shape, scale, reset) {
             }
             ctx.closePath()
             ctx.fill()
-            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint) {
+            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint && data.currentShapeID === shape.shapeID) {
                 for (let i = 0; i < 2; i++) {
                     let point = shape.controlPoints[shape.selectedCurve*2+i]
                     ctx.fillStyle = "blue"
@@ -152,7 +167,7 @@ export function drawShape(ctx, shape, scale, reset) {
             }
             ctx.closePath()
             ctx.fill()
-            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint) {
+            if ($(ctx.canvas).is('#editCanvas') && data.mode === data.Modes.ControlPoint && data.currentShapeID === shape.shapeID) {
                 for (let i = 0; i < shape.points.length; i++) {
                     let point = shape.points[i]
                     ctx.fillStyle = "blue"
@@ -188,13 +203,16 @@ let lastMousePosition = {x: 0, y: 0}
 let latestShapeID = 2
 
 export function createShape() {
+    fixShapesZ()
     if (data.shapes.size > data.maxShapes) {
         data.openPopup = data.popups.TooManyShapes
     }
     let shape = new Rectangle()
     let shapeID = shape.shapeID
+    shape.z = 0
     data.shapes.set(shapeID, shape)
     data.currentShapeID = shapeID
+    fixShapesZ()
     drawShapes() // shouldn't be needed but isn't updating properly without it
 }
 export function setMode(newMode, shapeID) {

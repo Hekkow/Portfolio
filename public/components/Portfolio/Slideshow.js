@@ -7,7 +7,7 @@ export default {
         </div>
         <div class="slideshowCenter">
         <div class="slideshowImageContainer">
-          <img class="slideshowImage" :src="images[selected]" :title="texts[selected]"/>
+          <img class="slideshowImage" :src="'Images/' + images[selected]" :title="texts[selected]"/>
         </div>
         <div class="slideshowButtons">
             <button v-for="n in images.length" @click="selected = n-1" :class="{scrollMenuButton: true, selected: selected === n - 1}"></button>

@@ -5,12 +5,15 @@ export default {
             data: data,
         }
     },
+    methods: {
+        closePopup(event) {
+            if (event.target.classList.contains('modalBackground')) {
+                data.openPopup = data.popups.None
+            }
+        }
+    },
     template: `
-      <div v-if="data.openPopup !== data.popups.None" class="modalBackground" @click="function(event) {
-          if (event.target.classList.contains('modalBackground')) {
-              data.openPopup = data.popups.None
-          }
-      }">
+      <div v-if="data.openPopup !== data.popups.None" class="modalBackground" @click="closePopup">
           <div class="popup" v-if="data.openPopup === data.popups.Blocked">
             <p class="popupText">This user has blocked you</p>
             <popup-button>Oh no! Anyways</popup-button>

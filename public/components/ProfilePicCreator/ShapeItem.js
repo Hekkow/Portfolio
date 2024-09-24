@@ -20,6 +20,10 @@ export default {
                 drawShape(this.$refs.shapePreview.getContext('2d'), this.shape, canvasWidth/parseFloat($(this.$refs.shapePreview).attr('width')), true)
             }
         },
+        setShape(event) {
+            data.shapes.set(this.shape.shapeID, shapeFactory(this.shape, event.target.value, this.shape.shapeID))
+            setMode(data.Modes.Move, this.shape.shapeID)
+        }
     },
     data() {
         return {
@@ -45,6 +49,7 @@ export default {
           </div>
           <button class="shapeDivLeftPanelButton" @click="moveShapeUp(shape.shapeID)"><icon :icon="'Up'"/></button>
           <button class="shapeDivLeftPanelButton" @click="moveShapeDown(shape.shapeID)"><icon :icon="'Down'"/></button>
+<!--          <button class="shapeDivLeftPanelButton">{{shape.z}}</button>-->
         </div>
 
         <div class="shapeDivMainPanel">
@@ -85,7 +90,7 @@ export default {
                 <button @click="shape.selectCurve(n)"
                         :class="{selectedButton: shape.selectedCurve === n-1, shapeItemButton: true}">Curve {{ n }}
                 </button>
-                <div v-if="shape.selectedCurve === n-1" style="display: flex">
+                <div v-if="shape.selectedCurve === n-1 && shape.shapeID === data.currentShapeID" style="display: flex">
                   <button v-for="i of 2" @click="shape.selectPoint(i)"
                           :class="{selectedButton: shape.selectedPoint === i-1, shapeItemButton: true}">Point {{ i }}
                   </button>
@@ -94,7 +99,7 @@ export default {
             </div>
             <div v-if="[Shapes.Points].includes(shape.shape) && data.mode === data.Modes.ControlPoint"
                  class="shapeDivMainPanelSection">
-              <div v-for="n of shape.points.length" class="bothSideRow">
+              <div v-for="n of shape.points.length" class="bothSideRow" v-if="shape.shapeID === data.currentShapeID">
                 <button @click="shape.selectPoint(n)"
                         :class="{selectedButton: shape.selectedPoint === n, shapeItemButton: true}">Point {{ n }}
                 </button>
@@ -108,14 +113,11 @@ export default {
             <div class="sliderRow">
               <icon icon="Color" :space="true"/><label>Color</label>
               <input type="color" class="pfpInput" :value="shape.color"
-                     @input="function(event) { shape.setColor(event.target.value) }">
+                     @input="shape.setColor($event.target.value)">
             </div>
             <div class="sliderRow">
               <icon icon="Shape" :space="true"/><label>Shape</label>
-              <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="function(event) {
-                data.shapes.set(shape.shapeID, shapeFactory(shape, event.target.value, shape.shapeID))
-                setMode(data.Modes.Move, shape.shapeID)
-              }">
+              <select class="shapeSelect pfpInput" :id="'selectShape' + shape.shapeID" :value="shape.shape" @change="setShape">
                 <option v-for="shapeName in Shapes" :value="Shapes[shapeName]">{{ shapeName }}</option>
               </select>
             </div>
