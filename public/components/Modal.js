@@ -43,7 +43,7 @@ export default {
             <modal-button v-if="data.usersCheckbox.length > 0" @click="inviteToGroupChat()">Invite</modal-button>
         </div>
         <div class="modal" v-if="data.userID !== -1 && data.openModal === data.modals.RenameGroupChat">
-            <p class="modalTitle">Rename<p/>
+            <p class="modalTitle">Rename</p>
           <div class="regularRow"><input style="width: 80%" type="text" v-model="inputText"><modal-button @click='renameGroupChat(inputText)'>Rename</modal-button></div>
         </div>
         <div class="modal" v-if="data.userID !== -1 && data.openModal === data.modals.TransferGroupChat">

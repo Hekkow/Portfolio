@@ -103,10 +103,12 @@ p {
     width: 100%;
 }
 .slideshowImage {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: calc(100% - 20px * 2);
+    max-height: calc(100% - 20px * 2);
     position: absolute;
     transition: 0.3s;
+    border: 20px solid #eeeeee;
+
 }
 
 .slideshowButtons {

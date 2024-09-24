@@ -149,7 +149,6 @@ function loadLocalData(newData) {
     if (!data.loadedConversations.has(conversationToOpen)) return
     data.openConversationID = conversationToOpen // replace with cookie later
     read(data.openConversationID)
-    console.log(data)
 }
 function receivedNewMessage(message) {
     if (!data.loadedConversations.has(message.conversationID) || !data.loadedUsers.get(data.userID).openConversations.includes(message.conversationID)) {
