@@ -1,36 +1,44 @@
+import {rotateAway, rotateBack} from "../../index.js";
+
 export default {
     data() {
         return {
             selected: 0,
             animating: [],
-            imageTransforms: new Map()
+            imageTransforms: new Map(),
+            start: null,
+            overlapTime: null,
+            translateY: 0,
+            translateX: 0,
+            slideshowID: 'slideshow1'
         }
     },
     template: `
-      <div class="slideshowContainer">
+      <div class="slideshowContainer" :id="slideshowID">
+
         <div class="slideshowSide">
-          <button @click="previous"><</button>
+          <button @click="previous" class="drawnBorder" v-show="this.selected !== 0"><</button>
         </div>
         <div class="slideshowCenter">
-        <div class="slideshowImageContainer">
-          <img
-              class="slideshowImage" 
-              v-for="(image, index) in images" 
-              :src="'Images/' + image" 
-              :style="{transform: selected === index ? null : this.imageTransforms.get(index), zIndex: images.length - index}" 
-              :title="texts[index]"
-              :ref="'image' + index"
-          />
+          <div class="slideshowImageContainer">
+            <slideshow-image
+                v-for="(image, index) in images"
+
+                :ref="slideshowID + 'image' + index"
+                :newID="slideshowID + 'image' + index"
+                :image="image"
+                :text="texts[index]"
+                :z="images.length - index"
+            />
+          </div>
+          <div class="slideshowTextDiv">
+            <slideshow-text v-for="(text, index) in texts" :text="text" :z="images.length - index" :ref="slideshowID + 'text' + index" :newID="slideshowID + 'text' + index" />
+          </div>
         </div>
-        <div class="slideshowText">
-            <p>{{texts[selected]}}</p>
-        </div>
-      </div>
         <div class="slideshowSide">
-          <button @click="next">></button>
+          <button @click="next" class="drawnBorder" v-show="this.selected !== this.images.length - 1">></button>
         </div>
       </div>
-        
     `,
     props: {
         images: {
@@ -43,49 +51,30 @@ export default {
     methods: {
         previous() {
             if (this.selected === 0) return
-            let animatingSlide = this.selected - 1
-            if (this.animating.includes(animatingSlide)) return
+            let animatingSlide = this.$refs[this.slideshowID + 'image' + (this.selected - 1)][0]
+            let animatingText = this.$refs[this.slideshowID + 'text' + (this.selected - 1)][0]
+            if (animatingSlide.animating || animatingText.animating) return
+
+            animatingSlide.animateBack()
+            animatingText.animateBack()
             this.selected -= 1
-            this.animating.push(animatingSlide)
-            this.addThenRemoveClass('animatingSlideBack')
         },
         next() {
-            if (this.selected === this.images.length - 1) {
-                return
-            }
-            let animatingSlide = this.selected
-            if (this.animating.includes(animatingSlide)) {
-                return
-            }
-
-            this.addThenRemoveClass('animatingSlideAway')
+            if (this.selected === this.images.length - 1) return
+            let animatingSlide = this.$refs[this.slideshowID + 'image' + (this.selected)][0]
+            let animatingText = this.$refs[this.slideshowID + 'text' + (this.selected)][0]
+            if (animatingSlide.animating || animatingText.animating) return
+            animatingSlide.animateAway()
+            animatingText.animateAway()
             this.selected += 1
-            this.animating.push(animatingSlide)
-
         },
-        getTransform() {
-            let randomX = this.random(-20, 20)
-            let randomY = this.random(-20, 10)
-            let rotation = this.random(-10, 10)
-            return 'translate(' + randomX + 'px, ' + randomY + 'px) rotate(' + rotation + 'deg)'
-        },
-        addThenRemoveClass(className) {
-            let toRemove = ['animatingSlideBack', 'animatingSlideAway'].filter(i => i !== className)[0]
-            let originalSelected = this.selected
-            let image = $(this.$refs['image' + originalSelected])
-            image.addClass(className)
-            image.removeClass(toRemove)
-            setTimeout(() => {
-                this.animating = this.animating.filter(slide => slide !== originalSelected)
-            }, 1000)
-        },
-        random(min, max) {
-            return Math.floor(Math.random() * (max - min + 1)) + min
-        }
     },
-    beforeMount() {
-        for (let i = 0; i < this.images.length; i++) {
-            this.imageTransforms.set(i, this.getTransform())
+    mounted() {
+        for (let i = 1; i < this.images.length; i++) {
+            console.log(this.slideshowID + 'image' + i)
+
+            // this.$refs[this.slideshowID + 'image' + i].style.backgroundColor = 'red'
+            rotateAway(this.$refs[this.slideshowID + 'image' + i][0])
         }
     }
 }

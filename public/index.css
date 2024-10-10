@@ -10,8 +10,13 @@
     --slideshow-text-height: 150px;
     --slideshow-text-font-size: 17px;
     --segment-section-margin-bottom: 20px;
-    --drawn-border: 50px solid red;
-    --drawn-border-image: url('./Images/border.png') 50 round;
+}
+.drawnBorder {
+    border: solid transparent;
+    border-image: url('./Images/border1.png');
+    border-width: 15px 11px 13px 17px;
+    border-image-slice: 15 11 13 17 fill;
+    border-image-repeat: round;
 }
 @font-face {
     font-family: ReenieBeanie;
@@ -29,14 +34,14 @@ html, body {
 button {
     font-family: ReenieBeanie, sans-serif;
     font-size: var(--paragraph-font-size);
-    background-color: white;
-    border: var(--drawn-border);
-    border-image: var(--drawn-border-image);
+    background-color: transparent;
+
     display: flex;
     align-items: center;
     text-align: center;
     justify-content: center;
     cursor: pointer;
+
 }
 #App {
     overflow: hidden;
@@ -50,9 +55,7 @@ p {
     display: flex;
     justify-content: space-between;
     flex-direction: column;
-
-    border: var(--drawn-border);
-    border-image: var(--drawn-border-image);
+    padding: 30px;
     /*background-image: url('./Images/lined-paper-background.jpg');*/
 }
 .panelSide {
@@ -81,9 +84,29 @@ p {
     height: 70px;
     font-size: var(--segment-button-font-size);
     transition: 0.15s ease-out;
+    position: relative;
+    display: flex;
+    align-items: center;
 }
-
-
+.segmentButtonOuter {
+    width: 100%;
+    height: 120px;
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+}
+.segmentButtonHovers {
+    width: calc(100% + 15px);
+    height: calc(100% + 15px);
+    left: -12px;
+    top: -12px;
+    position: absolute;
+    display: flex;
+    flex-wrap: wrap;
+}
+.segmentButtonHoverArea {
+    flex-basis: 33.33%;
+}
 
 .centerContent {
     display: flex;
@@ -94,9 +117,7 @@ p {
     width: 90%;
     height: 90%;
     position: absolute;
-    border: var(--drawn-border);
-    border-image: var(--drawn-border-image);
-    background-color: white;
+    /*background-color: white;*/
     display: flex;
 }
 .panelSegment {
@@ -108,6 +129,7 @@ p {
     justify-content: space-between;
     align-items: center;
     width: var(--slideshow-width);
+    position: relative;
 }
 .slideshowCenter {
     display: flex;
@@ -117,6 +139,8 @@ p {
 }
 .slideshowSide {
     width: 20px;
+    min-width: 20px;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -134,19 +158,25 @@ p {
     max-width: calc(100% - 20px * 2);
     max-height: calc(100% - 20px * 2);
     position: absolute;
-    transition: 0.3s;
-    border: var(--drawn-border);
-    border-image: var(--drawn-border-image);
+    /*transition: 0.3s;*/
 
 }
-
 .slideshowButtons {
+    width: 20px;
+    height: 20px;
 }
-.slideshowText {
+.slideshowTextDiv {
     margin-top: 55px;
     height: var(--slideshow-text-height);
+    width: 100%;
+    display: flex;
+    align-items: center;
+
+}
+.slideshowText {
     text-align: center;
     font-size: var(--paragraph-font-size);
+    position: absolute;
 }
 
 #scrollMenu {
@@ -198,9 +228,17 @@ p {
         transform: translate(0, 0);
     }
 }
-.animatingSlideAway {
-    animation: pageUp 1s ease-in-out forwards;
+.theHANDContainer {
+    /*background-color: red;*/
+    width: 300px;
+    height: 300px;
+    position: fixed;
+    z-index: 100;
+    pointer-events: none;
+    display: none;
 }
-.animatingSlideBack {
-    animation: pageDown 1s ease-in-out forwards;
+.theHAND {
+    height: 300px;
+    position: absolute;
+    transform-origin: 150px 150px;
 }

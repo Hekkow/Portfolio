@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "animejs": "^3.2.2",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-ws": "^5.0.2",

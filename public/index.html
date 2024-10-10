@@ -7,11 +7,11 @@
 </head>
 <body>
 <div id="App" class="centerContent">
-    <div style="width: 100%; height: 100%; position: absolute; z-index: 1000; background-color: white; display: flex; justify-content: center; align-items: center;">
-        SITE IN PROGRESS
-    </div>
+<!--    <div style="width: 100%; height: 100%; position: absolute; z-index: 1000; background-color: white; display: flex; justify-content: center; align-items: center;">-->
+<!--        SITE IN PROGRESS-->
+<!--    </div>-->
     <panel class="centerContent">
-        <span style="text-align: center">Omid Ghafori<br>Animation coming soon</span>
+        <span style="text-align: center">Omid Ghafori<br>Animation coming soon, please visit on desktop</span>
 
     </panel>
     <panel>
@@ -28,7 +28,7 @@
                     and the world instantly got its color back. I used Node.js with Express/WebSockets for the backend, and MongoDB for the database.
                     It's optimized to run well on the slowest laptop I've ever seen.
                 </template>
-                <template #button>VISIT CHAT</template>
+                <template #button>LINK THIS</template>
             </go-to-area>
         </panel-side>
         <panel-side>
@@ -40,9 +40,9 @@
 
                 ]"
             :texts="[
-                'I made all the profile pics you see here myself using the profile picture creator. ' +
-                 'I\'m quite proud of these wee fellas. Here you see messages, replies, group chats, direct conversations, blocking, so all the usual chatting stuff, plus ' +
-                  'some funky stuff like censoring profile pictures.',
+                 'Here you see messages, replies, group chats, direct conversations, blocking, so all the usual chatting stuff, plus ' +
+                  'some funky stuff like censoring profile pictures. ' +
+                   'I made all the profile pics you see here myself using the profile picture creator. I\'m quite proud of these wee fellas. ',
                   'This is the mobile version. It\'s a bit of a mess right now because the keyboard and browser take up more than half of the screen, but it works perfectly fine and I\'ll make an app soon',
                  'Here\'s the theme builder in action. No idea why anyone would purposely make it this ugly but they have the full freedom to if they so please.',
                 'This is the profile picture creator. It allows you to choose from a variety of shapes and modify them, sometimes down to the individual vertices. ' +
@@ -53,9 +53,7 @@
             ></slideshow>
         </panel-side>
     </panel>
-    <panel class="centerContent">
-        Multiplayer game coming soon
-    </panel>
+
     <panel>
         <panel-side width="550px">
             <go-to-area width="400px">
@@ -77,20 +75,24 @@
             </go-to-area>
         </panel-side>
         <panel-side>
-            <div class="segment" style="width: 400px;">
+            <div class="segment drawnBorder" style="width: 400px;">
                 This is my GitHub if you'd like to check out what I'm working on at the moment.
                 I'm currently looking for a job so if you'd like to see if I'm a good fit for you, please feel free to send me an email :)
                 I would also be very grateful for any feedback at all. Thank you for visiting my humble website.
                 LINK TO RESUME
                 <segment-button image-src="Images/github.png" link="https://github.com/Hekkow">GITHUB</segment-button>
+                <segment-button image-src="Images/github.png" link="resume">RESUME</segment-button>
             </div>
 
         </panel-side>
     </panel>
-    <scroll-menu></scroll-menu>
+    <panel class="centerContent">
+        Multiplayer game coming soon
+    </panel>
 
 </div>
     <script src="https://unpkg.com/vue@3"></script>
+    <script src="anime-master/lib/anime.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="index.js" type="module"></script>
 </body>

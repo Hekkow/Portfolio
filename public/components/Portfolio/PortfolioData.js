@@ -1,4 +1,4 @@
 export const data = Vue.reactive({
     numberPanels: 0,
-    activePanel: 3
+    currentPanel: 0,
 })
