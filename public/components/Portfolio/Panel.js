@@ -13,6 +13,7 @@ export default {
             <div class="theHANDContainer" ref="theHANDContainer" style="left: 100vw; top: -100vh">
                 <img class="theHAND" ref="theHAND" src="../../Images/theHAND.png"/>
               </div>
+          <!-- removing down -->
             <slot/>
         </div>
     `,
