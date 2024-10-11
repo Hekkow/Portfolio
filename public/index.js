@@ -39,6 +39,7 @@ function animatePanel(index, scrollDirection) {
         })
     }
 }
+window.animatePanel = animatePanel
 function randomDirection() {
     let direction = [0, 0]
     direction[random(0, 1)] = [-1, 1][random(0, 1)]

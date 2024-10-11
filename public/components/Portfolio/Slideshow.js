@@ -69,12 +69,15 @@ export default {
             this.selected += 1
         },
     },
-    mounted() {
-        for (let i = 1; i < this.images.length; i++) {
-            console.log(this.slideshowID + 'image' + i)
-
-            // this.$refs[this.slideshowID + 'image' + i].style.backgroundColor = 'red'
-            rotateAway(this.$refs[this.slideshowID + 'image' + i][0])
-        }
-    }
+    // mounted() {
+    //     setTimeout(() => {
+    //         for (let i = 1; i < this.images.length; i++) {
+    //             console.log(this.$refs, this.slideshowID + 'image' + i)
+    //
+    //             this.$refs[this.slideshowID + 'image' + i][0].style.backgroundColor = 'red'
+    //             // rotateAway(this.$refs[this.slideshowID + 'image' + i][0])
+    //         }
+    //     }, 50)
+    //
+    // }
 }

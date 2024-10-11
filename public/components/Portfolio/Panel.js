@@ -1,6 +1,5 @@
 import {data} from "./PortfolioData.js";
 import {random, rotateAway, rotateBack} from "../../index.js";
-import anime from "../../anime-master/lib/anime.es.js";
 export default {
 
     data() {
@@ -15,9 +14,6 @@ export default {
                 <img class="theHAND" ref="theHAND" src="../../Images/theHAND.png"/>
               </div>
             <slot/>
-            <div class="downButton">
-                DOWN
-            </div>
         </div>
     `,
     watch: {

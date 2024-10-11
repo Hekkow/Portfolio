@@ -29,6 +29,7 @@ export default {
     methods: {
         animateBack() {
             this.animating = true
+            this.$refs.text.style.display = 'block'
             animateObjectBack(this.$refs.text, this.$refs.theHAND, this.$refs.theHANDContainer, this.direction).then(_ => {
                 this.animating = false
             })
@@ -39,6 +40,7 @@ export default {
             let index = random(0, 1);
             this.direction[index] = index === 0 ? [-1, 1][random(0, 1)] : -1
             animateObjectAway(this.$refs.text, this.$refs.theHAND, this.$refs.theHANDContainer, this.direction).then(direction => {
+                this.$refs.text.style.display = 'none'
                 this.animating = false
                 this.direction = direction
             })

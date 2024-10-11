@@ -13,9 +13,9 @@
 }
 .drawnBorder {
     border: solid transparent;
-    border-image: url('./Images/border1.png');
-    border-width: 15px 11px 13px 17px;
-    border-image-slice: 15 11 13 17 fill;
+    border-image: url('./Images/border2.png');
+    border-width: 10px 13px 11px 12px;
+    border-image-slice: 10 13 11 12 fill;
     border-image-repeat: round;
 }
 @font-face {
@@ -138,8 +138,8 @@ p {
     flex-grow: 1;
 }
 .slideshowSide {
-    width: 20px;
-    min-width: 20px;
+    width: 30px;
+    min-width: 30px;
     height: 100%;
     display: flex;
     justify-content: center;
@@ -162,8 +162,8 @@ p {
 
 }
 .slideshowButtons {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
 }
 .slideshowTextDiv {
     margin-top: 55px;
@@ -241,4 +241,17 @@ p {
     height: 300px;
     position: absolute;
     transform-origin: 150px 150px;
+}
+.downButton {
+    width: 160px;
+    height: 30px;
+    /*border-radius: 30px;*/
+    position: absolute;
+    bottom: 10px;
+    margin: 0 auto;
+    text-align: center;
+    outline: 0;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
 }

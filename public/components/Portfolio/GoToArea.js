@@ -7,16 +7,12 @@ export default {
         <div :class="{segmentText: true, segmentMargined: $slots.button}">
           <slot name="text"/>
         </div>
-        <segment-button v-if="$slots.button">
-          <slot name="button"/>
-        </segment-button>
-        <!--            <button class="segmentButton drawn-border" v-if="$slots.button">-->
-        <!--                <slot name="button"/>-->
-        <!--            </button>-->
+      <slot name="button"/>
       </div>
 
     `,
     props: {
-        width: {}
+        width: {},
+        link: {},
     }
 }

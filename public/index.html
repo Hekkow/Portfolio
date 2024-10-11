@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <title>Omid Ghafori</title>
     <link rel="stylesheet" href="index.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 </head>
 <body>
 <div id="App" class="centerContent">
-<!--    <div style="width: 100%; height: 100%; position: absolute; z-index: 1000; background-color: white; display: flex; justify-content: center; align-items: center;">-->
-<!--        SITE IN PROGRESS-->
-<!--    </div>-->
     <panel class="centerContent">
-        <span style="text-align: center">Omid Ghafori<br>Animation coming soon, please visit on desktop</span>
-
+        <span style="text-align: center"><span style="font-size: 50px">Omid Ghafori</span><br>Animation coming soon, please visit on desktop</span>
+        <button class="downButton drawnBorder" onclick="animatePanel(0, 1)">
+            Scroll Down
+        </button>
     </panel>
     <panel>
         <panel-side width="550px">
-            <go-to-area width="400px">
+            <go-to-area width="400px" link="">
                 <template #title>Chat App</template>
                 <template #text>
                     I built a chat app. It's a bit ugly but it's mine.
@@ -28,7 +30,10 @@
                     and the world instantly got its color back. I used Node.js with Express/WebSockets for the backend, and MongoDB for the database.
                     It's optimized to run well on the slowest laptop I've ever seen.
                 </template>
-                <template #button>LINK THIS</template>
+
+                <template #button>
+                    <segment-button image-src="Images/chat.png" link="https://theomidghafori.tech/chat">VISIT</segment-button>
+                </template>
             </go-to-area>
         </panel-side>
         <panel-side>
@@ -79,9 +84,10 @@
                 This is my GitHub if you'd like to check out what I'm working on at the moment.
                 I'm currently looking for a job so if you'd like to see if I'm a good fit for you, please feel free to send me an email :)
                 I would also be very grateful for any feedback at all. Thank you for visiting my humble website.
-                LINK TO RESUME
+                <span style="color: #0080ff">theomidghafori@gmail.com</span>
+                <segment-button style="margin-top: 30px;" image-src="Images/email.png" link="mailto:theomidghafori@gmail.com">EMAIL</segment-button>
                 <segment-button image-src="Images/github.png" link="https://github.com/Hekkow">GITHUB</segment-button>
-                <segment-button image-src="Images/github.png" link="resume">RESUME</segment-button>
+                <segment-button image-src="Images/docs.png" link="https://docs.google.com/document/d/1XeqwZzDwVfK97S7D-muy-DIMvVEdcM2FzocsBthcnjI/edit?usp=sharing">RESUME</segment-button>
             </div>
 
         </panel-side>

@@ -36,6 +36,7 @@ export default {
     methods: {
         animateBack() {
             this.animating = true
+            this.$refs.image.style.display = 'block'
             animateObjectBack(this.$refs.image, this.$refs.theHAND, this.$refs.theHANDContainer, this.direction).then(_ => {
                 this.animating = false
             })
@@ -48,6 +49,7 @@ export default {
             animateObjectAway(this.$refs.image, this.$refs.theHAND, this.$refs.theHANDContainer, this.direction).then(direction => {
                 this.animating = false
                 this.direction = direction
+                this.$refs.image.style.display = 'none'
             })
         },
 
