@@ -12,9 +12,16 @@ class Database {
         this.conversations = this.database.collection('Conversations')
         this.latestIDs = await this.database.collection('LatestIDs')
         this.readMessages = await this.database.collection('ReadMessages')
+        this.portfolioMessages = await this.database.collection('PortfolioMessages')
         await this.users.createIndex({userID: 1})
         await this.conversations.createIndex({conversationID: 1})
         await this.readMessages.createIndex({conversationID: 1})
+    }
+    async getPortfolioMessages() {
+        return this.portfolioMessages.find({}).toArray()
+    }
+    async addPortfolioMessage(username, text) {
+        this.portfolioMessages.insertOne({username: username, text: text})
     }
     async createPublicConversation() {
         if (await this.getLatestConversationID() === 2) await this.createConversation({users: [], conversationType: Helper.group, conversationName: "Howdy"})

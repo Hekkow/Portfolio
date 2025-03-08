@@ -1,257 +1,507 @@
 :root {
-    --scroll-menu-width: 20px;
-    --paragraph-font-size: 25px;
-    --paragraph-line-height: 29px;
-    --title-font-size: 70px;
-    --segment-title-font-size: 50px;
-    --segment-button-font-size: 40px;
-    --slideshow-width: 1000px;
-    --slideshow-top-height: 600px;
-    --slideshow-text-height: 150px;
-    --slideshow-text-font-size: 17px;
-    --segment-section-margin-bottom: 20px;
-}
-.drawnBorder {
-    border: solid transparent;
-    border-image: url('./Images/border2.png');
-    border-width: 10px 13px 11px 12px;
-    border-image-slice: 10 13 11 12 fill;
-    border-image-repeat: round;
+    --taskbar-height: 64px;
+    --taskbar-width: 96px;
+    --border-top-height: 40px;
+    /*--border-side-width: 17px;*/
+    --default-font: "Munro", monospace;
+    --default-transition-time: 0.15s;
+    --blue: #306082;
 }
 @font-face {
-    font-family: ReenieBeanie;
-    src: url('./Fonts/ReenieBeanie.ttf');
+    font-family: Munro;
+    src: url("Fonts/munro.ttf")
 }
-html, body {
+body, html {
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    font-family: ReenieBeanie, sans-serif;
-    font-size: var(--paragraph-font-size);
+    user-select: none;
+}
+body {
+    background-color: #2e2e2e;
+    font-size: 18px;
+}
+.default-font {
+    font-family: var(--default-font);
+    /*image-rendering: pixelated;*/
+    text-rendering: optimizeLegibility;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: none;
+    letter-spacing: 1px;
+    color: white;
 }
 button {
-    font-family: ReenieBeanie, sans-serif;
-    font-size: var(--paragraph-font-size);
-    background-color: transparent;
-
-    display: flex;
-    align-items: center;
-    text-align: center;
-    justify-content: center;
+    font-family: var(--default-font);
+    font-size: 16px;
+    /*image-rendering: crisp-edges;*/
+    -webkit-font-smoothing: none;
+    -moz-osx-font-smoothing: grayscale;
     cursor: pointer;
-
+}
+input {
+    font-family: var(--default-font);
 }
 #App {
-    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
 }
-p {
-    margin: 0;
+#computer {
+    /*background-color: pink;*/
+    width: 1200px;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    cursor: url("Images/cursor.png") 0 0, auto;
+    background-image: url("Images/background.png");
+    background-size: cover;
 }
-.segment {
+#desktop {
+    flex-grow: 1;
+    position: relative;
+}
+#taskbar {
+    /*border-top: 3px solid black;*/
+    height: var(--taskbar-height);
     display: flex;
     justify-content: space-between;
-    flex-direction: column;
-    padding: 30px;
-    /*background-image: url('./Images/lined-paper-background.jpg');*/
 }
-.panelSide {
+#taskbar-apps {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    justify-content: center;
-    align-items: center;
-
+    margin: 0;
+    padding: 0;
 }
-
-.segmentTitle {
-    font-size: var(--segment-title-font-size);
-    text-align: center;
-
-}
-.segmentText {
-    font-size: var(--paragraph-font-size);
-    line-height: var(--paragraph-line-height);
-    text-align: justify;
-}
-.segmentMargined {
-    margin-bottom: var(--segment-section-margin-bottom);
-}
-.segmentButton {
-    text-align: left;
-    justify-content: start;
-    height: 70px;
-    font-size: var(--segment-button-font-size);
-    transition: 0.15s ease-out;
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-.segmentButtonOuter {
-    width: 100%;
-    height: 120px;
+.taskbar-app {
+    height: var(--taskbar-height);
+    width: var(--taskbar-width);
+    /*border-right: 1px solid black;*/
+    overflow: hidden; /* remove later probably */
+    background-image: url("Images/taskbar-app.png");
+    outline: 0;
     background-color: transparent;
     border: 0;
-    outline: 0;
+    margin: 0;
+    padding: 0;
 }
-.segmentButtonHovers {
-    width: calc(100% + 15px);
-    height: calc(100% + 15px);
-    left: -12px;
-    top: -12px;
-    position: absolute;
-    display: flex;
-    flex-wrap: wrap;
+.taskbar-app:hover:active {
+    background-image: url("Images/taskbar-app-held.png")
 }
-.segmentButtonHoverArea {
-    flex-basis: 33.33%;
+.taskbar-app.active {
+    background-image: url("Images/taskbar-app-active.png")
+    /*background-color: gray;*/
 }
-
-.centerContent {
+.taskbar-app:hover:active .taskbar-app-icon-img {
+    margin-top: 4px;
+    margin-left: 4px;
+}
+.taskbar-app-icon {
     display: flex;
     justify-content: center;
+
+}
+.taskbar-app-icon-img {
+    object-fit: contain;
+}
+#start-menu-button {
+    height: var(--taskbar-height);
+    width: var(--taskbar-width);
+    background-image: url("Images/start-menu-button.png");
+
+}
+#system-tray {
+    display: flex;
     align-items: center;
 }
-.panel {
-    width: 90%;
-    height: 90%;
+#system-tray-date {
+    text-align: center;
+    line-height: 20px;
+    margin: 0 10px;
+}
+#aero-peek {
+    width: 16px;
+    /*width: 10px;*/
+    height: 100%;
+    /*border-left: 1px solid black;*/
+    transition: var(--default-transition-time);
+    background-image: url("Images/aero-peek.png");
+    background-position: bottom;
+    background-repeat: no-repeat;
+}
+
+.desktop-shortcut {
+    width: 100px;
     position: absolute;
-    /*background-color: white;*/
-    display: flex;
+    box-sizing: border-box;
 }
-.panelSegment {
-    margin-bottom: 50px;
+.desktop-shortcut:hover {
+    background-color: rgba(0, 157, 255, 0.1);
+    outline: 4px solid rgba(255, 255, 255, 0.54);
 }
-.slideshowContainer {
+.desktop-shortcut.active {
+    background-color: rgba(12, 128, 200, 0.26);
+    outline: 4px solid white;
+}
+.desktop-shortcut.dragging {
+    background-color: rgba(12, 128, 200, 0.26);
+    outline: 4px solid white;
+    pointer-events: none;
+    z-index: 2;
+}
+.desktop-shortcut-icon {
+    width: 100px;
+    height: 100px;
+}
+.desktop-shortcut-title {
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    margin: 5px 0;
+    /*background-color: green;*/
+}
+.app-border {
+    position: absolute;
+    user-select: none;
+    border-image-source: url("Images/app-border.png");
+    border-image-slice: 20 16 12 12 fill;
+    border-image-width: 20px 16px 12px 12px;
+    padding: 37px 16px 16px 8px;
+    border-image-repeat: repeat repeat;
+    border-style: solid;
+    /*min-width: 200px;*/
+    /*min-height: 100px;*/
+
+}
+.app-border.active {
+    border-image-source: url("Images/app-border-active.png");
+}
+.app-border.hide-border {
+    border-image: none;
+    border-style: none;
+    pointer-events: none;
+}
+.app-border-top {
     display: flex;
-    /*flex-direction: column;*/
-    justify-content: space-between;
+    flex-direction: row;
+    height: var(--border-top-height);
+    position: absolute;
+    top: -3px;
+    width: calc(100% - 24px);
+}
+.app-border-top.hide-border {
+    display: none;
+}
+.app-border-title {
+    line-height: var(--border-top-height);
+    color: black;
+}
+.app-border-icon {
+    height: 100%;
+    margin: 0 4px;
+    display: flex;
     align-items: center;
-    width: var(--slideshow-width);
-    position: relative;
 }
-.slideshowCenter {
+.app-border-buttons-div {
+    height: 100%;
+    margin-left: auto;
+}
+.app-border-button {
+    aspect-ratio: 1;
+    height: 100%;
+    border: 0;
+    background-color: transparent;
+}
+.app-border-button:hover:active {
+    background-position: center 4px;
+}
+.app-border-button.close:hover:active {
+    background-image: url("Images/app-button-close.png")
+}
+.app-border-button.minimize:hover:active {
+    background-image: url("Images/app-button-minimize.png");
+    /*background-color: red !important;*/
+}
+.app-border-button.close {
+    background-image: url("Images/app-button-close.png"), url("Images/app-button.png")
+}
+.app-border-button.minimize {
+    background-image: url("Images/app-button-minimize.png"), url("Images/app-button.png")
+}
+
+.app {
+    overflow: hidden;
+    pointer-events: auto;
+}
+#start-menu {
+    width: 300px;
+    height: 500px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    flex-grow: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 999;
+    border-image-source: url("Images/start-menu.png");
+    border-image-slice: 20 16 12 12 fill;
+    border-image-width: 20px 16px 12px 12px;
+    border-image-repeat: repeat repeat;
+    border-style: solid;
 }
-.slideshowSide {
-    width: 30px;
-    min-width: 30px;
+#start-menu-apps {
+    overflow-y: scroll;
+    margin-right: 12px;
+    scrollbar-width: thin;
+    margin-bottom: 8px;
+}
+.start-menu-app {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    flex-direction: row;
+}
+.start-menu-app-icon {
+    height: 100%;
+    aspect-ratio: 1;
+}
+/*.start-menu-app-icon-img {*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*}*/
+.start-menu-app-text {
+    display: flex;
+    align-items: center;
+    color: black;
+}
+.notepad {
+    width: 500px;
+    height: 400px;
+    background-color: #ffffff;
+    color: black;
+    border: 4px solid var(--blue);
+}
+.notepad-textarea {
+    background-color: transparent;
+    border: 0;
+    resize: none;
+    width: 100%;
+    height: 100%;
+    white-space: pre-wrap;
+    font-family: var(--default-font);
+    padding: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-gutter: both-edges stable;
+}
+
+.notepad-textarea:focus {
+    outline: none;
+}
+.notepad-button {
+    /*background-color: white;*/
+    text-decoration: underline;
+    color: var(--blue);
+    cursor: pointer;
+    font-weight: bold;
+
+}
+.notepad-button:visited {
+    color: var(--blue);
+}
+.notepad-red {
+    color: #d85762;
+    font-weight: bold;
+}
+.notepad-blue {
+    color: #4194ea;
+    font-weight: bold;
+}
+.notepad-green {
+    color: #2fb510;
+    font-weight: bold;
+}
+.notepad-img {
+    max-width: 100%;
+    user-select: none;
+    cursor: pointer;
+}
+#weather {
+    width: 384px;
+    height: 384px;
+    position: relative;
+}
+.weather-div {
+    display: flex;
+}
+.weather-setting-toggle {
+    float: right;
+}
+.weather-setting-button {
+    background-color: transparent;
+    width: 32px;
+    height: 32px;
+    background-image: url("Images/button.png");
+    outline: 0;
+    border: 0;
+    padding: 0;
+    margin: 0 0 4px 4px;
+}
+.weather-setting-button:hover:active {
+    background-image: url("Images/button-active.png");
+}
+.weather-setting-button:hover:active .weather-setting-icon {
+    padding-top: 4px;
+    padding-left: 4px;
+    /*margin: 0;*/
+}
+.weather-day {
+    background-color: transparent;
+    width: 160px;
+    height: 32px;
+    background-image: url("Images/big-button.png");
+    outline: 0;
+    border: 0;
+    padding-bottom: 4px;
+    padding-right: 6px;
+}
+.weather-day:hover:active {
+    background-image: url("Images/big-button-active.png");
+    padding-bottom: 0;
+    padding-top: 4px;
+    padding-right: 0;
+}
+.weather-settings {
+    display: flex;
+    flex-direction: column;
+    float: right;
+    position: relative;
+    z-index: 2;
+}
+.weather-settings-popup {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    right: 100%;
+    /*background-color: white;*/
+    padding: 16px;
+    color: black;
+    border-image-source: url("Images/app-border-active.png");
+    border-image-slice: 20 16 12 12 fill;
+    border-image-width: 20px 16px 12px 12px;
+    /*padding: 37px 16px 16px 8px;*/
+    border-image-repeat: repeat repeat;
+    border-style: solid;
+}
+.weather-input {
+    background-image: url("Images/big-button.png");
+    outline: 0;
+    border: 0;
+    width: 160px;
+    height: 32px;
+    padding: 0 0 6px 8px;
+    margin: 0;
+    background-color: transparent;
+    box-sizing: border-box;
+    margin-bottom: 4px;
+}
+.weather-input:focus {
+    background-image: url("Images/big-button-active.png");
+    padding: 4px 0 2px 12px;
+}
+#weather-pond {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+#chatbox {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    width: 564px;
+    height: 400px;
+    background-color: #ffffff;
+    color: black;
+    border: 4px solid var(--blue);
+
+}
+.chatbox-top {
+    flex-grow: 1;
+
+    overflow-y: auto;
+    box-sizing: border-box;
+    scrollbar-width: thin;
+    scrollbar-gutter: both-edges stable;
+}
+.chatbox-bottom {
+    /*height: 30px;*/
+    padding-top: 10px;
+    display: flex;
+
+}
+.chatbox-message {
+    word-break: break-word;
+    user-select: text;
+}
+
+.chatbox-input {
+    width: 400px;
+    height: 32px;
+    /*border: 4px solid black;*/
+    outline: 0;
+    border: 0;
+    background-image: url("Images/big-text-input.png");
+    box-sizing: border-box;
+    margin-right: 4px;
+    /*padding-left: 10px;*/
+    padding: 0 0 6px 8px;
+}
+.chatbox-input:focus {
+    width: 400px;
+    height: 32px;
+    background-image: url("Images/big-text-input-active.png");
+    padding: 4px 0 2px 12px;
+}
+.big-button {
+    background-color: transparent;
+    width: 160px;
+    height: 32px;
+    background-image: url("Images/big-button.png");
+    outline: 0;
+    border: 0;
+    padding-bottom: 4px;
+    padding-right: 6px;
+    margin-bottom: 4px;
+}
+.big-button:hover:active {
+    background-image: url("Images/big-button-active.png");
+    padding-bottom: 0;
+    padding-top: 4px;
+    padding-right: 0;
+}
+#image-viewer {
+    min-width: 300px;
+    min-height: 200px;
+    max-width: calc(1200px - 8px - 16px);
+    max-height: calc(700px - var(--taskbar-height) - 37px - 16px); /* app-border padding top and bottom */
+}
+.image-viewer-image {
+    max-height: 100%;
+    max-width: 100%;
+    /*image-rendering: smooth;*/
+}
+.ifMobile {
+    width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 100;
-}
-.slideshowImageContainer {
-    display: flex;
-    justify-content: center;
-    align-items: end;
-    position: relative;
-    height: var(--slideshow-top-height);
-    width: 100%;
-}
-.slideshowImage {
-    max-width: calc(100% - 20px * 2);
-    max-height: calc(100% - 20px * 2);
-    position: absolute;
-    /*transition: 0.3s;*/
-
-}
-.slideshowButtons {
-    width: 30px;
-    height: 30px;
-}
-.slideshowTextDiv {
-    margin-top: 55px;
-    height: var(--slideshow-text-height);
-    width: 100%;
-    display: flex;
-    align-items: center;
-
-}
-.slideshowText {
-    text-align: center;
-    font-size: var(--paragraph-font-size);
-    position: absolute;
-}
-
-#scrollMenu {
-    position: fixed;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: var(--scroll-menu-width);
-}
-.scrollMenuButton {
-    width: var(--scroll-menu-width);
-    height: var(--scroll-menu-width);
-    border-radius: var(--scroll-menu-width);
-    border: 3px solid black;
-    background-color: rgba(0, 0, 0, 0);
-    margin: 5px;
-    cursor: pointer;
-    z-index: 100;
-    position: relative;
-}
-.selected {
-    border: 3px solid red;
-}
-.animatingPageUp {
-    animation: pageUp 1s ease-in-out forwards;
-}
-.animatingPageDown {
-    animation: pageDown 1s ease-in-out forwards;
-}
-@keyframes pageUp {
-    0% {
-        transform: translate(0, 0);
-    }
-    50% {
-        transform: translate(-50%, 10%) rotate(-20deg);
-    }
-    100% {
-        transform: translate(-100%) rotate(-80deg);
-    }
-}
-@keyframes pageDown {
-    0% {
-        transform: translate(-100%) rotate(-80deg);
-    }
-    50% {
-        transform: translate(-50%, 10%) rotate(-20deg);
-    }
-    100% {
-        transform: translate(0, 0);
-    }
-}
-.theHANDContainer {
-    /*background-color: red;*/
-    width: 300px;
-    height: 300px;
-    position: fixed;
-    z-index: 100;
-    pointer-events: none;
-    display: none;
-}
-.theHAND {
-    height: 300px;
-    position: absolute;
-    transform-origin: 150px 150px;
-}
-.downButton {
-    width: 160px;
-    height: 30px;
-    /*border-radius: 30px;*/
-    position: absolute;
-    bottom: 10px;
-    margin: 0 auto;
-    text-align: center;
-    outline: 0;
-    border-top: 0;
-    border-left: 0;
-    border-right: 0;
 }

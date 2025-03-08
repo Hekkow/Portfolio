@@ -14,6 +14,26 @@ Database.initPromise.then(async () => {
 })
 app.use(express.static('public'));
 app.use(express.json());
+let portfolioClients = []
+app.ws('/portfolioChat', (ws, req) => {
+    portfolioClients.push(ws)
+    Database.getPortfolioMessages().then((messages) => {
+        ws.send(JSON.stringify(messages))
+    })
+    ws.on('message', (msg) => {
+        let data = JSON.parse(msg)
+        Database.addPortfolioMessage(data.username, data.text).then(() => {
+            console.log(portfolioClients)
+            portfolioClients.filter(client => client !== ws).forEach((socket) => {
+                socket.send(JSON.stringify({username: data.username, text: data.text}))
+            })
+        })
+
+    })
+    ws.on('close', () => {
+        portfolioClients = portfolioClients.filter(client => client !== ws)
+    })
+})
 app.ws('/chat', (ws, req) => {
     ws.on('message', (msg) => {
         let data = JSON.parse(msg)

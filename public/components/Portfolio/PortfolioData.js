@@ -1,4 +1,9 @@
 export const data = Vue.reactive({
-    numberPanels: 0,
-    currentPanel: 0,
+    openApps: new Set(),
+    allApps: new Set(),
+    desktopApps: new Map(),
+    latestDesktopID: 0,
+    appOrder: [],
+    startMenuOpen: false,
+    openImage: null,
 })
