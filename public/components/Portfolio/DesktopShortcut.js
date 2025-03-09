@@ -94,8 +94,15 @@ export default {
     mounted() {
         document.addEventListener("mousemove", this.drag)
         document.addEventListener("mouseup", this.mouseUp)
+        let t = this
         $('#computer').click((event) => {
             this.highlighted = false
+        })
+        $('.desktop-shortcut').click(function(event) {
+            if ($(event.target).parents('.desktop-shortcut')[0] !== t.$el) {
+                console.log(event.target, t.$el)
+                t.highlighted = false
+            }
         })
         this.$el.style.left = this.app.x * (this.width + this.margin) + this.margin + "px"
         this.$el.style.top = this.app.y * (this.height + this.margin) + this.margin + "px"

@@ -129,8 +129,7 @@ export default {
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.latitude}&longitude=${this.longitude}&current=weather_code&daily=weather_code&timezone=America%2FNew_York`)
                 .then((response) => {
                     if (!response.ok) {
-                        alert("BROKEN")
-                        // FINISH THIS LATER
+                        return
                     }
                     response.json().then((result) => {
                         this.forecast = result.daily.weather_code
