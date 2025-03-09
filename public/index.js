@@ -119,15 +119,14 @@ While it was alive though, I completed fast paced movement including dashes and 
 explosive bullets and anti gravity, and basic enemy AI with vision and pathfinding.
 
 <video class="notepad-img" controls>
-  <source src="Images/fps1.mp4" type="video/mp4">
-</video>
-<div class="notepad-button" onclick="openImage('Images/fps1.mp4')">Expand</div>
-
-<video class="notepad-img" controls>
   <source src="Images/fps2.mp4" type="video/mp4">
 </video>
 <div class="notepad-button" onclick="openImage('Images/fps2.mp4')">Expand</div>
 
+<video class="notepad-img" controls>
+  <source src="Images/fps1.mp4" type="video/mp4">
+</video>
+<div class="notepad-button" onclick="openImage('Images/fps1.mp4')">Expand</div>
 <a class="notepad-button" contenteditable="false" href="https://github.com/Hekkow/FPS-Game" target="_blank">GitHub</a>
 
 I lost access to most of my projects recently unfortunately, so these are only projects I've done within the last year or so. Hopefully many more to come.

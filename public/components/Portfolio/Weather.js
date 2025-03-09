@@ -23,8 +23,8 @@ export default {
                 10: "Nov",
                 11: "Dec"
             },
-            longitude: -75.6981,
-            latitude: 45.4112,
+            longitude: 0,
+            latitude: 0,
         }
     },
     template: `
@@ -47,6 +47,7 @@ export default {
               Longitude: <input class="weather-input" v-model="longitude"/>
               Latitude: <input class="weather-input" v-model="latitude"/>
               <button class="big-button" @click="updateWeather">Set</button>
+              <button class="big-button" @click="getLocation">Get Location</button>
             </div>
             <button class="weather-setting-button" @click="toggleShowLocation">
               <img class="weather-setting-icon" src="../../Images/longitude-latitude.png" alt="">
@@ -83,6 +84,13 @@ export default {
         }
     },
     methods: {
+        getLocation() {
+            navigator.geolocation.getCurrentPosition((position) => {
+                this.latitude = position.coords.latitude
+                this.longitude = position.coords.longitude
+                this.updateWeather()
+            })
+        },
         minimizeApp,
         closeApp,
         toggleShowDays() {
