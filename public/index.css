@@ -330,7 +330,13 @@ input {
     max-width: 100%;
     user-select: none;
     cursor: pointer;
+    outline: 0;
 }
+/*.notepad-img:focus {*/
+/*    max-width: 100%;*/
+/*    user-select: none;*/
+/*    cursor: pointer;*/
+/*}*/
 #weather {
     width: 384px;
     height: 384px;
@@ -492,6 +498,9 @@ input {
     min-height: 200px;
     max-width: calc(1200px - 8px - 16px);
     max-height: calc(700px - var(--taskbar-height) - 37px - 16px); /* app-border padding top and bottom */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .image-viewer-image {
     max-height: 100%;

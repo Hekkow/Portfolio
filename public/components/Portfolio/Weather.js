@@ -1,4 +1,5 @@
 import {data} from "./PortfolioData.js";
+import {closeApp, minimizeApp} from "../../index.js";
 export default {
     data() {
         return {
@@ -51,6 +52,12 @@ export default {
               <img class="weather-setting-icon" src="../../Images/longitude-latitude.png" alt="">
             </button>
           </div>
+          <button class="weather-setting-button" @click="minimizeApp(app)">
+            <img class="weather-setting-icon" src="../../Images/minimize.png" alt="">
+          </button>
+          <button class="weather-setting-button" @click="closeApp(app)">
+            <img class="weather-setting-icon" src="../../Images/close.png" alt="">
+          </button>
           <button class="weather-setting-button draggable" v-draggable @mousedown="hidePopups">
             <img class="weather-setting-icon draggable" src="../../Images/drag.png" alt="" v-draggable>
           </button>
@@ -76,6 +83,8 @@ export default {
         }
     },
     methods: {
+        minimizeApp,
+        closeApp,
         toggleShowDays() {
             this.showDays = !this.showDays
             this.showLocation = false

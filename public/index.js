@@ -110,13 +110,33 @@ media needs.
 
 <img class="notepad-img" src="Images/profilepic.png" onclick="openImage('Images/profilepic.png')">
 
+<a class="notepad-button" contenteditable="false" href="https://github.com/Hekkow/Portfolio" target="_blank">GitHub</a>
+
+<span class="notepad-green">FPS Game</span>
+I worked on this game for about 8 months but lost access to the project sadly, so all I have left is the out of date GitHub page and a couple videos I sent to friends.
+
+While it was alive though, I completed fast paced movement including dashes and grappling hooks, a dynamic weapons system that could combine multiple upgrades like \
+explosive bullets and anti gravity, and basic enemy AI with vision and pathfinding.
+
+<video class="notepad-img" controls>
+  <source src="Images/fps1.mp4" type="video/mp4">
+</video>
+<div class="notepad-button" onclick="openImage('Images/fps1.mp4')">Expand</div>
+
+<video class="notepad-img" controls>
+  <source src="Images/fps2.mp4" type="video/mp4">
+</video>
+<div class="notepad-button" onclick="openImage('Images/fps2.mp4')">Expand</div>
+
+<a class="notepad-button" contenteditable="false" href="https://github.com/Hekkow/FPS-Game" target="_blank">GitHub</a>
+
 I lost access to most of my projects recently unfortunately, so these are only projects I've done within the last year or so. Hopefully many more to come.
 
 `
 
 // whoAmI.text = "test1\ntest"
 
-openApp(aboutThisSite)
+openApp(myProjects)
 
 data.allApps = new Set([trashBin, aboutMe, weather, aboutThisSite, leaveAComment, downloadMoreRAM, myProjects, peskyPlant, platformer, imageViewer])
 for (let app of data.allApps) {
