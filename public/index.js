@@ -135,7 +135,7 @@ I lost access to most of my projects recently unfortunately, so these are only p
 
 // whoAmI.text = "test1\ntest"
 
-openApp(myProjects)
+openApp(aboutThisSite)
 
 data.allApps = new Set([trashBin, aboutMe, weather, aboutThisSite, leaveAComment, downloadMoreRAM, myProjects, peskyPlant, platformer, imageViewer])
 for (let app of data.allApps) {

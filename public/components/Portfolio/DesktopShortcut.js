@@ -77,8 +77,6 @@ export default {
             }
         },
         dropped(dropping) {
-            // console.log(dropping)
-            // console.log("HERE", this.app.name)
             if (this.app.name === "Trash") {
                 console.log("here1", data.desktopApps)
 
