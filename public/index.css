@@ -34,10 +34,12 @@ body {
 button {
     font-family: var(--default-font);
     font-size: 16px;
-    /*image-rendering: crisp-edges;*/
     -webkit-font-smoothing: none;
     -moz-osx-font-smoothing: grayscale;
-    cursor: pointer;
+    cursor: url("Images/cursor-pointer.png") 16 0, pointer;
+}
+button:active {
+    cursor: url("Images/cursor-grabber.png") 16 0, pointer;
 }
 input {
     font-family: var(--default-font);
@@ -56,7 +58,7 @@ input {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    cursor: url("Images/cursor.png") 0 0, auto;
+    cursor: url("Images/cursor-default.png") 0 0, auto;
     background-image: url("Images/background.png");
     background-size: cover;
 }
@@ -298,6 +300,8 @@ input {
     box-sizing: border-box;
     scrollbar-width: thin;
     scrollbar-gutter: both-edges stable;
+    cursor: url("Images/cursor-text.png") 8 12, text;
+
 }
 
 .notepad-textarea:focus {
@@ -329,14 +333,9 @@ input {
 .notepad-img {
     max-width: 100%;
     user-select: none;
-    cursor: pointer;
+    cursor: url("Images/cursor-pointer.png") 16 0, pointer;
     outline: 0;
 }
-/*.notepad-img:focus {*/
-/*    max-width: 100%;*/
-/*    user-select: none;*/
-/*    cursor: pointer;*/
-/*}*/
 #weather {
     width: 384px;
     height: 384px;
