@@ -14,11 +14,6 @@ export default {
     mounted() {
         this.app.top = "10%"
         this.app.left = "28%"
-        let timer = $(`<p>1</p>`)
-        $(this.$el).append(timer)
-        setInterval(() => {
-            timer.text(parseInt(timer.text())+1)
-        }, 1000)
     },
     props: {
         app: Object,

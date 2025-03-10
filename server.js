@@ -23,7 +23,6 @@ app.ws('/portfolioChat', (ws, req) => {
     ws.on('message', (msg) => {
         let data = JSON.parse(msg)
         Database.addPortfolioMessage(data.username, data.text).then(() => {
-            console.log(portfolioClients)
             portfolioClients.filter(client => client !== ws).forEach((socket) => {
                 socket.send(JSON.stringify({username: data.username, text: data.text}))
             })

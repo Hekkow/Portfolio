@@ -43,6 +43,8 @@ button:active {
 }
 input {
     font-family: var(--default-font);
+    cursor: url("Images/cursor-text.png") 8 12, text;
+
 }
 #App {
     display: flex;
@@ -311,7 +313,7 @@ input {
     /*background-color: white;*/
     text-decoration: underline;
     color: var(--blue);
-    cursor: pointer;
+    cursor: url("Images/cursor-pointer.png") 16 0, pointer;
     font-weight: bold;
 
 }
