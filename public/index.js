@@ -25,7 +25,7 @@ document.addEventListener("mouseup", () => {
     draggingLocation = null
 })
 App.mount('#App')
-class AppClass {
+export class AppClass {
     constructor(name, tagName, icon, x, y) {
         this.name = name
         this.minimized = false
@@ -43,7 +43,7 @@ let aboutMe = new AppClass("About Me", "notepad", "notepad", 0, 3)
 
 let myProjects = new AppClass("My Projects", "notepad", "notepad", 1, 0)
 let peskyPlant = new AppClass("Pesky Plant", "pesky-plant", "unavailable", 1, 1)
-let downloadMoreRAM = new AppClass("Download more RAM", "virus", "unavailable", 1, 2)
+let downloadMoreRAM = new AppClass("Download more RAM", "virus", "ram", 1, 2)
 let platformer = new AppClass("Platformer", "game", "unavailable", 1, 3)
 
 // education

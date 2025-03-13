@@ -54,7 +54,6 @@ export default {
     mounted() {
         this.app.top = "20%"
         this.app.left = "45%"
-        console.log(window.location.hostname)
         let host = window.location.hostname === "localhost" ? `ws://localhost:6969/portfolioChat` : `wss://${window.location.hostname}/portfolioChat`
         this.ws = new WebSocket(host)
         this.ws.onmessage = (event) => {

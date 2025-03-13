@@ -16,6 +16,7 @@ import Chatbox from "./Chatbox.js";
 import ImageViewer from "./ImageViewer.js";
 import Virus from "./Virus.js";
 import PeskyPlant from "./PeskyPlant.js";
+import CommandPrompt from "./CommandPrompt.js";
 const App = Vue.createApp({
     data() {
         return {
@@ -40,4 +41,5 @@ App.component('chatbox', Chatbox)
 App.component('image-viewer', ImageViewer)
 App.component('virus', Virus)
 App.component('pesky-plant', PeskyPlant)
+App.component('command-prompt', CommandPrompt)
 export default App

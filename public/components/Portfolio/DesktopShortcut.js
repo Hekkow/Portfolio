@@ -63,10 +63,6 @@ export default {
 
             this.started = false
             this.dragging = false
-            // click detection
-            // let diffX = Math.abs(event.pageX - this.startX)
-            // let diffY = Math.abs(event.pageY - this.startY)
-            // if (diffX < 6 && diffY < 6) { }
         },
         drag(event) {
             if (this.dragging) {
@@ -78,8 +74,6 @@ export default {
         },
         dropped(dropping) {
             if (this.app.name === "Trash") {
-                console.log("here1", data.desktopApps)
-
                 if (!this.app.deleted) {
                     this.app.deleted = new Map()
                 }
@@ -98,7 +92,6 @@ export default {
         })
         $('.desktop-shortcut').click(function(event) {
             if ($(event.target).parents('.desktop-shortcut')[0] !== t.$el) {
-                console.log(event.target, t.$el)
                 t.highlighted = false
             }
         })

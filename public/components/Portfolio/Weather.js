@@ -29,6 +29,7 @@ export default {
     },
     template: `
       <div id="weather">
+        <div style="position: absolute; background-color: white; color: black; border: 4px solid black; padding: 4px;">Art for other weathers coming soon</div>
         <button @click="showSettings = !showSettings" class="weather-setting-toggle weather-setting-button">
           <img class="weather-setting-icon" :src="plusMinus" alt="">
         </button>
@@ -134,7 +135,6 @@ export default {
                     response.json().then((result) => {
                         this.forecast = result.daily.weather_code
                         this.forecast[0] = result.current.weather_code // not sure if needed
-                        console.log(result)
                     })
                 })
         }
