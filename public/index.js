@@ -42,16 +42,12 @@ let aboutMe = new AppClass("About Me", "notepad", "notepad", 0, 3)
 
 
 let myProjects = new AppClass("My Projects", "notepad", "notepad", 1, 0)
-let peskyPlant = new AppClass("Pesky Plant", "pesky-plant", "unavailable", 1, 1)
-let downloadMoreRAM = new AppClass("Download more RAM", "virus", "ram", 1, 2)
-let platformer = new AppClass("Platformer", "game", "platformer", 1, 3)
+let downloadMoreRAM = new AppClass("Download more RAM", "virus", "ram", 1, 1)
+let platformer = new AppClass("Platformer", "game", "platformer", 1, 2)
 
-// education
-// skills
-// github, resume
 
-let imageViewer = new AppClass("Image Viewer", "image-viewer", "image-viewer", 2, 0)
-let leaveAComment = new AppClass("Leave a Comment", "chatbox", "chatbox", 2, 1)
+let imageViewer = new AppClass("Image Viewer", "image-viewer", "image-viewer", 1, 3)
+let leaveAComment = new AppClass("Leave a Comment", "chatbox", "chatbox", 2, 0)
 
 aboutThisSite.text = `<span class="notepad-red">Hello</span>, and thank you for visiting my portfolio website!
 I built it using Vue.js, with a sprinkle of jQuery, Node.js, and GDScript. \
@@ -137,7 +133,7 @@ I lost access to most of my projects recently unfortunately, so these are only p
 
 openApp(aboutThisSite)
 
-data.allApps = new Set([trashBin, aboutMe, weather, aboutThisSite, leaveAComment, downloadMoreRAM, myProjects, peskyPlant, platformer, imageViewer])
+data.allApps = new Set([trashBin, aboutMe, weather, aboutThisSite, leaveAComment, downloadMoreRAM, myProjects, platformer, imageViewer])
 for (let app of data.allApps) {
     data.desktopApps.set(data.latestDesktopID, app)
     data.latestDesktopID++
