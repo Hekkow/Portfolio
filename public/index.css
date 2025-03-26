@@ -182,7 +182,7 @@ input {
     border-image-width: 20px 16px 12px 12px;
     padding: 37px 16px 16px 8px;
     border-image-repeat: repeat repeat;
-    border-style: solid;
+    /*border-style: solid;*/
     /*min-width: 200px;*/
     /*min-height: 100px;*/
 
