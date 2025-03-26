@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://cy40li5umhb2n"]
+
+[ext_resource type="Script" uid="uid://dqtxifjj6ua43" path="res://death.gd" id="1_7k7bx"]
+[ext_resource type="Texture2D" uid="uid://b2mn2bmhkd1el" path="res://tilemap.png" id="2_7k7bx"]
+
+[node name="Spike" type="Area2D"]
+collision_mask = 2
+script = ExtResource("1_7k7bx")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(14, 14)
+texture = ExtResource("2_7k7bx")
+region_enabled = true
+region_rect = Rect2(56, 0, 28, 28)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="."]
+position = Vector2(14, 16)
+polygon = PackedVector2Array(-12, 12, -8, -4, 0, 10, 8, -4, 13, 12)

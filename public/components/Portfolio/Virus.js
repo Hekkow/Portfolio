@@ -13,7 +13,7 @@ export default {
         <div
             v-for="i in cmds"
             :key="i"
-            :class="{'app-border': true, 'hide-border': false, active: true}"
+            :class="{'app-border': true, 'hide-border': false, 'active': i === numCmds-1}"
             :style="{pointerEvents: 'auto',
             top: (i%16)*43 + 'px',
             left: (i%75)*14 + 'px',}"

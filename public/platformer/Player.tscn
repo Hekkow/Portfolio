@@ -1,0 +1,44 @@
+[gd_scene load_steps=7 format=3 uid="uid://ea4vvqd4outf"]
+
+[ext_resource type="Script" uid="uid://cn4t1kekjiuwi" path="res://player.gd" id="1_xg88j"]
+[ext_resource type="Texture2D" uid="uid://cm57d1v5lovw2" path="res://player.png" id="2_e80uo"]
+[ext_resource type="Script" uid="uid://ctvgf8yp1tiga" path="res://Smear.gd" id="3_e80uo"]
+[ext_resource type="SpriteFrames" uid="uid://cxb1g88m8gbeb" path="res://PlayerSprite.tres" id="5_cxr5p"]
+[ext_resource type="Texture2D" uid="uid://6aqc1k65i68e" path="res://death.png" id="6_tdg3f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kb21j"]
+size = Vector2(28, 52)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+z_index = 3
+texture_filter = 1
+position = Vector2(208, 429)
+collision_layer = 3
+platform_wall_layers = 3
+safe_margin = 0.1
+script = ExtResource("1_xg88j")
+
+[node name="Sprite2DAA" type="Sprite2D" parent="."]
+visible = false
+z_index = 3
+texture = ExtResource("2_e80uo")
+
+[node name="SmearSprite" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0)
+top_level = true
+z_index = 1
+texture = ExtResource("2_e80uo")
+script = ExtResource("3_e80uo")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_kb21j")
+
+[node name="DeathSprite" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(-2, 2)
+texture = ExtResource("6_tdg3f")
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -8)
+sprite_frames = ExtResource("5_cxr5p")
+animation = &"respawn"

@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3 uid="uid://bre4u5m4418jf"]
+
+[ext_resource type="Texture2D" uid="uid://ha3aratrikck" path="res://sign.png" id="1_mbcot"]
+[ext_resource type="Script" uid="uid://dgfv7p58m2knf" path="res://sign.gd" id="1_w2mlg"]
+[ext_resource type="Texture2D" uid="uid://by3kbdov7iedj" path="res://sign_popup.png" id="3_tbceu"]
+[ext_resource type="FontFile" uid="uid://dam54qgsv2nde" path="res://Daydream.ttf" id="4_e8cgb"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_w2mlg"]
+size = Vector2(28, 28)
+
+[sub_resource type="Theme" id="Theme_w2mlg"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_q3tny"]
+resource_local_to_scene = true
+font = ExtResource("4_e8cgb")
+font_size = 10
+font_color = Color(0, 0, 0, 1)
+
+[node name="Sign" type="Area2D"]
+texture_filter = 1
+collision_mask = 2
+script = ExtResource("1_w2mlg")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(14, 14)
+texture = ExtResource("1_mbcot")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(14, 14)
+shape = SubResource("RectangleShape2D_w2mlg")
+
+[node name="NinePatchRect" type="NinePatchRect" parent="."]
+visible = false
+offset_left = -84.0
+offset_top = -140.0
+offset_right = 112.0
+offset_bottom = -28.0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+texture = ExtResource("3_tbceu")
+patch_margin_left = 7
+patch_margin_top = 7
+patch_margin_right = 7
+patch_margin_bottom = 7
+
+[node name="Label" type="Label" parent="NinePatchRect"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = -8.0
+offset_bottom = -9.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = SubResource("Theme_w2mlg")
+text = "TESTTESTTESTTESTTESTTESTESTESTSETSETESTTESTGESGESG"
+label_settings = SubResource("LabelSettings_q3tny")
+autowrap_mode = 3

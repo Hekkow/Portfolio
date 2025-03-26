@@ -1,0 +1,45 @@
+[gd_scene load_steps=7 format=3 uid="uid://ctiptaudxhaxl"]
+
+[ext_resource type="Script" uid="uid://dc7h8ins50d1b" path="res://Bouncer.gd" id="1_5ioly"]
+[ext_resource type="Texture2D" uid="uid://chxdef71h0673" path="res://bouncer1.png" id="2_187tn"]
+[ext_resource type="Texture2D" uid="uid://54jnv2f2me3e" path="res://bouncer2.png" id="3_187tn"]
+[ext_resource type="Texture2D" uid="uid://be7sdj702pm35" path="res://bouncer3.png" id="4_dwd3m"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ersjh"]
+radius = 28.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_20jeo"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_187tn")
+}],
+"loop": false,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_187tn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_dwd3m")
+}],
+"loop": false,
+"name": &"explode",
+"speed": 10.0
+}]
+
+[node name="Bouncer" type="Area2D"]
+texture_filter = 1
+collision_layer = 0
+collision_mask = 2
+script = ExtResource("1_5ioly")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(14, 14)
+shape = SubResource("CircleShape2D_ersjh")
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(14, 14)
+sprite_frames = SubResource("SpriteFrames_20jeo")

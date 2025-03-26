@@ -1,0 +1,39 @@
+[gd_scene load_steps=6 format=3 uid="uid://3j3cbmwg2ttk"]
+
+[ext_resource type="Script" uid="uid://quinb50eryuc" path="res://Level.gd" id="1_e2c4e"]
+[ext_resource type="Texture2D" uid="uid://dagwmw87n2b8f" path="res://background.png" id="2_2nifc"]
+[ext_resource type="TileSet" uid="uid://uqfdwe3ejwvf" path="res://tileset.tres" id="2_trjfi"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wkftn"]
+texture = ExtResource("2_2nifc")
+texture_region_size = Vector2i(28, 28)
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+3:1/0 = 0
+2:1/0 = 0
+1:1/0 = 0
+0:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_06hw4"]
+tile_size = Vector2i(28, 28)
+sources/1 = SubResource("TileSetAtlasSource_wkftn")
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1_e2c4e")
+
+[node name="Background" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_06hw4")
+
+[node name="Level" type="TileMapLayer" parent="."]
+tile_set = ExtResource("2_trjfi")
+
+[node name="SpawnPoint" type="Node2D" parent="."]
+position = Vector2(107, 361)
+
+[node name="Objects" type="Node2D" parent="."]

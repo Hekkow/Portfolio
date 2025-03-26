@@ -1,0 +1,23 @@
+[gd_scene load_steps=2 format=3 uid="uid://bxnkfvwwahrvr"]
+
+[ext_resource type="Script" uid="uid://c6l2yfb8stgn1" path="res://UI/SettingsInput.gd" id="1_242ne"]
+
+[node name="SettingsInput" type="HBoxContainer"]
+offset_right = 224.0
+offset_bottom = 23.0
+script = ExtResource("1_242ne")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "TEST"
+
+[node name="HSlider" type="HSlider" parent="."]
+custom_minimum_size = Vector2(113.295, 0)
+layout_mode = 2
+size_flags_vertical = 4
+max_value = 10000.0
+
+[node name="SpinBox" type="SpinBox" parent="."]
+layout_mode = 2
+max_value = 100000.0

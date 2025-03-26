@@ -6,14 +6,21 @@ export default {
         }
     },
     template: `
-      <div style="width: 270px; height: 50px; color: black;">
-        Coming soon
-      </div>
-<!--        <iframe style="width: 500px; height: 500px;" src="http://localhost:6969/new-game-project/export/New%20Game%20Project.html" ref="iframe"></iframe>-->
+<!--      <div style="width: 270px; height: 50px; color: black;">-->
+<!--        Coming soon-->
+<!--      </div>-->
+        <iframe style="width: 784px; height: 504px;" :src="gameSrc" ref="iframe"></iframe>
     `,
+    computed: {
+        gameSrc() {
+            let file = '/platformer/export/platformer.html'
+            let host = window.location.hostname === "localhost" ? `http://localhost:6969${file}` : `wss://${window.location.hostname}${file}`
+            return host
+        }
+    },
     mounted() {
-        this.app.top = "20%"
-        this.app.left = "30%"
+        this.app.top = "5%"
+        this.app.left = "15%"
     },
     props: {
         app: Object,
