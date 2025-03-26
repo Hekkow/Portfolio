@@ -9,7 +9,7 @@ export default {
       <!--      <div style="width: 270px; height: 50px; color: black;">-->
       <!--        Coming soon-->
       <!--      </div>-->
-      <iframe style="width: 784px; height: 504px; border-right: 2px solid #b5b5b5; border-bottom: 2px solid #b5b5b5;" :src="gameSrc"
+      <iframe style="width: 784px; height: 504px; border: 4px solid #306082" :src="gameSrc"
               ref="iframe"></iframe>
     `,
     computed: {

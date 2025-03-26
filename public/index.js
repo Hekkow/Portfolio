@@ -44,7 +44,7 @@ let aboutMe = new AppClass("About Me", "notepad", "notepad", 0, 3)
 let myProjects = new AppClass("My Projects", "notepad", "notepad", 1, 0)
 let peskyPlant = new AppClass("Pesky Plant", "pesky-plant", "unavailable", 1, 1)
 let downloadMoreRAM = new AppClass("Download more RAM", "virus", "ram", 1, 2)
-let platformer = new AppClass("Platformer", "game", "unavailable", 1, 3)
+let platformer = new AppClass("Platformer", "game", "platformer", 1, 3)
 
 // education
 // skills
