@@ -52,7 +52,7 @@ button {
     width: 700px;
     background-color: #dadada;
     margin: 0 auto;
-    margin-left: 10px;
+    padding-left: 10px;
     box-sizing: border-box;
 }
 .mail {
