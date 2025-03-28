@@ -53,6 +53,7 @@ button {
     background-color: #dadada;
     margin: 0 auto;
     margin-left: 10px;
+    box-sizing: border-box;
 }
 .mail {
     width: 100%;
