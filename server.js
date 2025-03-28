@@ -316,7 +316,9 @@ app.get('/chat', (req, res) => {
 app.get('/login', (req, res) => {
     res.sendFile(__dirname + '/public/login.html')
 })
-
+app.get('/digitalhumanities', (req, res) => {
+    res.sendFile(__dirname + '/public/DigitalHumanities/digitalhumanities.html')
+})
 app.use('/', loginServer.router)
 app.listen(process.env.PORT, () => {
     console.log("Server started")
