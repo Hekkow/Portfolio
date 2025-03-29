@@ -29,7 +29,6 @@ export default {
     },
     template: `
       <div id="weather">
-        <div style="position: absolute; background-color: white; color: black; border: 4px solid black; padding: 4px;">Art for other weathers coming soon</div>
         <button @click="showSettings = !showSettings" class="weather-setting-toggle weather-setting-button">
           <img class="weather-setting-icon" :src="plusMinus" alt="">
         </button>
@@ -65,7 +64,7 @@ export default {
           </button>
         </div>
         <div id="weather-pond" style="">
-          <img src="../../Images/pond.png" alt="">
+          <img :src="currentWeather" alt="">
         </div>
         <!--{{getWeather(forecast[currentDay])}};-->
       </div>
@@ -82,6 +81,9 @@ export default {
     computed: {
         plusMinus() {
             return `../../Images/${this.showSettings ? 'minus' : 'plus'}.png`
+        },
+        currentWeather() {
+            return `../../Images/Weather/${this.getWeather(this.forecast[this.currentDay])}.png`
         }
     },
     methods: {
@@ -116,15 +118,15 @@ export default {
             return printableDate
         },
         getWeather(code) {
-            if (code <= 1) return "clear"
-            if (code <= 3) return "cloudy"
-            if (code <= 48) return "foggy"
-            if (code <= 67) return "rainy"
-            if (code <= 77) return "snowy"
-            if (code <= 82) return "rainy"
-            if (code <= 86) return "snowy"
-            if (code <= 99) return "thunder"
-            return "clear"
+            if (code <= 1) return "Clear"
+            if (code <= 3) return "Cloudy"
+            if (code <= 48) return "Foggy"
+            if (code <= 67) return "Rainy"
+            if (code <= 77) return "Snowy"
+            if (code <= 82) return "Rainy"
+            if (code <= 86) return "Snowy"
+            if (code <= 99) return "Thunder"
+            return "Clear"
         },
         updateWeather() {
             fetch(`https://api.open-meteo.com/v1/forecast?latitude=${this.latitude}&longitude=${this.longitude}&current=weather_code&daily=weather_code&timezone=America%2FNew_York`)
